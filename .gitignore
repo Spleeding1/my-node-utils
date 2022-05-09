@@ -2,6 +2,7 @@
 *
 
 !.gitignore
+!cli-alias.txt
 !my-fs.js
 !my-JSON.js
 !my-loops.js

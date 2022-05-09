@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# source cli-alias.txt
+
+# playground PluginRig from wp-rig-playground
+# git clone "/Users/CrazyCarl/Software/my-node-utils" my-node-utils
+
+
+# Universal
+alias gb="git branch"
+alias gcam="git commit -a -m"
+alias gp="git pull"
+alias gtda="git tag | xargs git tag -d"
+
+## master
+alias gmm="git merge master"
+alias gsm="git switch master"
