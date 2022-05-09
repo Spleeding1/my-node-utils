@@ -6,6 +6,8 @@
  * Version 1.0.0
  *
  * Utility functions for loops.
+ *
+ * * asyncForEach(iterable, asyncFunction)
  */
 
 async function asyncForEach(iterable, asyncFunction) {

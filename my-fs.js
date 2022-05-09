@@ -5,7 +5,11 @@
  * All Rights Reserved
  * Version 1.0.0
  *
- * Utility functions that use fs.
+ * Utility async functions that use fs.
+ *
+ * * createDirectory(dirPath)
+ * * createFileDirectories(filePath, isDirPath = false)
+ * * fileOrDirCheck(path)
  */
 
 const colors = require(`colors`);
