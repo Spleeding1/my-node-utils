@@ -3,17 +3,53 @@
  * my-fs.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.0.0
+ * Version 1.0.1
  *
  * Utility async functions that use fs.
  *
+ * * cleanUpAssets(outputFilesDir, srcFilesDir, extension)
+ * * copyDirContents(sourceDir, targetDir, fileSuffix = null)
  * * createDirectory(dirPath)
  * * createFileDirectories(filePath, isDirPath = false)
  * * fileOrDirCheck(path)
+ * * getDirContents(path, fileSuffix = null)
  */
 
 const colors = require(`colors`);
 const fs = require(`fs`);
+
+/**
+ * Deletes output file if src file does not exist.
+ * @async
+ * @param {string} minFilesDir Path to output files.
+ * @param {string} srcFilesDir Path to source files.
+ * @param {string} extension File extension of files.
+ */
+async function cleanUpAssets(outputFilesDir, srcFilesDir, extension) {
+	const outputFiles = await getDirContents(outputFilesDir, extension);
+	const srcFiles = await getDirContents(srcFilesDir, extension);
+	let srcString = ``;
+
+	srcFiles.forEach(fileName => {
+		if (!fileName.startsWith(`_`)) {
+			srcString = `${srcString}, ${fileName}`;
+		}
+	});
+
+	for await (const file of outputFiles) {
+		if (!file.endsWith(extension)) {
+			continue;
+		}
+		const fileName = `${file.split(`.`)[0]}${extension}`;
+		if (srcString.includes(fileName)) {
+			continue;
+		}
+
+		fs.unlinkSync(`${minFilesDir}/${file}`);
+	}
+}
+
+module.exports.cleanUpAssets = cleanUpAssets;
 
 /**
  * Copies the contents of one directory to another.
