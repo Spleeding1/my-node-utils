@@ -1,5 +1,5 @@
 /**
- * @package node_packages
+ * @package my-node-utils
  * my-loops.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
