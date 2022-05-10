@@ -6,6 +6,8 @@
  * Version 1.0.0
  *
  * Utility functions to work with JSON.
+ *
+ * * mergeJSON(changeJSON, defaultJSON, filePaths = false)
  */
 
 /**

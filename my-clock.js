@@ -6,6 +6,9 @@
  * Version 1.0.0
  *
  * Utility clock and timing functions.
+ *
+ * * startClock()
+ * * stopClock(startTime)
  */
 
 /**
