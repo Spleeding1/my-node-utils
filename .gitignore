@@ -3,6 +3,7 @@
 
 !.gitignore
 !cli-alias.txt
+!my-clock.js
 !my-fs.js
 !my-JSON.js
 !my-loops.js
