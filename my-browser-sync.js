@@ -37,19 +37,19 @@ async function browserSyncChokidar(proxy, port, watchPaths, reloadFunc) {
 		console.info(`\nReloaded in ${timer.stop(reloadTime).green}`.magenta);
 	});
 	watcher.on(`change`, async path => {
-		const reloadTime = startClock();
+		const reloadTime = timer.start();
 		await reloadFunc(path);
 		browserSync.reload();
 		console.info(`\nReloaded in ${timer.stop(reloadTime).green}`.magenta);
 	});
 	watcher.on(`unlink`, async path => {
-		const reloadTime = startClock();
+		const reloadTime = timer.start();
 		await reloadFunc(path);
 		browserSync.reload();
 		console.info(`\nReloaded in ${timer.stop(reloadTime).green}`.magenta);
 	});
 	watcher.on(`addDir`, () => {
-		const reloadTime = startClock();
+		const reloadTime = timer.start();
 		browserSync.reload();
 		console.info(`\nReloaded in ${timer.stop(reloadTime).green}`.magenta);
 	});
