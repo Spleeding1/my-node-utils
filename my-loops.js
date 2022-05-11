@@ -12,7 +12,7 @@
 
 async function asyncForEach(iterable, asyncFunction, asyncFuncArgs = null) {
 	const promises = iterable.map(async i => {
-		if (asyncFuncArg) {
+		if (asyncFuncArgs) {
 			asyncFuncArgs.unshift(i);
 			const result = await asyncFunction.apply(asyncFuncArgs);
 		} else {
