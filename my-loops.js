@@ -3,16 +3,22 @@
  * my-loops.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.0.0
+ * Version 1.0.1
  *
  * Utility functions for loops.
  *
  * * asyncForEach(iterable, asyncFunction)
  */
 
-async function asyncForEach(iterable, asyncFunction) {
+async function asyncForEach(iterable, asyncFunction, asyncFuncArgs = null) {
 	const promises = iterable.map(async i => {
-		const result = await asyncFunction(i);
+		if (asyncFuncArg) {
+			asyncFuncArgs.unshift(i);
+			const result = await asyncFunction.apply(asyncFuncArgs);
+		} else {
+			const result = await asyncFunction(i);
+		}
+
 		return result;
 	});
 
