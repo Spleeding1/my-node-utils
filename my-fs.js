@@ -109,12 +109,12 @@ async function createDirectory(dirPath) {
 	try {
 		if (!fs.existsSync(dirPath)) {
 			fs.mkdirSync(dirPath);
-			console.log(`created ${dirPath}`.gray);
+			console.info(`created ${dirPath}`.gray);
 		} else {
-			console.log(`exists ${dirPath}`.gray);
+			console.info(`exists ${dirPath}`.gray);
 		}
 	} catch (err) {
-		console.log(err.brightRed);
+		console.error(err.brightRed);
 	}
 }
 
@@ -156,10 +156,10 @@ async function fileOrDirCheck(path) {
 		} else if (stat.isDirectory()) {
 			result = `isDirectory`;
 		}
-		console.log(`${result}: ${path}`.gray);
+		console.info(`${result}: ${path}`.gray);
 		return result;
 	} catch (e) {
-		console.log(`${e}\n${path}`.brightRed);
+		console.error(`${e}\n${path}`.brightRed);
 		return `error`;
 	}
 }
