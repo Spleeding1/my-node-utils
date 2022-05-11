@@ -3,7 +3,7 @@
  * my-fs.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.0.1
+ * Version 1.6.1
  *
  * Utility async functions that use fs.
  *
@@ -177,7 +177,7 @@ async function getDirContents(path, fileSuffix = null) {
 	const contents = fs.readdirSync(path);
 
 	// Exit if no contents
-	if (!contents || contents.length) {
+	if (!contents || !contents.length) {
 		return [];
 	}
 
@@ -186,7 +186,7 @@ async function getDirContents(path, fileSuffix = null) {
 
 		for await (const item of contents) {
 			if (item.endsWith(fileSuffix)) {
-				selectedFiles.append(item);
+				selectedFiles.push(item);
 			}
 		}
 
