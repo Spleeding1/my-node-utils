@@ -10,14 +10,9 @@
  * * asyncForEach(iterable, asyncFunction)
  */
 
-async function asyncForEach(iterable, asyncFunction, asyncFuncArgs = null) {
+async function asyncForEach(iterable, asyncFunction) {
 	const promises = iterable.map(async i => {
-		if (asyncFuncArgs) {
-			asyncFuncArgs.unshift(i);
-			const result = await asyncFunction.apply(asyncFuncArgs);
-		} else {
-			const result = await asyncFunction(i);
-		}
+		const result = await asyncFunction(i);
 
 		return result;
 	});
