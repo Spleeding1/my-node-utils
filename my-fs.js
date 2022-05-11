@@ -19,9 +19,10 @@ const colors = require(`colors`);
 const fs = require(`fs`);
 
 /**
- * Deletes output file if src file does not exist.
+ * Deletes output file if src file does not exist. Bypasses src files that start with `_`. Removes
+ * file extension to account for `*.min.*` files.
  * @async
- * @param {string} minFilesDir Path to output files.
+ * @param {string} outputFilesDir Path to output files.
  * @param {string} srcFilesDir Path to source files.
  * @param {string} extension File extension of files.
  */
