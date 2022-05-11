@@ -3,7 +3,7 @@
  * my-browser-sync.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version: 1.1.1
+ * Version: 1.1.2
  *
  * Utility functions for working with browserSync
  *
@@ -12,6 +12,7 @@
 
 const browserSync = require(`browser-sync`).create();
 const chokidar = require(`chokidar`);
+const {timer} = require(`./my-clock`);
 
 /**
  * Creates development server.
@@ -30,22 +31,22 @@ async function browserSyncChokidar(proxy, port, watchPaths, reloadFunc) {
 	const watcher = chokidar.watch(watchPaths, {ignoreInitial: true});
 
 	watcher.on(`add`, async path => {
-		const reloadTime = startClock();
+		const reloadTime = timer.start();
 		await reloadFunc(path);
 		browserSync.reload();
-		console.info(`\nReloaded in ${stopClock(reloadTime).green}`.magenta);
+		console.info(`\nReloaded in ${timer.stop(reloadTime).green}`.magenta);
 	});
 	watcher.on(`change`, async path => {
 		const reloadTime = startClock();
 		await reloadFunc(path);
 		browserSync.reload();
-		console.info(`\nReloaded in ${stopClock(reloadTime).green}`.magenta);
+		console.info(`\nReloaded in ${timer.stop(reloadTime).green}`.magenta);
 	});
 	watcher.on(`unlink`, async path => {
 		const reloadTime = startClock();
 		await reloadFunc(path);
 		browserSync.reload();
-		console.info(`\nReloaded in ${stopClock(reloadTime).green}`.magenta);
+		console.info(`\nReloaded in ${timer.stop(reloadTime).green}`.magenta);
 	});
 	watcher.on(`addDir`, () => {
 		const reloadTime = startClock();
@@ -53,9 +54,9 @@ async function browserSyncChokidar(proxy, port, watchPaths, reloadFunc) {
 		console.info(`\nReloaded in ${stopClock(reloadTime).green}`.magenta);
 	});
 	watcher.on(`unlinkDir`, () => {
-		const reloadTime = startClock();
+		const reloadTime = timer.start();
 		browserSync.reload();
-		console.info(`\nReloaded in ${stopClock(reloadTime).green}`.magenta);
+		console.info(`\nReloaded in ${timer.stop(reloadTime).green}`.magenta);
 	});
 }
 
