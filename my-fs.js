@@ -3,7 +3,7 @@
  * my-fs.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.6.1
+ * Version 1.6.2
  *
  * Utility async functions that use fs.
  *

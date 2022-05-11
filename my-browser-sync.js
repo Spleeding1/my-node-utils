@@ -3,12 +3,15 @@
  * my-browser-sync.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version: 1.1.0
+ * Version: 1.1.1
  *
  * Utility functions for working with browserSync
  *
  * * browserSyncChokidar(proxy, port, watchPaths)
  */
+
+const browserSync = require(`browser-sync`).create();
+const chokidar = require(`chokidar`);
 
 /**
  * Creates development server.
