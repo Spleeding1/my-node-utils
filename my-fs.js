@@ -58,7 +58,7 @@ module.exports.cleanUpAssets = cleanUpAssets;
  * @param {string} sourceDir Path of source directory.
  * @param {string} targetDir Path of target directory.
  * @param {string} fileSuffix Used if targeting specific file types.
- * @returns {void} If an error occurs.
+ * @returns {Promise<void>} If an error occurs.
  */
 async function copyDirContents(sourceDir, targetDir, fileSuffix = null) {
 	if (fileOrDirCheck(sourceDir) !== `isDirectory` || fileOrDirCheck(targetDir) !== `isDirectory`) {
