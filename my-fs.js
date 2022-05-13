@@ -3,7 +3,7 @@
  * my-fs.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.6.3
+ * Version 1.6.4
  *
  * Utility async functions that use fs.
  *
@@ -129,7 +129,7 @@ async function createFileDirectories(filePath, isDirPath = false) {
 
 	if (splitFilePath.length > 1) {
 		const totalDirectories = isDirPath ? splitFilePath.length : splitFilePath.length - 1;
-		let currentDir = `.`;
+		let currentDir = ``;
 		for (let d = 0; d < totalDirectories; d++) {
 			currentDir += `/${splitFilePath[d]}`;
 			await createDirectory(currentDir);
