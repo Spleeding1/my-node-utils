@@ -110,8 +110,6 @@ async function createDirectory(dirPath) {
 		if (!fs.existsSync(dirPath)) {
 			fs.mkdirSync(dirPath);
 			console.info(`created ${dirPath}`.gray);
-		} else {
-			console.info(`exists ${dirPath}`.gray);
 		}
 	} catch (err) {
 		console.error(err.brightRed);
