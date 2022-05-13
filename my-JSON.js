@@ -12,13 +12,12 @@
 
 /**
  * Merges JSON files into an object, overwritting duplicate keys.
- * @async
  * @param {string} changeFile JSON Overwrites.
  * @param {string} defaultFile JSON defaults.
  * @param {bool} filePaths If changeFile and defaultFile are paths.
  * @returns {Promise<object>} Combined object of default and overwritten JSON.
  */
-async function mergeJSON(changeJSON, defaultJSON, filePaths = false) {
+function mergeJSON(changeJSON, defaultJSON, filePaths = false) {
 	if (filePaths) {
 		changeJSON = require(changeJSON);
 		defaultJSON = require(defaultJSON);
