@@ -26,7 +26,7 @@ function mergeJSON(changeJSON, defaultJSON, filePaths = false) {
 	const defaultKeys = Object.keys(defaultJSON);
 	let finalJSON = {};
 
-	for await (const key of defaultKeys) {
+	for (const key of defaultKeys) {
 		finalJSON[key] = key in changeJSON ? changeJSON[key] : defaultJSON[key];
 	}
 
