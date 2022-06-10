@@ -13,7 +13,7 @@
 
 /**
  * Starting time for clocking process performance.
- * @returns performance.now().
+ * @returns {number}
  */
 function startTimer() {
 	return performance.now();
@@ -25,6 +25,9 @@ function startTimer() {
  * @returns {string} Difference between startTime and stopTime in seconds.
  */
 function stopTimer(startTime) {
+	if (isNaN(startTime)) {
+		throw `startTime must be a number`;
+	}
 	const elaspedTime = performance.now() - startTime;
 	return `${(elaspedTime / 1000).toFixed(3)}s`;
 }

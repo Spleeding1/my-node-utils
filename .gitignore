@@ -1,6 +1,8 @@
 # Ignore everything
 *
 
+!tests
+!tests/*.test.js
 !.gitignore
 !cli-alias.txt
 !my-browser-sync.js
