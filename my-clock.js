@@ -3,7 +3,7 @@
  * my-clock.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.2.1
+ * Version 1.2.2
  *
  * Utility clock and timing functions.
  *
@@ -25,11 +25,11 @@ function startTimer() {
  * @returns {string} Difference between startTime and stopTime in seconds.
  */
 function stopTimer(startTime) {
-	if (isNaN(startTime)) {
-		throw `startTime must be a number`;
+	if (typeof startTime !== `number`) {
+		throw TypeError(`startTime must be a number`);
 	}
-	const elaspedTime = performance.now() - startTime;
-	return `${(elaspedTime / 1000).toFixed(3)}s`;
+	const elapsedTime = performance.now() - startTime;
+	return `${(elapsedTime / 1000).toFixed(3)}s`;
 }
 
 module.exports.timer = {
