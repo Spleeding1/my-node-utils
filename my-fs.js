@@ -24,11 +24,21 @@ const fs = require(`fs`);
  * @async
  * @param {string} outputFilesDir Path to output files.
  * @param {string} srcFilesDir Path to source files.
- * @param {string} extension File extension of files.
+ * @param {?string} extension File extension of files.
  */
-async function cleanUpAssets(outputFilesDir, srcFilesDir, extension) {
-	const outputFiles = await getDirContents(outputFilesDir, extension);
-	const srcFiles = await getDirContents(srcFilesDir, extension);
+async function cleanUpAssets(destDir, srcDir, fileExt = null) {
+	if (typeof destDir !== `string`) {
+		throw TypeError(`destDir must be a string`);
+	}
+	if (typeof srcDir !== `string`) {
+		throw TypeError(`srcDir must be a string`);
+	}
+	// if (fileExt && ) {
+
+	// }
+
+	const destFiles = await getDirContents(destDir, fileExt);
+	const srcFiles = await getDirContents(srcDir, fileExt);
 	let srcString = ``;
 
 	srcFiles.forEach(fileName => {
@@ -37,16 +47,16 @@ async function cleanUpAssets(outputFilesDir, srcFilesDir, extension) {
 		}
 	});
 
-	for await (const file of outputFiles) {
-		if (!file.endsWith(extension)) {
+	for await (const file of destFiles) {
+		if (!file.endsWith(fileExt)) {
 			continue;
 		}
-		const fileName = `${file.split(`.`)[0]}${extension}`;
+		const fileName = `${file.split(`.`)[0]}${fileExt}`;
 		if (srcString.includes(fileName)) {
 			continue;
 		}
 
-		fs.unlinkSync(`${minFilesDir}/${file}`);
+		fs.unlinkSync(`${destDir}/${file}`);
 	}
 }
 
@@ -57,7 +67,7 @@ module.exports.cleanUpAssets = cleanUpAssets;
  * @async
  * @param {string} sourceDir Path of source directory.
  * @param {string} targetDir Path of target directory.
- * @param {string} fileSuffix Used if targeting specific file types.
+ * @param {?string} fileSuffix Used if targeting specific file types.
  * @returns {Promise<void>} If an error occurs.
  */
 async function copyDirContents(sourceDir, targetDir, fileSuffix = null) {
@@ -167,23 +177,41 @@ module.exports.fileOrDirCheck = fileOrDirCheck;
 /**
  * Gets the contents of a directory.
  * @async
- * @param {string} path Directory path.
- * @param {string} fileSuffix File suffix to only get certain files.
+ * @param {string} srcDir Directory path.
+ * @param {?object} exclude File suffix to only get certain files.
  * @returns {Promise<array>} Array of directory contents.
  */
-async function getDirContents(path, fileSuffix = null) {
-	const contents = fs.readdirSync(path);
+async function getDirContents(srcDir, exclude = null) {
+	if (typeof srcDir !== `string`) {
+		throw TypeError(`srcDir must be a string`);
+	}
+
+	if (exclude !== null) {
+		if (typeof exclude !== `string`) {
+			if (!Array.isArray(exclude)) {
+				throw TypeError(`exclude must be a string, array of strings, or null`);
+			} else {
+				exclude.forEach(ex => {
+					if (typeof ex !== `string`) {
+						throw TypeError(`exclude must be a string, array of strings, or null`);
+					}
+				});
+			}
+		}
+	}
+
+	const contents = fs.readdirSync(srcDir);
 
 	// Exit if no contents
 	if (!contents || !contents.length) {
 		return [];
 	}
 
-	if (fileSuffix) {
+	if (exclude) {
 		let selectedFiles = [];
 
 		for await (const item of contents) {
-			if (item.endsWith(fileSuffix)) {
+			if (item.endsWith(exclude)) {
 				selectedFiles.push(item);
 			}
 		}
