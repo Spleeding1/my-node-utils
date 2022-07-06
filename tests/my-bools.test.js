@@ -14,6 +14,25 @@ const is = require(`./../my-bools`);
 // ############################################################
 
 // ****************************************
+// is.array(arg)
+// ****************************************
+describe(`is.array`, () => {
+	test.each([
+		{type: `an object`, arg: {}, expected: false},
+		{type: `null`, arg: null, expected: false},
+		{type: `a string`, arg: `abc`, expected: false},
+		{type: `true`, arg: true, expected: false},
+		{type: `false`, arg: false, expected: false},
+		{type: `a number`, arg: 123, expected: false},
+		{type: `an array`, arg: [], expected: true},
+	])(`should return $expected if arg is $type`, ({type, arg, expected}) => {
+		const result = is.array(arg);
+		expect(result).toBe(expected);
+		expect(typeof result).toBe(`boolean`);
+	});
+});
+
+// ****************************************
 // is.nullStringOrArray(arg)
 // ****************************************
 describe(`is.nullStringOrArray`, () => {

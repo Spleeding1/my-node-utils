@@ -8,11 +8,26 @@
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
  *
+ * * array(arg)
  * * nullStringOrArray(arg)
  * * objectOrNull(arg)
  * * objectWithProperty(arg, property)
  * * string(arg)
  */
+
+/**
+ * Checks whether given argument is an array.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is an array.
+ */
+function array(arg) {
+	if (Array.isArray(arg)) {
+		return true;
+	}
+	return false;
+}
+
+module.exports.array = array;
 
 /**
  * Checks if given argument is null, a string or an array.
