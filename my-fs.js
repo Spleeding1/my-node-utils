@@ -181,9 +181,16 @@ module.exports.fileOrDirCheck = fileOrDirCheck;
  * @param {?object} args File suffix to only get certain files.
  * @returns {Promise<array>} Array of directory contents.
  */
-async function getDirContents(srcDir, args = null) {
+async function getDirContents(
+	srcDir,
+	args = {include: {prefix: null, suffix: null}, exclude: {prefix: null, suffix: null}}
+) {
 	if (typeof srcDir !== `string`) {
 		throw TypeError(`srcDir must be a string`);
+	}
+
+	if (args !== null && typeof args !== `object`) {
+		throw TypeError(`args must be an object or null`);
 	}
 
 	// if (exclude !== null) {
@@ -200,26 +207,26 @@ async function getDirContents(srcDir, args = null) {
 	// 	}
 	// }
 
-	const contents = fs.readdirSync(srcDir);
+	// const contents = fs.readdirSync(srcDir);
 
 	// Exit if no contents
-	if (!contents || !contents.length) {
-		return [];
-	}
+	// if (!contents || !contents.length) {
+	// 	return [];
+	// }
 
-	if (exclude) {
-		let selectedFiles = [];
+	// if (exclude) {
+	// 	let selectedFiles = [];
 
-		for await (const item of contents) {
-			if (item.endsWith(exclude)) {
-				selectedFiles.push(item);
-			}
-		}
+	// 	for await (const item of contents) {
+	// 		if (item.endsWith(exclude)) {
+	// 			selectedFiles.push(item);
+	// 		}
+	// 	}
 
-		return selectedFiles;
-	} else {
-		return contents;
-	}
+	// 	return selectedFiles;
+	// } else {
+	// 	return contents;
+	// }
 }
 
 module.exports.getDirContents = getDirContents;
