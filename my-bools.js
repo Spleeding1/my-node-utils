@@ -3,7 +3,7 @@
  * my-bools.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.2.0
+ * Version 1.4.0
  *
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
@@ -11,8 +11,14 @@
  * * nullStringOrArray(arg)
  * * objectOrNull(arg)
  * * objectWithProperty(arg, property)
+ * * string(arg)
  */
 
+/**
+ * Checks if given argument is null, a string or an array.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is null, a string, or an array.
+ */
 function nullStringOrArray(arg) {
 	if (arg === null || typeof arg === `string` || Array.isArray(arg)) {
 		return true;
@@ -60,3 +66,17 @@ function objectWithProperty(arg, property) {
 }
 
 module.exports.objectWithProperty = objectWithProperty;
+
+/**
+ * Checks whether given argument is a string.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is a string.
+ */
+function string(arg) {
+	if (typeof arg === `string`) {
+		return true;
+	}
+	return false;
+}
+
+module.exports.string = string;

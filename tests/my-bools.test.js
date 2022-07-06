@@ -31,6 +31,7 @@ describe(`is.nullStringOrArray`, () => {
 		expect(typeof result).toBe(`boolean`);
 	});
 });
+
 // ****************************************
 // is.objectOrNull(arg)
 // ****************************************
@@ -91,5 +92,24 @@ describe(`is.objectWithProperty`, () => {
 		expect(() => {
 			is.objectWithProperty(arg, value);
 		}).toThrow(TypeError(`property must be a string`));
+	});
+});
+
+// ****************************************
+// is.string(arg)
+// ****************************************
+describe(`is.string`, () => {
+	test.each([
+		{type: `an object`, arg: {}, expected: false},
+		{type: `null`, arg: null, expected: false},
+		{type: `a string`, arg: `abc`, expected: true},
+		{type: `true`, arg: true, expected: false},
+		{type: `false`, arg: false, expected: false},
+		{type: `a number`, arg: 123, expected: false},
+		{type: `an array`, arg: [], expected: false},
+	])(`should return $expected if arg is $type`, ({type, arg, expected}) => {
+		const result = is.string(arg);
+		expect(result).toBe(expected);
+		expect(typeof result).toBe(`boolean`);
 	});
 });
