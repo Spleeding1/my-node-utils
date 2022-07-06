@@ -28,10 +28,10 @@ const is = require(`./my-bools`);
  * @param {?string} extension File extension of files.
  */
 async function cleanUpAssets(destDir, srcDir, fileExt = null) {
-	if (typeof destDir !== `string`) {
+	if (!is.string(destDir)) {
 		throw TypeError(`destDir must be a string`);
 	}
-	if (typeof srcDir !== `string`) {
+	if (!is.string(srcDir)) {
 		throw TypeError(`srcDir must be a string`);
 	}
 	// if (fileExt && ) {
@@ -191,7 +191,7 @@ async function getDirContents(
 	let excludePrefix = null;
 	let excludeSuffix = null;
 
-	if (typeof srcDir !== `string`) {
+	if (!is.string(srcDir)) {
 		throw TypeError(`srcDir must be a string`);
 	}
 
@@ -204,12 +204,12 @@ async function getDirContents(
 			if (is.objectWithProperty(args.include, `prefix`)) {
 				if (
 					args.include.prefix === null ||
-					typeof args.include.prefix === `string` ||
+					is.string(args.include.prefix) ||
 					Array.isArray(args.include.prefix)
 				) {
 					if (Array.isArray(args.include.prefix)) {
 						args.include.prefix.forEach(prefix => {
-							if (typeof prefix !== `string`) {
+							if (!is.string(prefix)) {
 								throw TypeError(`args.include.prefix must be a string or an string[] or null`);
 							}
 						});
@@ -222,12 +222,12 @@ async function getDirContents(
 			if (is.objectWithProperty(args.include, `suffix`)) {
 				if (
 					args.include.suffix === null ||
-					typeof args.include.suffix === `string` ||
+					is.string(args.include.suffix) ||
 					Array.isArray(args.include.suffix)
 				) {
 					if (Array.isArray(args.include.suffix)) {
 						args.include.suffix.forEach(suffix => {
-							if (typeof suffix !== `string`) {
+							if (!is.string(suffix)) {
 								throw TypeError(`args.include.suffix must be a string or an string[] or null`);
 							}
 						});

@@ -20,7 +20,7 @@
  * @returns {boolean} If arg is null, a string, or an array.
  */
 function nullStringOrArray(arg) {
-	if (arg === null || typeof arg === `string` || Array.isArray(arg)) {
+	if (arg === null || string(arg) || Array.isArray(arg)) {
 		return true;
 	}
 	return false;
@@ -50,7 +50,7 @@ module.exports.objectOrNull = objectOrNull;
  * @throws {TypeError} If property is not a string.
  */
 function objectWithProperty(arg, property) {
-	if (typeof property !== `string`) {
+	if (!string(property)) {
 		throw TypeError(`property must be a string`);
 	}
 

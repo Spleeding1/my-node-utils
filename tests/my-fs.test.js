@@ -9,6 +9,7 @@
 
 const {cleanUpAssets, copyDirContents, getDirContents} = require(`./../my-fs`);
 const fs = require(`fs`);
+const is = require(`./../my-bools`);
 
 // Test variables.
 const cwd = process.cwd();
@@ -245,23 +246,23 @@ describe(`getDirContents`, () => {
 	});
 
 	// ***** args.exclude *****
-	test.each(objectOrNullTypesPassing)(
-		`should not throw error if args.exclude is $type`,
-		async ({type, value}) => {
-			const args = {exclude: value};
-			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
-		}
-	);
+	// test.each(objectOrNullTypesPassing)(
+	// 	`should not throw error if args.exclude is $type`,
+	// 	async ({type, value}) => {
+	// 		const args = {exclude: value};
+	// 		await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+	// 	}
+	// );
 
-	test.each(objectOrNullTypesFailing)(
-		`should throw an error if args.exclude is $type`,
-		async ({type, value}) => {
-			const args = {exclude: value};
-			await expect(getDirContents(srcDir, args)).rejects.toThrow(
-				TypeError(`args.exclude must be an object or null`)
-			);
-		}
-	);
+	// test.each(objectOrNullTypesFailing)(
+	// 	`should throw an error if args.exclude is $type`,
+	// 	async ({type, value}) => {
+	// 		const args = {exclude: value};
+	// 		await expect(getDirContents(srcDir, args)).rejects.toThrow(
+	// 			TypeError(`args.exclude must be an object or null`)
+	// 		);
+	// 	}
+	// );
 });
 
 // ############################################################
@@ -278,7 +279,7 @@ describe(`getDirContents`, () => {
  * @param {?string<array>} dirFiles Array of filenames to be written to the created directory.
  */
 async function setUpTestDir(dir, dirFiles = null) {
-	if (typeof dir !== `string`) {
+	if (!is.string(dir)) {
 		throw TypeError(`dir must be a string`);
 	}
 	if (!Array.isArray(dirFiles)) {
@@ -302,7 +303,7 @@ async function setUpTestDir(dir, dirFiles = null) {
  * @param {string} dir Path of directory to be deleted.
  */
 async function teardownTestDir(dir) {
-	if (typeof dir !== `string`) {
+	if (!is.string(dir)) {
 		throw TypeError(`dir must be a string`);
 	}
 
