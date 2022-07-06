@@ -8,9 +8,19 @@
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
  *
+ * * nullStringOrArray(arg)
  * * objectOrNull(arg)
  * * objectWithProperty(arg, property)
  */
+
+function nullStringOrArray(arg) {
+	if (arg === null || typeof arg === `string` || Array.isArray(arg)) {
+		return true;
+	}
+	return false;
+}
+
+module.exports.nullStringOrArray = nullStringOrArray;
 
 /**
  * Checks whether the supplied argument is an object or null.
