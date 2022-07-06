@@ -20,7 +20,7 @@ describe(`is.objectOrNull`, () => {
 	test(`should return true if arg is an object or null`, () => {
 		const result1 = is.objectOrNull({});
 		expect(result1).toBeTruthy();
-		expect(typeof result1).toEqual(`boolean`);
+		expect(typeof result1).toBe(`boolean`);
 
 		const result2 = is.objectOrNull(null);
 		expect(result2).toBeTruthy();
@@ -30,18 +30,18 @@ describe(`is.objectOrNull`, () => {
 	test(`should return false if arg is not an object or null`, () => {
 		const result1 = is.objectOrNull(`abc`);
 		expect(result1).toBeFalsy();
-		expect(typeof result1).toEqual(`boolean`);
+		expect(typeof result1).toBe(`boolean`);
 
 		const result2 = is.objectOrNull(123);
 		expect(result2).toBeFalsy();
-		expect(typeof result2).toEqual(`boolean`);
+		expect(typeof result2).toBe(`boolean`);
 
 		const result3 = is.objectOrNull(true);
 		expect(result3).toBeFalsy();
-		expect(typeof result3).toEqual(`boolean`);
+		expect(typeof result3).toBe(`boolean`);
 
 		const result4 = is.objectOrNull([]);
 		expect(result4).toBeFalsy();
-		expect(typeof result4).toEqual(`boolean`);
+		expect(typeof result4).toBe(`boolean`);
 	});
 });
