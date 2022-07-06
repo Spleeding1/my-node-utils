@@ -144,7 +144,7 @@ describe(`getDirContents`, () => {
 		await expect(getDirContents(srcDir, null)).resolves.not.toThrowError();
 	});
 
-	test(`should throw error if args is not an object`, async () => {
+	test(`should throw error if args is not an object or null`, async () => {
 		expect.assertions(3);
 		await expect(getDirContents(srcDir, `abc`)).rejects.toThrow(
 			TypeError(`args must be an object or null`)
@@ -155,6 +155,13 @@ describe(`getDirContents`, () => {
 		await expect(getDirContents(srcDir, true)).rejects.toThrow(
 			TypeError(`args must be an object or null`)
 		);
+	});
+
+	// ***** args.include *****
+	test(`should not throw error is args.include is an object or null`, async () => {
+		expect.assertions(2);
+		await expect(getDirContents(srcDir, {include: {}})).resolves.not.toThrowError();
+		await expect(getDirContents(srcDir, {include: {}})).resolves.not.toThrowError();
 	});
 
 	// test(`should not throw error if exclude is a string, array, or null`, async () => {
