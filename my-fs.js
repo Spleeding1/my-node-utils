@@ -178,27 +178,27 @@ module.exports.fileOrDirCheck = fileOrDirCheck;
  * Gets the contents of a directory.
  * @async
  * @param {string} srcDir Directory path.
- * @param {?object} exclude File suffix to only get certain files.
+ * @param {?object} args File suffix to only get certain files.
  * @returns {Promise<array>} Array of directory contents.
  */
-async function getDirContents(srcDir, exclude = null) {
+async function getDirContents(srcDir, args = null) {
 	if (typeof srcDir !== `string`) {
 		throw TypeError(`srcDir must be a string`);
 	}
 
-	if (exclude !== null) {
-		if (typeof exclude !== `string`) {
-			if (!Array.isArray(exclude)) {
-				throw TypeError(`exclude must be a string, array of strings, or null`);
-			} else {
-				exclude.forEach(ex => {
-					if (typeof ex !== `string`) {
-						throw TypeError(`exclude must be a string, array of strings, or null`);
-					}
-				});
-			}
-		}
-	}
+	// if (exclude !== null) {
+	// 	if (typeof exclude !== `string`) {
+	// 		if (!Array.isArray(exclude)) {
+	// 			throw TypeError(`exclude must be a string, array of strings, or null`);
+	// 		} else {
+	// 			exclude.forEach(ex => {
+	// 				if (typeof ex !== `string`) {
+	// 					throw TypeError(`exclude must be a string, array of strings, or null`);
+	// 				}
+	// 			});
+	// 		}
+	// 	}
+	// }
 
 	const contents = fs.readdirSync(srcDir);
 

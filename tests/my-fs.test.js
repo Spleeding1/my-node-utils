@@ -101,8 +101,17 @@ describe(`copyDirContents`, () => {
 
 // ****************************************
 // async function getDirContents(
-//     path,
-//     exclude = null
+//     srcDir,
+//     args = {
+//         include = {
+//             prefix: null
+//             suffix: null
+//         },
+//         exclude = {
+//             prefix: null
+//             suffix: null
+//         },
+//     }
 // )
 // ****************************************
 describe(`getDirContents`, () => {
@@ -116,33 +125,49 @@ describe(`getDirContents`, () => {
 		await teardownTestDir(srcDir);
 	});
 
-	test(`should not throw error if path is a string`, async () => {
+	// ------------------------------
+	// Argument types
+	// ------------------------------
+	// ######## srcDir ########
+	test(`should not throw error if srcDir is a string`, async () => {
 		await expect(getDirContents(srcDir)).resolves.not.toThrowError();
 	});
 
-	test(`should throw error if path is not a string`, async () => {
+	test(`should throw error if srcDir is not a string`, async () => {
 		await expect(getDirContents(123)).rejects.toThrow(TypeError(`srcDir must be a string`));
 	});
 
-	test(`should not throw error if exclude is a string, array, or null`, async () => {
-		expect.assertions(3);
-
-		await expect(getDirContents(srcDir, `.txt`)).resolves.not.toThrowError();
-		await expect(getDirContents(srcDir, [`.txt`, `.css`])).resolves.not.toThrowError();
+	// ######## args ########
+	test(`should not throw error if args is an object or null`, async () => {
+		expect.assertions(2);
+		await expect(getDirContents(srcDir, {})).resolves.not.toThrowError();
 		await expect(getDirContents(srcDir, null)).resolves.not.toThrowError();
 	});
 
-	test(`should throw error if exclude is not a string, array, or null`, async () => {
-		await expect(getDirContents(srcDir, 123)).rejects.toThrow(
-			TypeError(`exclude must be a string, array of strings, or null`)
-		);
-	});
+	// test(`should throw error if args is not an object`, async () => {
+	// 	expect.assertions(1);
+	// 	await expect(getDirContents(srcDir)).resolves.not.toThrowError();
+	// });
 
-	test(`should throw error if exclude array contains non-strings`, async () => {
-		await expect(getDirContents(srcDir, [`.txt`, 123])).rejects.toThrow(
-			TypeError(`exclude must be a string, array of strings, or null`)
-		);
-	});
+	// test(`should not throw error if exclude is a string, array, or null`, async () => {
+	// 	expect.assertions(3);
+
+	// 	await expect(getDirContents(srcDir, `.txt`)).resolves.not.toThrowError();
+	// 	await expect(getDirContents(srcDir, [`.txt`, `.css`])).resolves.not.toThrowError();
+	// 	await expect(getDirContents(srcDir, null)).resolves.not.toThrowError();
+	// });
+
+	// test(`should throw error if exclude is not a string, array, or null`, async () => {
+	// 	await expect(getDirContents(srcDir, 123)).rejects.toThrow(
+	// 		TypeError(`exclude must be a string, array of strings, or null`)
+	// 	);
+	// });
+
+	// test(`should throw error if exclude array contains non-strings`, async () => {
+	// 	await expect(getDirContents(srcDir, [`.txt`, 123])).rejects.toThrow(
+	// 		TypeError(`exclude must be a string, array of strings, or null`)
+	// 	);
+	// });
 });
 
 // ############################################################
