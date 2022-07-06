@@ -17,31 +17,18 @@ const is = require(`./../my-bools`);
 // is.objectOrNull(arg)
 // ****************************************
 describe(`is.objectOrNull`, () => {
-	test(`should return true if arg is an object or null`, () => {
-		const result1 = is.objectOrNull({});
-		expect(result1).toBeTruthy();
-		expect(typeof result1).toBe(`boolean`);
-
-		const result2 = is.objectOrNull(null);
-		expect(result2).toBeTruthy();
-		expect(typeof result2).toEqual(`boolean`);
-	});
-
-	test(`should return false if arg is not an object or null`, () => {
-		const result1 = is.objectOrNull(`abc`);
-		expect(result1).toBeFalsy();
-		expect(typeof result1).toBe(`boolean`);
-
-		const result2 = is.objectOrNull(123);
-		expect(result2).toBeFalsy();
-		expect(typeof result2).toBe(`boolean`);
-
-		const result3 = is.objectOrNull(true);
-		expect(result3).toBeFalsy();
-		expect(typeof result3).toBe(`boolean`);
-
-		const result4 = is.objectOrNull([]);
-		expect(result4).toBeFalsy();
-		expect(typeof result4).toBe(`boolean`);
+	const testArgs = [
+		{type: `an object`, arg: {}, expected: true},
+		{type: `null`, arg: null, expected: true},
+		{type: `a string`, arg: `abc`, expected: false},
+		{type: `true`, arg: true, expected: false},
+		{type: `false`, arg: false, expected: false},
+		{type: `a number`, arg: 123, expected: false},
+		{type: `an array`, arg: [], expected: false},
+	];
+	test.each(testArgs)(`should return $expected if arg is $type`, ({type, arg, expected}) => {
+		const result = is.objectOrNull(arg);
+		expect(result).toBe(expected);
+		expect(typeof result).toBe(`boolean`);
 	});
 });
