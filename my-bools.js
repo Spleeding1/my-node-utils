@@ -6,6 +6,7 @@
  * Version 1.1.0
  *
  * Utility functions that return true or false.
+ * const is = require(`./my-bools.js`);
  *
  * * objectOrNull(arg)
  */
