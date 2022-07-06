@@ -5,6 +5,7 @@
 !tests/*.test.js
 !.gitignore
 !cli-alias.txt
+!my-bools.js
 !my-browser-sync.js
 !my-clock.js
 !my-fs.js
