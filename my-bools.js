@@ -35,7 +35,7 @@ module.exports.array = array;
  * @returns {boolean} If arg is null, a string, or an array.
  */
 function nullStringOrArray(arg) {
-	if (arg === null || string(arg) || Array.isArray(arg)) {
+	if (arg === null || string(arg) || array(arg)) {
 		return true;
 	}
 	return false;
@@ -49,7 +49,7 @@ module.exports.nullStringOrArray = nullStringOrArray;
  * @returns {boolean} If arg is an object or null.
  */
 function objectOrNull(arg) {
-	if (arg === null || (typeof arg === `object` && !Array.isArray(arg))) {
+	if (arg === null || (typeof arg === `object` && !array(arg))) {
 		return true;
 	}
 	return false;
@@ -69,12 +69,7 @@ function objectWithProperty(arg, property) {
 		throw TypeError(`property must be a string`);
 	}
 
-	if (
-		typeof arg === `object` &&
-		!Array.isArray(arg) &&
-		arg !== null &&
-		arg.hasOwnProperty(property)
-	) {
+	if (typeof arg === `object` && !array(arg) && arg !== null && arg.hasOwnProperty(property)) {
 		return true;
 	}
 	return false;
