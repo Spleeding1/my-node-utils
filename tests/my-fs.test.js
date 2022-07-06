@@ -9,7 +9,6 @@
 
 const {cleanUpAssets, copyDirContents, getDirContents} = require(`./../my-fs`);
 const fs = require(`fs`);
-const {assert} = require("console");
 
 // Test variables.
 const cwd = process.cwd();
@@ -115,6 +114,17 @@ describe(`copyDirContents`, () => {
 // )
 // ****************************************
 describe(`getDirContents`, () => {
+	const objectOrNullTypesPassing = [
+		{type: `an object`, value: {}},
+		{type: `null`, value: null},
+	];
+	const objectOrNullTypesFailing = [
+		{type: `a string`, value: `abc`},
+		{type: `a number`, value: 123},
+		{type: `an array`, value: []},
+		{type: `true`, value: true},
+		{type: `false`, value: false},
+	];
 	const srcDir = `${cwd}/getDirContentsSrc`;
 
 	beforeEach(async () => {
@@ -133,56 +143,71 @@ describe(`getDirContents`, () => {
 		await expect(getDirContents(srcDir)).resolves.not.toThrowError();
 	});
 
-	test(`should throw error if srcDir is not a string`, async () => {
-		await expect(getDirContents(123)).rejects.toThrow(TypeError(`srcDir must be a string`));
+	test.each([
+		{type: `a number`, srcDir: 123},
+		{type: `an object`, srcDir: {}},
+		{type: `null`, srcDir: null},
+		{type: `an array`, srcDir: []},
+		{type: `true`, srcDir: true},
+		{type: `false`, srcDir: false},
+	])(`should throw error if srcDir is $type`, async ({type, srcDir}) => {
+		await expect(getDirContents(srcDir)).rejects.toThrow(TypeError(`srcDir must be a string`));
 	});
 
 	// ######## args ########
-	test(`should not throw error if args is an object or null`, async () => {
-		expect.assertions(2);
-		await expect(getDirContents(srcDir, {})).resolves.not.toThrowError();
-		await expect(getDirContents(srcDir, null)).resolves.not.toThrowError();
-	});
+	test.each(objectOrNullTypesPassing)(
+		`should not throw error if args is $type`,
+		async ({type, value}) => {
+			await expect(getDirContents(srcDir, value)).resolves.not.toThrowError();
+		}
+	);
 
-	test(`should throw error if args is not an object or null`, async () => {
-		expect.assertions(3);
-		await expect(getDirContents(srcDir, `abc`)).rejects.toThrow(
-			TypeError(`args must be an object or null`)
-		);
-		await expect(getDirContents(srcDir, 123)).rejects.toThrow(
-			TypeError(`args must be an object or null`)
-		);
-		await expect(getDirContents(srcDir, true)).rejects.toThrow(
-			TypeError(`args must be an object or null`)
-		);
-	});
+	test.each(objectOrNullTypesFailing)(
+		`should throw an error if args is $type`,
+		async ({type, value}) => {
+			await expect(getDirContents(srcDir, value)).rejects.toThrow(
+				TypeError(`args must be an object or null`)
+			);
+		}
+	);
 
 	// ***** args.include *****
-	test(`should not throw error is args.include is an object or null`, async () => {
-		expect.assertions(2);
-		await expect(getDirContents(srcDir, {include: {}})).resolves.not.toThrowError();
-		await expect(getDirContents(srcDir, {include: {}})).resolves.not.toThrowError();
-	});
+	test.each(objectOrNullTypesPassing)(
+		`should not throw error if args.include is $type`,
+		async ({type, value}) => {
+			const args = {include: value};
+			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+		}
+	);
 
-	// test(`should not throw error if exclude is a string, array, or null`, async () => {
-	// 	expect.assertions(3);
+	test.each(objectOrNullTypesFailing)(
+		`should throw an error if args.include is $type`,
+		async ({type, value}) => {
+			const args = {include: value};
+			await expect(getDirContents(srcDir, args)).rejects.toThrow(
+				TypeError(`args.include must be an object or null`)
+			);
+		}
+	);
 
-	// 	await expect(getDirContents(srcDir, `.txt`)).resolves.not.toThrowError();
-	// 	await expect(getDirContents(srcDir, [`.txt`, `.css`])).resolves.not.toThrowError();
-	// 	await expect(getDirContents(srcDir, null)).resolves.not.toThrowError();
-	// });
+	// ***** args.exclude *****
+	test.each(objectOrNullTypesPassing)(
+		`should not throw error if args.exclude is $type`,
+		async ({type, value}) => {
+			const args = {exclude: value};
+			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+		}
+	);
 
-	// test(`should throw error if exclude is not a string, array, or null`, async () => {
-	// 	await expect(getDirContents(srcDir, 123)).rejects.toThrow(
-	// 		TypeError(`exclude must be a string, array of strings, or null`)
-	// 	);
-	// });
-
-	// test(`should throw error if exclude array contains non-strings`, async () => {
-	// 	await expect(getDirContents(srcDir, [`.txt`, 123])).rejects.toThrow(
-	// 		TypeError(`exclude must be a string, array of strings, or null`)
-	// 	);
-	// });
+	test.each(objectOrNullTypesFailing)(
+		`should throw an error if args.exclude is $type`,
+		async ({type, value}) => {
+			const args = {exclude: value};
+			await expect(getDirContents(srcDir, args)).rejects.toThrow(
+				TypeError(`args.exclude must be an object or null`)
+			);
+		}
+	);
 });
 
 // ############################################################

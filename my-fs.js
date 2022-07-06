@@ -17,6 +17,7 @@
 
 const colors = require(`colors`);
 const fs = require(`fs`);
+const is = require(`./my-bools`);
 
 /**
  * Deletes output file if src file does not exist. Bypasses src files that start with `_`. Removes
@@ -189,8 +190,16 @@ async function getDirContents(
 		throw TypeError(`srcDir must be a string`);
 	}
 
-	if (args !== null && typeof args !== `object`) {
+	if (!is.objectOrNull(args)) {
 		throw TypeError(`args must be an object or null`);
+	}
+
+	if (args && args.hasOwnProperty(`include`) && !is.objectOrNull(args.include)) {
+		throw TypeError(`args.include must be an object or null`);
+	}
+
+	if (args && args.hasOwnProperty(`exclude`) && !is.objectOrNull(args.exclude)) {
+		throw TypeError(`args.exclude must be an object or null`);
 	}
 
 	// if (exclude !== null) {
