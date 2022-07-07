@@ -33,6 +33,23 @@ describe(`is.array`, () => {
 });
 
 // ****************************************
+// is.arrayOfStrings(array)
+// ****************************************
+describe(`is.arrayOfStrings`, () => {
+	test.each([
+		{type: `an array with strings`, value: [`abc`, `def`, `ghi`], expected: true},
+		{type: `an array with an object`, value: [`abc`, {}, `def`], expected: false},
+		{type: `an array with a number`, value: [123, `abc`, `def`], expected: false},
+		{type: `an array with true`, value: [`abc`, `def`, true], expected: false},
+		{type: `an array with false`, value: [`abc`, false, `def`], expected: false},
+		{type: `an array with null`, value: [null, `abc`, `def`], expected: false},
+	])(`should return $expected if array is $type`, ({type, value, expected}) => {
+		const result = is.arrayOfStrings(value);
+		expect(result).toBe(expected);
+		expect(typeof result).toBe(`boolean`);
+	});
+});
+// ****************************************
 // is.nullStringOrArray(arg)
 // ****************************************
 describe(`is.nullStringOrArray`, () => {
