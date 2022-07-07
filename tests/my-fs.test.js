@@ -246,23 +246,77 @@ describe(`getDirContents`, () => {
 	});
 
 	// ***** args.exclude *****
-	// test.each(objectOrNullTypesPassing)(
-	// 	`should not throw error if args.exclude is $type`,
-	// 	async ({type, value}) => {
-	// 		const args = {exclude: value};
-	// 		await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
-	// 	}
-	// );
+	test.each(objectOrNullTypesPassing)(
+		`should not throw error if args.exclude is $type`,
+		async ({type, value}) => {
+			const args = {exclude: value};
+			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+		}
+	);
 
-	// test.each(objectOrNullTypesFailing)(
-	// 	`should throw an error if args.exclude is $type`,
-	// 	async ({type, value}) => {
-	// 		const args = {exclude: value};
-	// 		await expect(getDirContents(srcDir, args)).rejects.toThrow(
-	// 			TypeError(`args.exclude must be an object or null`)
-	// 		);
-	// 	}
-	// );
+	test.each(objectOrNullTypesFailing)(
+		`should throw an error if args.exclude is $type`,
+		async ({type, value}) => {
+			const args = {exclude: value};
+			await expect(getDirContents(srcDir, args)).rejects.toThrow(
+				TypeError(`args.exclude must be an object or null`)
+			);
+		}
+	);
+
+	// --- args.exclude.prefix ---
+	test.each([
+		{type: `a string`, value: `abc`},
+		{type: `an array`, value: [`abc`]},
+		{type: `null`, value: null},
+	])(`should not throw an error if args.exclude.prefix is $type`, async ({type, value}) => {
+		const args = {exclude: {prefix: value}};
+		await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+	});
+
+	test.each([
+		{type: `an object`, value: {}},
+		{type: `a number`, value: 123},
+		{type: `true`, value: true},
+		{type: `false`, value: false},
+		{type: `an array with an object`, value: [`abc`, {}, `def`]},
+		{type: `an array with a number`, value: [123, `abc`, `def`]},
+		{type: `an array with true`, value: [`abc`, `def`, true]},
+		{type: `an array with false`, value: [`abc`, false, `def`]},
+		{type: `an array with null`, value: [null, `abc`, `def`]},
+	])(`should throw error if arg.include.prefix is $type`, async ({type, value}) => {
+		const args = {exclude: {prefix: value}};
+		await expect(getDirContents(srcDir, args)).rejects.toThrow(
+			TypeError(`args.exclude.prefix must be a string or an string[] or null`)
+		);
+	});
+
+	// --- args.exclude.suffix ---
+	test.each([
+		{type: `a string`, value: `abc`},
+		{type: `an array`, value: [`abc`]},
+		{type: `null`, value: null},
+	])(`should not throw an error if args.exclude.suffix is $type`, async ({type, value}) => {
+		const args = {exclude: {suffix: value}};
+		await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+	});
+
+	test.each([
+		{type: `an object`, value: {}},
+		{type: `a number`, value: 123},
+		{type: `true`, value: true},
+		{type: `false`, value: false},
+		{type: `an array with an object`, value: [`abc`, {}, `def`]},
+		{type: `an array with a number`, value: [123, `abc`, `def`]},
+		{type: `an array with true`, value: [`abc`, `def`, true]},
+		{type: `an array with false`, value: [`abc`, false, `def`]},
+		{type: `an array with null`, value: [null, `abc`, `def`]},
+	])(`should throw error if arg.exclude.suffix is $type`, async ({type, value}) => {
+		const args = {exclude: {suffix: value}};
+		await expect(getDirContents(srcDir, args)).rejects.toThrow(
+			TypeError(`args.exclude.suffix must be a string or an string[] or null`)
+		);
+	});
 });
 
 // ############################################################
@@ -282,7 +336,7 @@ async function setUpTestDir(dir, dirFiles = null) {
 	if (!is.string(dir)) {
 		throw TypeError(`dir must be a string`);
 	}
-	if (!Array.isArray(dirFiles)) {
+	if (!is.array(dirFiles)) {
 		throw TypeError(`dirFiles must be an array`);
 	}
 	fs.mkdirSync(dir);

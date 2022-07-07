@@ -202,17 +202,9 @@ async function getDirContents(
 	if (is.objectWithProperty(args, `include`)) {
 		if (is.objectOrNull(args.include)) {
 			if (is.objectWithProperty(args.include, `prefix`)) {
-				if (
-					args.include.prefix === null ||
-					is.string(args.include.prefix) ||
-					Array.isArray(args.include.prefix)
-				) {
-					if (Array.isArray(args.include.prefix)) {
-						args.include.prefix.forEach(prefix => {
-							if (!is.string(prefix)) {
-								throw TypeError(`args.include.prefix must be a string or an string[] or null`);
-							}
-						});
+				if (is.nullStringOrArray(args.include.prefix)) {
+					if (is.array(args.include.prefix) && !is.arrayOfStrings(args.include.prefix)) {
+						throw TypeError(`args.include.prefix must be a string or an string[] or null`);
 					}
 				} else {
 					throw TypeError(`args.include.prefix must be a string or an string[] or null`);
@@ -220,17 +212,9 @@ async function getDirContents(
 			}
 
 			if (is.objectWithProperty(args.include, `suffix`)) {
-				if (
-					args.include.suffix === null ||
-					is.string(args.include.suffix) ||
-					Array.isArray(args.include.suffix)
-				) {
-					if (Array.isArray(args.include.suffix)) {
-						args.include.suffix.forEach(suffix => {
-							if (!is.string(suffix)) {
-								throw TypeError(`args.include.suffix must be a string or an string[] or null`);
-							}
-						});
+				if (is.nullStringOrArray(args.include.suffix)) {
+					if (is.array(args.include.suffix) && !is.arrayOfStrings(args.include.suffix)) {
+						throw TypeError(`args.include.suffix must be a string or an string[] or null`);
 					}
 				} else {
 					throw TypeError(`args.include.suffix must be a string or an string[] or null`);
@@ -241,8 +225,30 @@ async function getDirContents(
 		}
 	}
 
-	if (args && args.hasOwnProperty(`exclude`) && !is.objectOrNull(args.exclude)) {
-		throw TypeError(`args.exclude must be an object or null`);
+	if (is.objectWithProperty(args, `exclude`)) {
+		if (is.objectOrNull(args.exclude)) {
+			if (is.objectWithProperty(args.exclude, `prefix`)) {
+				if (is.nullStringOrArray(args.exclude.prefix)) {
+					if (is.array(args.exclude.prefix) && !is.arrayOfStrings(args.exclude.prefix)) {
+						throw TypeError(`args.exclude.prefix must be a string or an string[] or null`);
+					}
+				} else {
+					throw TypeError(`args.exclude.prefix must be a string or an string[] or null`);
+				}
+			}
+
+			if (is.objectWithProperty(args.exclude, `suffix`)) {
+				if (is.nullStringOrArray(args.exclude.suffix)) {
+					if (is.array(args.exclude.suffix) && !is.arrayOfStrings(args.exclude.suffix)) {
+						throw TypeError(`args.exclude.suffix must be a string or an string[] or null`);
+					}
+				} else {
+					throw TypeError(`args.exclude.suffix must be a string or an string[] or null`);
+				}
+			}
+		} else {
+			throw TypeError(`args.exclude must be an object or null`);
+		}
 	}
 
 	// const contents = fs.readdirSync(srcDir);
