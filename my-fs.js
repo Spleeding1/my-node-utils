@@ -191,6 +191,9 @@ async function getDirContents(
 	let excludePrefix = null;
 	let excludeSuffix = null;
 
+	// ------------------------------
+	// Argument type checks
+	// ------------------------------
 	if (!is.string(srcDir)) {
 		throw TypeError(`srcDir must be a string`);
 	}
@@ -199,7 +202,7 @@ async function getDirContents(
 		throw TypeError(`args must be an object or null`);
 	}
 
-	// ***** Filter contents: inclusions *****
+	// ######## Check for inclusion filters ########
 	if (is.objectWithProperty(args, `include`)) {
 		if (is.objectOrNull(args.include)) {
 			if (is.objectWithProperty(args.include, `prefix`)) {
@@ -207,6 +210,7 @@ async function getDirContents(
 					if (is.array(args.include.prefix) && !is.arrayOfStrings(args.include.prefix)) {
 						throw TypeError(`args.include.prefix must be a string or an string[] or null`);
 					}
+					includePrefix = args.include.prefix;
 				} else {
 					throw TypeError(`args.include.prefix must be a string or an string[] or null`);
 				}
@@ -220,13 +224,14 @@ async function getDirContents(
 				} else {
 					throw TypeError(`args.include.suffix must be a string or an string[] or null`);
 				}
+				includeSuffix = args.include.suffix;
 			}
 		} else {
 			throw TypeError(`args.include must be an object or null`);
 		}
 	}
 
-	// ***** Filter contents: exclusions *****
+	// ######## Check for  exclusion filters ########
 	if (is.objectWithProperty(args, `exclude`)) {
 		if (is.objectOrNull(args.exclude)) {
 			if (is.objectWithProperty(args.exclude, `prefix`)) {
@@ -234,6 +239,7 @@ async function getDirContents(
 					if (is.array(args.exclude.prefix) && !is.arrayOfStrings(args.exclude.prefix)) {
 						throw TypeError(`args.exclude.prefix must be a string or an string[] or null`);
 					}
+					excludePrefix = args.exclude.prefix;
 				} else {
 					throw TypeError(`args.exclude.prefix must be a string or an string[] or null`);
 				}
@@ -244,6 +250,7 @@ async function getDirContents(
 					if (is.array(args.exclude.suffix) && !is.arrayOfStrings(args.exclude.suffix)) {
 						throw TypeError(`args.exclude.suffix must be a string or an string[] or null`);
 					}
+					excludeSuffix = args.exclude.suffix;
 				} else {
 					throw TypeError(`args.exclude.suffix must be a string or an string[] or null`);
 				}
@@ -253,13 +260,67 @@ async function getDirContents(
 		}
 	}
 
+	// ------------------------------
+	// Get dir contents
+	// ------------------------------
 	const contents = fs.readdirSync(srcDir);
 
-	// Exit if no contents
-	// if (!contents || !contents.length) {
-	// 	return [];
-	// }
+	// Skip filtering if no contents
+	if (!contents || !contents.length) {
+		return [];
+	}
 
+	// ------------------------------
+	// Apply filters to contents
+	// ------------------------------
+	let filtered = [];
+
+	// ######## Apply inclusion filters ########
+	if (includePrefix && includeSuffix) {
+		if (is.array(includePrefix) && is.array(includeSuffix)) {
+			for await (const prefix of includePrefix) {
+				for await (const suffix of includeSuffix) {
+					filtered = filtered.concat(
+						contents.filter(file => file.startsWith(prefix) && file.endsWith(suffix))
+					);
+				}
+			}
+		} else if (is.array(includePrefix)) {
+			for await (const prefix of includePrefix) {
+				filtered = filtered.concat(
+					contents.filter(file => file.startsWith(prefix) && file.endsWith(includeSuffix))
+				);
+			}
+		} else if (is.array(includeSuffix)) {
+			for await (const suffix of includeSuffix) {
+				filtered = filtered.concat(
+					contents.filter(file => file.startsWith(includePrefix) && file.endsWith(suffix))
+				);
+			}
+		} else {
+			filtered = filtered.concat(
+				contents.filter(file => file.startsWith(includePrefix) && file.endsWith(includeSuffix))
+			);
+		}
+	} else if (includePrefix) {
+		if (is.array(includePrefix)) {
+			for await (const prefix of includePrefix) {
+				filtered = filtered.concat(contents.filter(file => file.startsWith(prefix)));
+			}
+		} else {
+			filtered = filtered.concat(contents.filter(file => file.startsWith(includePrefix)));
+		}
+	} else if (includeSuffix) {
+		if (is.array(includeSuffix)) {
+			for await (const suffix of includeSuffix) {
+				filtered = filtered.concat(contents.filter(file => file.endsWith(suffix)));
+			}
+		} else {
+			filtered = filtered.concat(contents.filter(file => file.endsWith(includeSuffix)));
+		}
+	} else {
+		filtered = contents;
+	}
 	// if (exclude) {
 	// 	let selectedFiles = [];
 
@@ -271,7 +332,7 @@ async function getDirContents(
 
 	// 	return selectedFiles;
 	// } else {
-	return contents;
+	return filtered;
 	// }
 }
 

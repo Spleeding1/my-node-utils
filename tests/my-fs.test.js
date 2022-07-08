@@ -131,14 +131,14 @@ describe(`getDirContents`, () => {
 		`aDirectory`,
 	];
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		await setUpTestDir(srcDir);
 		await setUpTestDir(srcDir1, dirOneFiles);
 		await setUpTestDir(srcDir2, dirTwoFiles);
 		await setUpTestDir(srcDir3, dirThreeFiles);
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await teardownTestDir(srcDir);
 		await teardownTestDir(srcDir1);
 		await teardownTestDir(srcDir2);
@@ -338,7 +338,52 @@ describe(`getDirContents`, () => {
 	});
 
 	// ######## inclusion ########
-	test.each([]);
+	test.each([
+		{dir: srcDir3, args: {include: {prefix: `_`}}, length: 2, files: [`_file1.txt`, `_file3.css`]},
+		{
+			dir: srcDir3,
+			args: {include: {prefix: [`_`, `file2`]}},
+			length: 4,
+			files: [`_file1.txt`, `_file3.css`, `file2.js`, `file2.min.js`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: {suffix: `.css`}},
+			length: 3,
+			files: [`file3.css`, `_file3.css`, `file3.min.css`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: {suffix: [`.css`, `.txt`]}},
+			length: 6,
+			files: [`file3.css`, `_file3.css`, `file3.min.css`, `file1.txt`, `_file1.txt`, `file4.txt`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: {prefix: `_`, suffix: `.txt`}},
+			length: 1,
+			files: [`_file1.txt`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: {prefix: `_`, suffix: [`.css`, `.txt`]}},
+			length: 2,
+			files: [`_file3.css`, `_file1.txt`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: {prefix: [`_`, `file`], suffix: [`.css`, `.min.js`]}},
+			length: 4,
+			files: [`_file3.css`, `_file3.css`, `file3.min.css`, `file2.min.js`],
+		},
+	])(`should only return $files with $args`, async ({dir, args, length, files}) => {
+		const dirContents = await getDirContents(dir, args);
+		expect.assertions();
+		expect(dirContents.length).toBe(length);
+		files.forEach(file => {
+			expect(dirContents.includes(file)).toBeTruthy();
+		});
+	});
 });
 
 // ############################################################
@@ -352,7 +397,7 @@ describe(`getDirContents`, () => {
 /**
  * Creates a directory and optionally writes files in it for testing.
  * @param {string} dir Path of directory to be created.
- * @param {?string<array>} dirFiles Array of filenames to be written to the created directory.
+ * @param {string<array>?} dirFiles Array of filenames to be written to the created directory.
  */
 async function setUpTestDir(dir, dirFiles = null) {
 	if (!is.string(dir)) {
