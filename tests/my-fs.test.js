@@ -115,17 +115,6 @@ describe(`copyDirContents`, () => {
 // )
 // ****************************************
 describe(`getDirContents`, () => {
-	const objectOrNullTypesPassing = [
-		{type: `an object`, value: {}},
-		{type: `null`, value: null},
-	];
-	const objectOrNullTypesFailing = [
-		{type: `a string`, value: `abc`},
-		{type: `a number`, value: 123},
-		{type: `an array`, value: []},
-		{type: `true`, value: true},
-		{type: `false`, value: false},
-	];
 	const srcDir = `${cwd}/getDirContentsSrc`;
 
 	beforeEach(async () => {
@@ -139,6 +128,34 @@ describe(`getDirContents`, () => {
 	// ------------------------------
 	// Argument types
 	// ------------------------------
+	// ######## Reusable test data ########
+	const objectOrNullTypesPassing = [
+		{type: `an object`, value: {}},
+		{type: `null`, value: null},
+	];
+	const objectOrNullTypesFailing = [
+		{type: `a string`, value: `abc`},
+		{type: `a number`, value: 123},
+		{type: `an array`, value: []},
+		{type: `true`, value: true},
+		{type: `false`, value: false},
+	];
+	const nullStringOrArrayOfStringsTypesPassing = [
+		{type: `a string`, value: `abc`},
+		{type: `an array`, value: [`abc`]},
+		{type: `null`, value: null},
+	];
+	const nullStringOrArrayOfStringsTypesFailing = [
+		{type: `an object`, value: {}},
+		{type: `a number`, value: 123},
+		{type: `true`, value: true},
+		{type: `false`, value: false},
+		{type: `an array with an object`, value: [`abc`, {}, `def`]},
+		{type: `an array with a number`, value: [123, `abc`, `def`]},
+		{type: `an array with true`, value: [`abc`, `def`, true]},
+		{type: `an array with false`, value: [`abc`, false, `def`]},
+		{type: `an array with null`, value: [null, `abc`, `def`]},
+	];
 	// ######## srcDir ########
 	test(`should not throw error if srcDir is a string`, async () => {
 		await expect(getDirContents(srcDir)).resolves.not.toThrowError();
@@ -192,58 +209,42 @@ describe(`getDirContents`, () => {
 	);
 
 	// --- args.include.prefix ---
-	test.each([
-		{type: `a string`, value: `abc`},
-		{type: `an array`, value: [`abc`]},
-		{type: `null`, value: null},
-	])(`should not throw an error if args.include.prefix is $type`, async ({type, value}) => {
-		const args = {include: {prefix: value}};
-		await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
-	});
+	test.each(nullStringOrArrayOfStringsTypesPassing)(
+		`should not throw an error if args.include.prefix is $type`,
+		async ({type, value}) => {
+			const args = {include: {prefix: value}};
+			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+		}
+	);
 
-	test.each([
-		{type: `an object`, value: {}},
-		{type: `a number`, value: 123},
-		{type: `true`, value: true},
-		{type: `false`, value: false},
-		{type: `an array with an object`, value: [`abc`, {}, `def`]},
-		{type: `an array with a number`, value: [123, `abc`, `def`]},
-		{type: `an array with true`, value: [`abc`, `def`, true]},
-		{type: `an array with false`, value: [`abc`, false, `def`]},
-		{type: `an array with null`, value: [null, `abc`, `def`]},
-	])(`should throw error if arg.include.prefix is $type`, async ({type, value}) => {
-		const args = {include: {prefix: value}};
-		await expect(getDirContents(srcDir, args)).rejects.toThrow(
-			TypeError(`args.include.prefix must be a string or an string[] or null`)
-		);
-	});
+	test.each(nullStringOrArrayOfStringsTypesFailing)(
+		`should throw error if arg.include.prefix is $type`,
+		async ({type, value}) => {
+			const args = {include: {prefix: value}};
+			await expect(getDirContents(srcDir, args)).rejects.toThrow(
+				TypeError(`args.include.prefix must be a string or an string[] or null`)
+			);
+		}
+	);
 
 	// --- args.include.suffix ---
-	test.each([
-		{type: `a string`, value: `abc`},
-		{type: `an array`, value: [`abc`]},
-		{type: `null`, value: null},
-	])(`should not throw an error if args.include.suffix is $type`, async ({type, value}) => {
-		const args = {include: {suffix: value}};
-		await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
-	});
+	test.each(nullStringOrArrayOfStringsTypesPassing)(
+		`should not throw an error if args.include.suffix is $type`,
+		async ({type, value}) => {
+			const args = {include: {suffix: value}};
+			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+		}
+	);
 
-	test.each([
-		{type: `an object`, value: {}},
-		{type: `a number`, value: 123},
-		{type: `true`, value: true},
-		{type: `false`, value: false},
-		{type: `an array with an object`, value: [`abc`, {}, `def`]},
-		{type: `an array with a number`, value: [123, `abc`, `def`]},
-		{type: `an array with true`, value: [`abc`, `def`, true]},
-		{type: `an array with false`, value: [`abc`, false, `def`]},
-		{type: `an array with null`, value: [null, `abc`, `def`]},
-	])(`should throw error if arg.include.suffix is $type`, async ({type, value}) => {
-		const args = {include: {suffix: value}};
-		await expect(getDirContents(srcDir, args)).rejects.toThrow(
-			TypeError(`args.include.suffix must be a string or an string[] or null`)
-		);
-	});
+	test.each(nullStringOrArrayOfStringsTypesFailing)(
+		`should throw error if arg.include.suffix is $type`,
+		async ({type, value}) => {
+			const args = {include: {suffix: value}};
+			await expect(getDirContents(srcDir, args)).rejects.toThrow(
+				TypeError(`args.include.suffix must be a string or an string[] or null`)
+			);
+		}
+	);
 
 	// ***** args.exclude *****
 	test.each(objectOrNullTypesPassing)(
@@ -265,58 +266,42 @@ describe(`getDirContents`, () => {
 	);
 
 	// --- args.exclude.prefix ---
-	test.each([
-		{type: `a string`, value: `abc`},
-		{type: `an array`, value: [`abc`]},
-		{type: `null`, value: null},
-	])(`should not throw an error if args.exclude.prefix is $type`, async ({type, value}) => {
-		const args = {exclude: {prefix: value}};
-		await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
-	});
+	test.each(nullStringOrArrayOfStringsTypesPassing)(
+		`should not throw an error if args.exclude.prefix is $type`,
+		async ({type, value}) => {
+			const args = {exclude: {prefix: value}};
+			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+		}
+	);
 
-	test.each([
-		{type: `an object`, value: {}},
-		{type: `a number`, value: 123},
-		{type: `true`, value: true},
-		{type: `false`, value: false},
-		{type: `an array with an object`, value: [`abc`, {}, `def`]},
-		{type: `an array with a number`, value: [123, `abc`, `def`]},
-		{type: `an array with true`, value: [`abc`, `def`, true]},
-		{type: `an array with false`, value: [`abc`, false, `def`]},
-		{type: `an array with null`, value: [null, `abc`, `def`]},
-	])(`should throw error if arg.include.prefix is $type`, async ({type, value}) => {
-		const args = {exclude: {prefix: value}};
-		await expect(getDirContents(srcDir, args)).rejects.toThrow(
-			TypeError(`args.exclude.prefix must be a string or an string[] or null`)
-		);
-	});
+	test.each(nullStringOrArrayOfStringsTypesFailing)(
+		`should throw error if arg.include.prefix is $type`,
+		async ({type, value}) => {
+			const args = {exclude: {prefix: value}};
+			await expect(getDirContents(srcDir, args)).rejects.toThrow(
+				TypeError(`args.exclude.prefix must be a string or an string[] or null`)
+			);
+		}
+	);
 
 	// --- args.exclude.suffix ---
-	test.each([
-		{type: `a string`, value: `abc`},
-		{type: `an array`, value: [`abc`]},
-		{type: `null`, value: null},
-	])(`should not throw an error if args.exclude.suffix is $type`, async ({type, value}) => {
-		const args = {exclude: {suffix: value}};
-		await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
-	});
+	test.each(nullStringOrArrayOfStringsTypesPassing)(
+		`should not throw an error if args.exclude.suffix is $type`,
+		async ({type, value}) => {
+			const args = {exclude: {suffix: value}};
+			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
+		}
+	);
 
-	test.each([
-		{type: `an object`, value: {}},
-		{type: `a number`, value: 123},
-		{type: `true`, value: true},
-		{type: `false`, value: false},
-		{type: `an array with an object`, value: [`abc`, {}, `def`]},
-		{type: `an array with a number`, value: [123, `abc`, `def`]},
-		{type: `an array with true`, value: [`abc`, `def`, true]},
-		{type: `an array with false`, value: [`abc`, false, `def`]},
-		{type: `an array with null`, value: [null, `abc`, `def`]},
-	])(`should throw error if arg.exclude.suffix is $type`, async ({type, value}) => {
-		const args = {exclude: {suffix: value}};
-		await expect(getDirContents(srcDir, args)).rejects.toThrow(
-			TypeError(`args.exclude.suffix must be a string or an string[] or null`)
-		);
-	});
+	test.each(nullStringOrArrayOfStringsTypesFailing)(
+		`should throw error if arg.exclude.suffix is $type`,
+		async ({type, value}) => {
+			const args = {exclude: {suffix: value}};
+			await expect(getDirContents(srcDir, args)).rejects.toThrow(
+				TypeError(`args.exclude.suffix must be a string or an string[] or null`)
+			);
+		}
+	);
 });
 
 // ############################################################
