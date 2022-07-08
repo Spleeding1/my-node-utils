@@ -302,6 +302,14 @@ describe(`getDirContents`, () => {
 			);
 		}
 	);
+
+	// ######## Functionality ########
+	test(`should return an array of dir contents`, async () => {
+		const dirContents = await getDirContents(srcDir);
+		expect.assertions(2);
+		expect(is.array(dirContents)).toBeTruthy();
+		expect(dirContents.length).toBe(3);
+	});
 });
 
 // ############################################################

@@ -179,7 +179,7 @@ module.exports.fileOrDirCheck = fileOrDirCheck;
  * Gets the contents of a directory.
  * @async
  * @param {string} srcDir Directory path.
- * @param {?object} args File suffix to only get certain files.
+ * @param {object?} args File suffix to only get certain files.
  * @returns {Promise<array>} Array of directory contents.
  */
 async function getDirContents(
@@ -199,6 +199,7 @@ async function getDirContents(
 		throw TypeError(`args must be an object or null`);
 	}
 
+	// ***** Filter contents: inclusions *****
 	if (is.objectWithProperty(args, `include`)) {
 		if (is.objectOrNull(args.include)) {
 			if (is.objectWithProperty(args.include, `prefix`)) {
@@ -225,6 +226,7 @@ async function getDirContents(
 		}
 	}
 
+	// ***** Filter contents: exclusions *****
 	if (is.objectWithProperty(args, `exclude`)) {
 		if (is.objectOrNull(args.exclude)) {
 			if (is.objectWithProperty(args.exclude, `prefix`)) {
@@ -251,7 +253,7 @@ async function getDirContents(
 		}
 	}
 
-	// const contents = fs.readdirSync(srcDir);
+	const contents = fs.readdirSync(srcDir);
 
 	// Exit if no contents
 	// if (!contents || !contents.length) {
@@ -269,7 +271,7 @@ async function getDirContents(
 
 	// 	return selectedFiles;
 	// } else {
-	// 	return contents;
+	return contents;
 	// }
 }
 
