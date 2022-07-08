@@ -116,13 +116,33 @@ describe(`copyDirContents`, () => {
 // ****************************************
 describe(`getDirContents`, () => {
 	const srcDir = `${cwd}/getDirContentsSrc`;
+	const srcDir1 = `${cwd}/getDirContentsSrc1`;
+	const srcDir2 = `${cwd}/getDirContentsSrc2`;
+	const srcDir3 = `${cwd}/getDirContentsSrc3`;
+	const dirThreeFiles = [
+		`file1.txt`,
+		`_file1.txt`,
+		`file2.js`,
+		`file2.min.js`,
+		`file3.css`,
+		`_file3.css`,
+		`file3.min.css`,
+		`file4.txt`,
+		`aDirectory`,
+	];
 
 	beforeEach(async () => {
-		await setUpTestDir(srcDir, dirOneFiles);
+		await setUpTestDir(srcDir);
+		await setUpTestDir(srcDir1, dirOneFiles);
+		await setUpTestDir(srcDir2, dirTwoFiles);
+		await setUpTestDir(srcDir3, dirThreeFiles);
 	});
 
 	afterEach(async () => {
 		await teardownTestDir(srcDir);
+		await teardownTestDir(srcDir1);
+		await teardownTestDir(srcDir2);
+		await teardownTestDir(srcDir3);
 	});
 
 	// ------------------------------
@@ -303,13 +323,22 @@ describe(`getDirContents`, () => {
 		}
 	);
 
-	// ######## Functionality ########
-	test(`should return an array of dir contents`, async () => {
-		const dirContents = await getDirContents(srcDir);
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test.each([
+		{dir: srcDir, length: 0},
+		{dir: srcDir1, length: 3},
+		{dir: srcDir2, length: 1},
+	])(`should return an array of $dir contents`, async ({dir, length}) => {
+		const dirContents = await getDirContents(dir);
 		expect.assertions(2);
 		expect(is.array(dirContents)).toBeTruthy();
-		expect(dirContents.length).toBe(3);
+		expect(dirContents.length).toBe(length);
 	});
+
+	// ######## inclusion ########
+	test.each([]);
 });
 
 // ############################################################
@@ -329,7 +358,7 @@ async function setUpTestDir(dir, dirFiles = null) {
 	if (!is.string(dir)) {
 		throw TypeError(`dir must be a string`);
 	}
-	if (!is.array(dirFiles)) {
+	if (dirFiles && !is.array(dirFiles)) {
 		throw TypeError(`dirFiles must be an array`);
 	}
 	fs.mkdirSync(dir);
