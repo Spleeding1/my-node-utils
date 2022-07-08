@@ -14,9 +14,9 @@ const is = require(`./../my-bools`);
 // ############################################################
 
 // ****************************************
-// is.array(arg)
+// isArray(arg)
 // ****************************************
-describe(`is.array`, () => {
+describe(`isArray`, () => {
 	test.each([
 		{type: `an object`, arg: {}, expected: false},
 		{type: `null`, arg: null, expected: false},
@@ -33,9 +33,9 @@ describe(`is.array`, () => {
 });
 
 // ****************************************
-// is.arrayOfStrings(array)
+// isArrayOfStrings(array)
 // ****************************************
-describe(`is.arrayOfStrings`, () => {
+describe(`isArrayOfStrings`, () => {
 	test.each([
 		{type: `an array with strings`, value: [`abc`, `def`, `ghi`], expected: true},
 		{type: `an array with an object`, value: [`abc`, {}, `def`], expected: false},
@@ -50,9 +50,9 @@ describe(`is.arrayOfStrings`, () => {
 	});
 });
 // ****************************************
-// is.nullStringOrArray(arg)
+// isNullStringOrArray(arg)
 // ****************************************
-describe(`is.nullStringOrArray`, () => {
+describe(`isNullStringOrArray`, () => {
 	test.each([
 		{type: `an object`, arg: {}, expected: false},
 		{type: `null`, arg: null, expected: true},
@@ -69,9 +69,9 @@ describe(`is.nullStringOrArray`, () => {
 });
 
 // ****************************************
-// is.objectOrNull(arg)
+// isObjectOrNull(arg)
 // ****************************************
-describe(`is.objectOrNull`, () => {
+describe(`isObjectOrNull`, () => {
 	test.each([
 		{type: `an object`, arg: {}, expected: true},
 		{type: `null`, arg: null, expected: true},
@@ -88,7 +88,7 @@ describe(`is.objectOrNull`, () => {
 });
 
 // ****************************************
-// is.objectWithProperty(arg, property)
+// isObjectWithProperty(arg, property)
 // ****************************************
 describe(`is.objectWithProperty`, () => {
 	const arg = {hasProperty: `yes`};
@@ -132,7 +132,7 @@ describe(`is.objectWithProperty`, () => {
 });
 
 // ****************************************
-// is.string(arg)
+// isString(arg)
 // ****************************************
 describe(`is.string`, () => {
 	test.each([
