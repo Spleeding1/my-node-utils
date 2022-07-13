@@ -384,6 +384,96 @@ describe(`getDirContents`, () => {
 			expect(dirContents.includes(file)).toBeTruthy();
 		});
 	});
+
+	// ######## exclusion ########
+	test.each([
+		{
+			dir: srcDir3,
+			args: {exclude: {prefix: `_`}},
+			length: 7,
+			files: [
+				`file1.txt`,
+				`file2.js`,
+				`file2.min.js`,
+				`file3.css`,
+				`file3.min.css`,
+				`file4.txt`,
+				`aDirectory`,
+			],
+		},
+		{
+			dir: srcDir3,
+			args: {exclude: {prefix: [`_`, `file2`]}},
+			length: 5,
+			files: [`file1.txt`, `file3.css`, `file3.min.css`, `file4.txt`, `aDirectory`],
+		},
+		{
+			dir: srcDir3,
+			args: {exclude: {suffix: `.css`}},
+			length: 6,
+			files: [`file1.txt`, `_file1.txt`, `file2.js`, `file2.min.js`, `file4.txt`, `aDirectory`],
+		},
+		{
+			dir: srcDir3,
+			args: {exclude: {suffix: [`.css`, `.txt`]}},
+			length: 3,
+			files: [`file2.js`, `file2.min.js`, `aDirectory`],
+		},
+		{
+			dir: srcDir3,
+			args: {exclude: {prefix: `_`, suffix: `.txt`}},
+			length: 8,
+			files: [
+				`file1.txt`,
+				`file2.js`,
+				`file2.min.js`,
+				`file3.css`,
+				`_file3.css`,
+				`file3.min.css`,
+				`file4.txt`,
+				`aDirectory`,
+			],
+		},
+		{
+			dir: srcDir3,
+			args: {exclude: {prefix: `_`, suffix: [`.css`, `.txt`]}},
+			length: 7,
+			files: [
+				`file1.txt`,
+				`file2.js`,
+				`file2.min.js`,
+				`file3.css`,
+				`file3.min.css`,
+				`file4.txt`,
+				`aDirectory`,
+			],
+		},
+		{
+			dir: srcDir3,
+			args: {exclude: {prefix: [`_`, `file2`], suffix: [`.css`, `.min.js`]}},
+			length: 7,
+			files: [
+				`file1.txt`,
+				`_file1.txt`,
+				`file2.js`,
+				`file3.css`,
+				`file3.min.css`,
+				`file4.txt`,
+				`aDirectory`,
+			],
+		},
+	])(`should only return $files with $args`, async ({dir, args, length, files}) => {
+		const dirContents = await getDirContents(dir, args);
+		expect.assertions();
+		expect(dirContents.length).toBe(length);
+		files.forEach(file => {
+			expect(dirContents.includes(file)).toBeTruthy();
+		});
+	});
+
+	// TODO: inclusion and exclusion filters
+
+	// ######## inclusion and exclusion filtering ########
 });
 
 // ############################################################

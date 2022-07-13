@@ -321,17 +321,49 @@ async function getDirContents(
 	} else {
 		filtered = contents;
 	}
-	// if (exclude) {
-	// 	let selectedFiles = [];
 
-	// 	for await (const item of contents) {
-	// 		if (item.endsWith(exclude)) {
-	// 			selectedFiles.push(item);
-	// 		}
-	// 	}
-
-	// 	return selectedFiles;
-	// } else {
+	// ######## Apply exclusion filters ########
+	if (excludePrefix && excludeSuffix) {
+		if (is.array(excludePrefix) && is.array(excludeSuffix)) {
+			for await (const prefix of excludePrefix) {
+				for await (const suffix of excludeSuffix) {
+					filtered = filtered.filter(file => !file.startsWith(prefix) || !file.endsWith(suffix));
+				}
+			}
+		} else if (is.array(excludePrefix)) {
+			for await (const prefix of excludePrefix) {
+				filtered = filtered.filter(
+					file => !file.startsWith(prefix) || !file.endsWith(excludeSuffix)
+				);
+			}
+		} else if (is.array(excludeSuffix)) {
+			for await (const suffix of excludeSuffix) {
+				filtered = filtered.filter(
+					file => !file.startsWith(excludePrefix) || !file.endsWith(suffix)
+				);
+			}
+		} else {
+			filtered = filtered.filter(
+				file => !file.startsWith(excludePrefix) || !file.endsWith(excludeSuffix)
+			);
+		}
+	} else if (excludePrefix) {
+		if (is.array(excludePrefix)) {
+			for await (const prefix of excludePrefix) {
+				filtered = filtered.filter(file => !file.startsWith(prefix));
+			}
+		} else {
+			filtered = filtered.filter(file => !file.startsWith(excludePrefix));
+		}
+	} else if (excludeSuffix) {
+		if (is.array(excludeSuffix)) {
+			for await (const suffix of excludeSuffix) {
+				filtered = filtered.filter(file => !file.endsWith(suffix));
+			}
+		} else {
+			filtered = filtered.filter(file => !file.endsWith(excludeSuffix));
+		}
+	}
 	return filtered;
 	// }
 }
