@@ -3,12 +3,14 @@
  * my-messages.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
+ * version 1.2.0
  *
  * Functions to return commonly used messages
+ * * nullStringOrArrayOfStringsTypeError
+ * * stringTypeError
  */
 
 const is = require(`./my-bools`);
-const {isNotStringTypeError} = require("./tests/test-data/type-testing");
 
 // ############################################################
 // Error Messages
@@ -20,10 +22,17 @@ const {isNotStringTypeError} = require("./tests/test-data/type-testing");
 // Used for exporting
 let typeErrors = {};
 
+/**
+ * Returns TypeError with uniform message.
+ * @param {string} arg Argument name that should be a string.
+ * @returns {TypeError}
+ * @throws {TypeError} If $arg is not a string.
+ */
 function nullStringOrArrayOfStringsTypeError(arg) {
 	if (!is.string(arg)) {
-		throw stringTypeError;
+		throw stringTypeError(arg);
 	}
+	return TypeError(`$${arg} must be a string, string[], or null!`);
 }
 typeErrors.nullStringOrArrayOfStrings = nullStringOrArrayOfStringsTypeError;
 

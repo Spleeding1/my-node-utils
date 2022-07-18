@@ -14,9 +14,9 @@ const testData = require(`./test-data/type-testing`);
 // Unit Tests for TypeError messages
 // ############################################################
 // ****************************************
-// function
+// function nullStringOrArrayOfStringsTypeError(arg)
 // ****************************************
-describe(`typeError.nullStringOrArrayOfStrings`, () => {
+describe(`nullStringOrArrayOfStringsTypeError`, () => {
 	// ------------------------------
 	// Argument Types
 	// ------------------------------
@@ -29,7 +29,18 @@ describe(`typeError.nullStringOrArrayOfStrings`, () => {
 	test.each(testData.isNotStringTypeError)(`should throw error if $arg is $type`, ({type, arg}) => {
 		expect(() => {
 			message.typeError.nullStringOrArrayOfStrings(arg);
-		}).toThrow(TypeError(`must be a string`));
+		}).toThrow(TypeError(`$arg must be a string!`));
+	});
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test(`should return TypeError`, () => {
+		const result1 = message.typeError.nullStringOrArrayOfStrings(`theArg`);
+		expect(result1).toEqual(TypeError(`$theArg must be a string, string[], or null!`));
+
+		const result2 = message.typeError.nullStringOrArrayOfStrings(`theString`);
+		expect(result2).toEqual(TypeError(`$theString must be a string, string[], or null!`));
 	});
 });
 
