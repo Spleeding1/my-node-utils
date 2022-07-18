@@ -16,6 +16,8 @@
  * * string(arg)
  */
 
+const message = require(`./my-messages`);
+
 /**
  * Checks whether given argument is an array.
  * @param {*} arg Argument to check.
@@ -79,7 +81,7 @@ module.exports.objectOrNull = isObjectOrNull;
  */
 function isObjectWithProperty(arg, property) {
 	if (!isString(property)) {
-		throw TypeError(`property must be a string`);
+		throw message.typeError.string(`property`);
 	}
 
 	if (typeof arg === `object` && !isArray(arg) && arg !== null && arg.hasOwnProperty(property)) {

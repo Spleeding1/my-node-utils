@@ -18,6 +18,7 @@
 const colors = require(`colors`);
 const fs = require(`fs`);
 const is = require(`./my-bools`);
+const message = require(`./my-messages`);
 
 /**
  * Deletes output file if src file does not exist. Bypasses src files that start with `_`. Removes
@@ -29,10 +30,10 @@ const is = require(`./my-bools`);
  */
 async function cleanUpAssets(destDir, srcDir, fileExt = null) {
 	if (!is.string(destDir)) {
-		throw TypeError(`destDir must be a string`);
+		throw message.typeError.string(`destDir`);
 	}
 	if (!is.string(srcDir)) {
-		throw TypeError(`srcDir must be a string`);
+		throw message.typeError.string(`srcDir`);
 	}
 	// if (fileExt && ) {
 
@@ -195,7 +196,7 @@ async function getDirContents(
 	// Argument type checks
 	// ------------------------------
 	if (!is.string(srcDir)) {
-		throw TypeError(`srcDir must be a string`);
+		throw message.typeError.string(`srcDir`);
 	}
 
 	if (!is.objectOrNull(args)) {
@@ -204,59 +205,24 @@ async function getDirContents(
 
 	// ######## Check for inclusion filters ########
 	if (is.objectWithProperty(args, `include`)) {
-		if (is.objectOrNull(args.include)) {
-			if (is.objectWithProperty(args.include, `prefix`)) {
-				if (is.nullStringOrArray(args.include.prefix)) {
-					if (is.array(args.include.prefix) && !is.arrayOfStrings(args.include.prefix)) {
-						throw TypeError(`args.include.prefix must be a string or an string[] or null`);
-					}
-					includePrefix = args.include.prefix;
-				} else {
-					throw TypeError(`args.include.prefix must be a string or an string[] or null`);
-				}
-			}
-
-			if (is.objectWithProperty(args.include, `suffix`)) {
-				if (is.nullStringOrArray(args.include.suffix)) {
-					if (is.array(args.include.suffix) && !is.arrayOfStrings(args.include.suffix)) {
-						throw TypeError(`args.include.suffix must be a string or an string[] or null`);
-					}
-				} else {
-					throw TypeError(`args.include.suffix must be a string or an string[] or null`);
-				}
-				includeSuffix = args.include.suffix;
+		if (is.nullStringOrArray(args.include)) {
+			if (is.array(args.include) && !is.arrayOfStrings(args.include.prefix)) {
+				throw message.typeError.nullStringOrArrayOfStrings(`include.prefix`);
 			}
 		} else {
-			throw TypeError(`args.include must be an object or null`);
+			throw message.typeError.nullStringOrArrayOfStrings(`include.prefix`);
 		}
 	}
 
 	// ######## Check for  exclusion filters ########
 	if (is.objectWithProperty(args, `exclude`)) {
-		if (is.objectOrNull(args.exclude)) {
-			if (is.objectWithProperty(args.exclude, `prefix`)) {
-				if (is.nullStringOrArray(args.exclude.prefix)) {
-					if (is.array(args.exclude.prefix) && !is.arrayOfStrings(args.exclude.prefix)) {
-						throw TypeError(`args.exclude.prefix must be a string or an string[] or null`);
-					}
-					excludePrefix = args.exclude.prefix;
-				} else {
-					throw TypeError(`args.exclude.prefix must be a string or an string[] or null`);
-				}
+		if (is.nullStringOrArray(args.exclude)) {
+			if (is.array(args.exclude) && !is.arrayOfStrings(args.exclude.prefix)) {
+				throw message.typeError.nullStringOrArrayOfStrings(`exlude.prefix`);
 			}
-
-			if (is.objectWithProperty(args.exclude, `suffix`)) {
-				if (is.nullStringOrArray(args.exclude.suffix)) {
-					if (is.array(args.exclude.suffix) && !is.arrayOfStrings(args.exclude.suffix)) {
-						throw TypeError(`args.exclude.suffix must be a string or an string[] or null`);
-					}
-					excludeSuffix = args.exclude.suffix;
-				} else {
-					throw TypeError(`args.exclude.suffix must be a string or an string[] or null`);
-				}
-			}
+			excludePrefix = args.exclude.prefix;
 		} else {
-			throw TypeError(`args.exclude must be an object or null`);
+			throw message.typeError.nullStringOrArrayOfStrings(`exclude.prefix`);
 		}
 	}
 
