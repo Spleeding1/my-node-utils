@@ -3,6 +3,8 @@
 
 !tests
 !tests/*.test.js
+!tests/test-data
+!tests/test-data/*.js
 !.gitignore
 !cli-alias.txt
 !my-bools.js
@@ -11,3 +13,4 @@
 !my-fs.js
 !my-JSON.js
 !my-loops.js
+!my-messages.js
