@@ -127,7 +127,7 @@ describe(`is.objectWithProperty`, () => {
 	])(`should throw an error if property is $type`, ({type, value}) => {
 		expect(() => {
 			is.objectWithProperty(arg, value);
-		}).toThrow(TypeError(`property must be a string`));
+		}).toThrow(TypeError(`$property must be a string!`));
 	});
 });
 

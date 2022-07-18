@@ -183,10 +183,7 @@ module.exports.fileOrDirCheck = fileOrDirCheck;
  * @param {object?} args File suffix to only get certain files.
  * @returns {Promise<array>} Array of directory contents.
  */
-async function getDirContents(
-	srcDir,
-	args = {include: {prefix: null, suffix: null}, exclude: {prefix: null, suffix: null}}
-) {
+async function getDirContents(srcDir, args = {include: null, exclude: null}) {
 	let includePrefix = null;
 	let includeSuffix = null;
 	let excludePrefix = null;
@@ -206,23 +203,22 @@ async function getDirContents(
 	// ######## Check for inclusion filters ########
 	if (is.objectWithProperty(args, `include`)) {
 		if (is.nullStringOrArray(args.include)) {
-			if (is.array(args.include) && !is.arrayOfStrings(args.include.prefix)) {
-				throw message.typeError.nullStringOrArrayOfStrings(`include.prefix`);
+			if (is.array(args.include) && !is.arrayOfStrings(args.include)) {
+				throw message.typeError.nullStringOrArrayOfStrings(`args.include`);
 			}
 		} else {
-			throw message.typeError.nullStringOrArrayOfStrings(`include.prefix`);
+			throw message.typeError.nullStringOrArrayOfStrings(`args.include`);
 		}
 	}
 
 	// ######## Check for  exclusion filters ########
 	if (is.objectWithProperty(args, `exclude`)) {
 		if (is.nullStringOrArray(args.exclude)) {
-			if (is.array(args.exclude) && !is.arrayOfStrings(args.exclude.prefix)) {
-				throw message.typeError.nullStringOrArrayOfStrings(`exlude.prefix`);
+			if (is.array(args.exclude) && !is.arrayOfStrings(args.exclude)) {
+				throw message.typeError.nullStringOrArrayOfStrings(`args.exclude`);
 			}
-			excludePrefix = args.exclude.prefix;
 		} else {
-			throw message.typeError.nullStringOrArrayOfStrings(`exclude.prefix`);
+			throw message.typeError.nullStringOrArrayOfStrings(`args.exclude`);
 		}
 	}
 
