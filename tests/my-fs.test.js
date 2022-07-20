@@ -31,8 +31,10 @@ const dirTwoFiles = [`one.txt`];
 // ****************************************
 
 describe(`cleanUpAssets`, () => {
-	const srcDir = `cleanUpAssetsSrc`;
 	const destDir = `cleanUpAssetsDest`;
+	const destDirPath = `${cwd}/${destDir}`;
+	const srcDir = `cleanUpAssetsSrc`;
+	const srcDirPath = `${cwd}/${srcDir}`;
 
 	beforeEach(async () => {
 		await setUpTestDir(srcDir, dirTwoFiles);
@@ -45,26 +47,41 @@ describe(`cleanUpAssets`, () => {
 		});
 	});
 
+	// ------------------------------
+	// Argument types
+	// ------------------------------
 	test(`should accept strings for destDir and srcDir`, async () => {
-		await expect(
-			cleanUpAssets(`${cwd}/${destDir}`, `${cwd}/${srcDir}`)
-		).resolves.not.toThrowError();
+		await expect(cleanUpAssets(srcDirPath, destDirPath)).resolves.not.toThrowError();
 	});
 
-	// TODO: change to test each on the types.
-	test(`should throw error if non-strings are given for destDir and srcDir`, async () => {
-		expect.assertions(2);
+	// ######## srcDir failing ########
+	test.each(testData.isNotStringTypeError)(
+		`should throw error if srcDir is $type`,
+		async ({type, arg}) => {
+			await expect(cleanUpAssets(arg, destDirPath)).rejects.toThrow(
+				TypeError(`$srcDir must be a string!`)
+			);
+		}
+	);
 
-		await expect(cleanUpAssets(123, `${cwd}/${srcDir}`)).rejects.toThrow(
-			TypeError(`$destDir must be a string!`)
-		);
-		await expect(cleanUpAssets(`${cwd}/${destDir}`, 123)).rejects.toThrow(
-			TypeError(`$srcDir must be a string!`)
-		);
-		// TODO: come back after getDirContents is tested. Make fileExt an excludes = {srcPrefix, srcSuffix} to ignore files.
-		// expect(true).toBeFalsy();
+	// ######## destDir failing ########
+	test.each(testData.isNotStringTypeError)(
+		`should throw error if destDir is $type`,
+		async ({type, arg}) => {
+			await expect(cleanUpAssets(srcDirPath, arg)).rejects.toThrow(
+				TypeError(`$destDir must be a string!`)
+			);
+		}
+	);
+
+	// TODO: args type testing
+	// ######## args ########
+	test.each([
+		{type: `null`, arg: null},
+		{type: `an object`, arg: {}},
+	])(`should not throw an error if args is $type`, async ({type, arg}) => {
+		await expect(cleanUpAssets(srcDirPath, destDirPath, arg)).resolves.not.toThrowError();
 	});
-
 	test(`should remove files from the destDir that are not in the srcDir`, async () => {
 		await cleanUpAssets(`${cwd}/${destDir}`, `${cwd}/${srcDir}`, `.txt`);
 
@@ -197,7 +214,6 @@ describe(`getDirContents`, () => {
 		}
 	);
 
-	// TODO: Convert args.include and args.exclude to regex
 	// ######## args ########
 	test.each([
 		{type: `an object`, value: {}},
@@ -218,272 +234,106 @@ describe(`getDirContents`, () => {
 		);
 	});
 
-	// ***** args.include *****
-	test.each(nullStringOrArrayOfStringsTypesPassing)(
-		`should not throw error if args.include is $type`,
-		async ({type, value}) => {
-			const args = {include: value};
-			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
-		}
-	);
-
-	test.each(nullStringOrArrayOfStringsTypesFailing)(
-		`should throw an error if args.include is $type`,
-		async ({type, value}) => {
-			const args = {include: value};
-			await expect(getDirContents(srcDir, args)).rejects.toThrow(
-				TypeError(`$args.include must be a string, string[], or null!`)
-			);
-		}
-	);
-
-	// ***** args.exclude *****
-	test.each(nullStringOrArrayOfStringsTypesPassing)(
-		`should not throw error if args.exclude is $type`,
-		async ({type, value}) => {
-			const args = {exclude: value};
-			await expect(getDirContents(srcDir, args)).resolves.not.toThrowError();
-		}
-	);
-
-	test.each(nullStringOrArrayOfStringsTypesFailing)(
-		`should throw an error if args.exclude is $type`,
-		async ({type, value}) => {
-			const args = {exclude: value};
-			await expect(getDirContents(srcDir, args)).rejects.toThrow(
-				TypeError(`$args.exclude must be a string, string[], or null!`)
-			);
-		}
-	);
+	// args.include and args.exclude accept regex, regex[], and null and cannot be type tested.
 
 	// ------------------------------
 	// Functionality
 	// ------------------------------
-	// test.each([
-	// 	{dir: srcDir, length: 0},
-	// 	{dir: srcDir1, length: 3},
-	// 	{dir: srcDir2, length: 1},
-	// ])(`should return an array of $dir contents`, async ({dir, length}) => {
-	// 	const dirContents = await getDirContents(dir);
-	// 	expect.assertions(2);
-	// 	expect(is.array(dirContents)).toBeTruthy();
-	// 	expect(dirContents.length).toBe(length);
-	// });
+	test.each([
+		{dir: srcDir, length: 0},
+		{dir: srcDir1, length: 3},
+		{dir: srcDir2, length: 1},
+	])(`should return an array of $dir contents`, async ({dir, length}) => {
+		const dirContents = await getDirContents(dir);
+		expect.assertions(2);
+		expect(is.array(dirContents)).toBeTruthy();
+		expect(dirContents.length).toBe(length);
+	});
 
 	// ######## inclusion ########
-	// test.each([
-	// 	{dir: srcDir3, args: {include: {prefix: `_`}}, length: 2, files: [`_file1.txt`, `_file3.css`]},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {include: {prefix: [`_`, `file2`]}},
-	// 		length: 4,
-	// 		files: [`_file1.txt`, `_file3.css`, `file2.js`, `file2.min.js`],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {include: {suffix: `.css`}},
-	// 		length: 3,
-	// 		files: [`file3.css`, `_file3.css`, `file3.min.css`],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {include: {suffix: [`.css`, `.txt`]}},
-	// 		length: 6,
-	// 		files: [`file3.css`, `_file3.css`, `file3.min.css`, `file1.txt`, `_file1.txt`, `file4.txt`],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {include: {prefix: `_`, suffix: `.txt`}},
-	// 		length: 1,
-	// 		files: [`_file1.txt`],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {include: {prefix: `_`, suffix: [`.css`, `.txt`]}},
-	// 		length: 2,
-	// 		files: [`_file3.css`, `_file1.txt`],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {include: {prefix: [`_`, `file`], suffix: [`.css`, `.min.js`]}},
-	// 		length: 4,
-	// 		files: [`_file3.css`, `_file3.css`, `file3.min.css`, `file2.min.js`],
-	// 	},
-	// ])(`should only return $files with $args`, async ({dir, args, length, files}) => {
-	// 	const dirContents = await getDirContents(dir, args);
-	// 	expect.assertions();
-	// 	expect(dirContents.length).toBe(length);
-	// 	files.forEach(file => {
-	// 		expect(dirContents.includes(file)).toBeTruthy();
-	// 	});
-	// });
+	test.each([
+		{dir: srcDir3, args: {include: /^_/}, length: 2, files: [`_file1.txt`, `_file3.css`]},
+		{
+			dir: srcDir3,
+			args: {include: [/^_/, /^file2/]},
+			length: 4,
+			files: [`_file1.txt`, `_file3.css`, `file2.js`, `file2.min.js`],
+		},
+	])(`should only return $files with $args`, async ({dir, args, length, files}) => {
+		const dirContents = await getDirContents(dir, args);
+		expect.assertions();
+		expect(is.array(dirContents)).toBeTruthy();
+		expect(dirContents.length).toBe(length);
+		files.forEach(file => {
+			expect(dirContents.includes(file)).toBeTruthy();
+		});
+	});
 
 	// ######## exclusion ########
-	// test.each([
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {exclude: {prefix: `_`}},
-	// 		length: 7,
-	// 		files: [
-	// 			`file1.txt`,
-	// 			`file2.js`,
-	// 			`file2.min.js`,
-	// 			`file3.css`,
-	// 			`file3.min.css`,
-	// 			`file4.txt`,
-	// 			`aDirectory`,
-	// 		],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {exclude: {prefix: [`_`, `file2`]}},
-	// 		length: 5,
-	// 		files: [`file1.txt`, `file3.css`, `file3.min.css`, `file4.txt`, `aDirectory`],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {exclude: {suffix: `.css`}},
-	// 		length: 6,
-	// 		files: [`file1.txt`, `_file1.txt`, `file2.js`, `file2.min.js`, `file4.txt`, `aDirectory`],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {exclude: {suffix: [`.css`, `.txt`]}},
-	// 		length: 3,
-	// 		files: [`file2.js`, `file2.min.js`, `aDirectory`],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {exclude: {prefix: `_`, suffix: `.txt`}},
-	// 		length: 8,
-	// 		files: [
-	// 			`file1.txt`,
-	// 			`file2.js`,
-	// 			`file2.min.js`,
-	// 			`file3.css`,
-	// 			`_file3.css`,
-	// 			`file3.min.css`,
-	// 			`file4.txt`,
-	// 			`aDirectory`,
-	// 		],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {exclude: {prefix: `_`, suffix: [`.css`, `.txt`]}},
-	// 		length: 7,
-	// 		files: [
-	// 			`file1.txt`,
-	// 			`file2.js`,
-	// 			`file2.min.js`,
-	// 			`file3.css`,
-	// 			`file3.min.css`,
-	// 			`file4.txt`,
-	// 			`aDirectory`,
-	// 		],
-	// 	},
-	// 	{
-	// 		dir: srcDir3,
-	// 		args: {exclude: {prefix: [`_`, `file2`], suffix: [`.css`, `.min.js`]}},
-	// 		length: 7,
-	// 		files: [
-	// 			`file1.txt`,
-	// 			`_file1.txt`,
-	// 			`file2.js`,
-	// 			`file3.css`,
-	// 			`file3.min.css`,
-	// 			`file4.txt`,
-	// 			`aDirectory`,
-	// 		],
-	// 	},
-	// ])(`should only return $files with $args`, async ({dir, args, length, files}) => {
-	// 	const dirContents = await getDirContents(dir, args);
-	// 	expect.assertions();
-	// 	expect(dirContents.length).toBe(length);
-	// 	files.forEach(file => {
-	// 		expect(dirContents.includes(file)).toBeTruthy();
-	// 	});
-	// });
-
-	// TODO: inclusion and exclusion filters
+	test.each([
+		{
+			dir: srcDir3,
+			args: {exclude: /^_/},
+			length: 7,
+			files: [
+				`file1.txt`,
+				`file2.js`,
+				`file2.min.js`,
+				`file3.css`,
+				`file3.min.css`,
+				`file4.txt`,
+				`aDirectory`,
+			],
+		},
+		{
+			dir: srcDir3,
+			args: {exclude: [/^_/, /^file2/]},
+			length: 5,
+			files: [`file1.txt`, `file3.css`, `file3.min.css`, `file4.txt`, `aDirectory`],
+		},
+	])(`should only return $files with $args`, async ({dir, args, length, files}) => {
+		const dirContents = await getDirContents(dir, args);
+		expect.assertions();
+		expect(dirContents.length).toBe(length);
+		files.forEach(file => {
+			expect(dirContents.includes(file)).toBeTruthy();
+		});
+	});
 
 	// ######## inclusion and exclusion filtering ########
-
-	// test.each([
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {prefix: `_`}, exclude: {prefix: `_file2`}},
-	// 		length: 3,
-	// 		files: [`_file1.txt`, , `_file3.css`, `_file4.txt`],
-	// 	},
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {prefix: `_`}, exclude: {prefix: [`_file2`, `_file3`]}},
-	// 		length: 2,
-	// 		files: [`_file1.txt`, `_file4.txt`],
-	// 	},
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {prefix: `_`}, exclude: {suffix: `.js`}},
-	// 		length: 3,
-	// 		files: [`_file1.txt`, `_file3.css`, `_file4.txt`],
-	// 	},
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {prefix: `_`}, exclude: {suffix: [`.js`, `.txt`]}},
-	// 		length: 1,
-	// 		files: [`_file3.css`],
-	// 	},
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {prefix: `_`}, exclude: {prefix: `_file1`, suffix: `.js`}},
-	// 		length: 2,
-	// 		files: [`_file3.css`, `_file4.txt`],
-	// 	},
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {prefix: [`_`, `the`]}, exclude: {prefix: `_file2`}},
-	// 		length: 4,
-	// 		files: [`_file1.txt`, `_file3.css`, `_file4.txt`, `theFile.txt`],
-	// 	},
-
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {prefix: [`_`, `the`]}, exclude: {prefix: [`_file2`, `_file3`]}},
-	// 		length: 3,
-	// 		files: [`_file1.txt`, `_file4.txt`, `theFile.txt`],
-	// 	},
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {suffix: `.js`}, exclude: {suffix: `.min.js`}},
-	// 		length: 2,
-	// 		files: [`file2.js`, `_file2.js`],
-	// 	},
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {suffix: [`.js`, `.css`]}, exclude: {suffix: `.min.js`}},
-	// 		length: 5,
-	// 		files: [`file2.js`, `_file2.js`, `file3.css`, `_file3.css`, `file3.min.css`],
-	// 	},
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {suffix: `.txt`}, exclude: {suffix: [`4.txt`, `1.txt`]}},
-	// 		length: 1,
-	// 		files: [`theFile.txt`],
-	// 	},
-	// 	{
-	// 		dir: srcDir4,
-	// 		args: {include: {suffix: [`.css`, `.txt`]}, exclude: {suffix: [`4.txt`, `1.txt`]}},
-	// 		length: 4,
-	// 		files: [`file3.css`, `_file3.css`, `file3.min.css`, `theFile.txt`],
-	// 	},
-	// ])(`should only return $files with $args`, async ({dir, args, length, files}) => {
-	// 	const dirContents = await getDirContents(dir, args);
-	// 	expect.assertions();
-	// 	expect(dirContents.length).toBe(length);
-	// 	files.forEach(file => {
-	// 		expect(dirContents.includes(file)).toBeTruthy();
-	// 	});
-	// });
+	test.each([
+		{
+			dir: srcDir3,
+			args: {include: /file/, exclude: /^_/},
+			length: 6,
+			files: [`file1.txt`, `file2.js`, `file2.min.js`, `file3.css`, `file3.min.css`, `file4.txt`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: /file/, exclude: [/^_/, /.css$/]},
+			length: 4,
+			files: [`file1.txt`, `file2.js`, `file2.min.js`, `file4.txt`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: [/1/, /4/], exclude: /^_/},
+			length: 2,
+			files: [`file1.txt`, `file4.txt`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: [/1/, /2/], exclude: [/^_/, /.min.js/]},
+			length: 2,
+			files: [`file1.txt`, `file2.js`],
+		},
+	])(`should only return $files with $args`, async ({dir, args, length, files}) => {
+		const dirContents = await getDirContents(dir, args);
+		expect.assertions();
+		expect(dirContents.length).toBe(length);
+		files.forEach(file => {
+			expect(dirContents.includes(file)).toBeTruthy();
+		});
+	});
 });
 
 // ############################################################

@@ -28,38 +28,38 @@ const message = require(`./my-messages`);
  * @param {string} srcFilesDir Path to source files.
  * @param {?string} extension File extension of files.
  */
-async function cleanUpAssets(destDir, srcDir, fileExt = null) {
-	if (!is.string(destDir)) {
-		throw message.typeError.string(`destDir`);
-	}
+async function cleanUpAssets(srcDir, destDir, args = {include: null, exclude: null}) {
 	if (!is.string(srcDir)) {
 		throw message.typeError.string(`srcDir`);
+	}
+	if (!is.string(destDir)) {
+		throw message.typeError.string(`destDir`);
 	}
 	// if (fileExt && ) {
 
 	// }
 
-	const destFiles = await getDirContents(destDir, fileExt);
-	const srcFiles = await getDirContents(srcDir, fileExt);
+	// const destFiles = await getDirContents(destDir, fileExt);
+	// const srcFiles = await getDirContents(srcDir, fileExt);
 	let srcString = ``;
 
-	srcFiles.forEach(fileName => {
-		if (!fileName.startsWith(`_`)) {
-			srcString = `${srcString}, ${fileName}`;
-		}
-	});
+	// srcFiles.forEach(fileName => {
+	// 	if (!fileName.startsWith(`_`)) {
+	// 		srcString = `${srcString}, ${fileName}`;
+	// 	}
+	// });
 
-	for await (const file of destFiles) {
-		if (!file.endsWith(fileExt)) {
-			continue;
-		}
-		const fileName = `${file.split(`.`)[0]}${fileExt}`;
-		if (srcString.includes(fileName)) {
-			continue;
-		}
+	// for await (const file of destFiles) {
+	// 	if (!file.endsWith(fileExt)) {
+	// 		continue;
+	// 	}
+	// 	const fileName = `${file.split(`.`)[0]}${fileExt}`;
+	// 	if (srcString.includes(fileName)) {
+	// 		continue;
+	// 	}
 
-		fs.unlinkSync(`${destDir}/${file}`);
-	}
+	// 	fs.unlinkSync(`${destDir}/${file}`);
+	// }
 }
 
 module.exports.cleanUpAssets = cleanUpAssets;
@@ -182,13 +182,9 @@ module.exports.fileOrDirCheck = fileOrDirCheck;
  * @param {string} srcDir Directory path.
  * @param {object?} args File suffix to only get certain files.
  * @returns {Promise<array>} Array of directory contents.
+ * @throws {TypeError} If $srcDir or $args is an incorrect type.
  */
 async function getDirContents(srcDir, args = {include: null, exclude: null}) {
-	let includePrefix = null;
-	let includeSuffix = null;
-	let excludePrefix = null;
-	let excludeSuffix = null;
-
 	// ------------------------------
 	// Argument type checks
 	// ------------------------------
@@ -198,28 +194,6 @@ async function getDirContents(srcDir, args = {include: null, exclude: null}) {
 
 	if (!is.objectOrNull(args)) {
 		throw TypeError(`args must be an object or null`);
-	}
-
-	// ######## Check for inclusion filters ########
-	if (is.objectWithProperty(args, `include`)) {
-		if (is.nullStringOrArray(args.include)) {
-			if (is.array(args.include) && !is.arrayOfStrings(args.include)) {
-				throw message.typeError.nullStringOrArrayOfStrings(`args.include`);
-			}
-		} else {
-			throw message.typeError.nullStringOrArrayOfStrings(`args.include`);
-		}
-	}
-
-	// ######## Check for  exclusion filters ########
-	if (is.objectWithProperty(args, `exclude`)) {
-		if (is.nullStringOrArray(args.exclude)) {
-			if (is.array(args.exclude) && !is.arrayOfStrings(args.exclude)) {
-				throw message.typeError.nullStringOrArrayOfStrings(`args.exclude`);
-			}
-		} else {
-			throw message.typeError.nullStringOrArrayOfStrings(`args.exclude`);
-		}
 	}
 
 	// ------------------------------
@@ -238,96 +212,29 @@ async function getDirContents(srcDir, args = {include: null, exclude: null}) {
 	let filtered = [];
 
 	// ######## Apply inclusion filters ########
-	if (includePrefix && includeSuffix) {
-		if (is.array(includePrefix) && is.array(includeSuffix)) {
-			for await (const prefix of includePrefix) {
-				for await (const suffix of includeSuffix) {
-					filtered = filtered.concat(
-						contents.filter(file => file.startsWith(prefix) && file.endsWith(suffix))
-					);
-				}
-			}
-		} else if (is.array(includePrefix)) {
-			for await (const prefix of includePrefix) {
-				filtered = filtered.concat(
-					contents.filter(file => file.startsWith(prefix) && file.endsWith(includeSuffix))
-				);
-			}
-		} else if (is.array(includeSuffix)) {
-			for await (const suffix of includeSuffix) {
-				filtered = filtered.concat(
-					contents.filter(file => file.startsWith(includePrefix) && file.endsWith(suffix))
-				);
+	if (is.objectWithProperty(args, `include`) && args.include !== null) {
+		if (is.array(args.include)) {
+			for await (const regex of args.include) {
+				filtered = filtered.concat(contents.filter(file => file.match(regex)));
 			}
 		} else {
-			filtered = filtered.concat(
-				contents.filter(file => file.startsWith(includePrefix) && file.endsWith(includeSuffix))
-			);
-		}
-	} else if (includePrefix) {
-		if (is.array(includePrefix)) {
-			for await (const prefix of includePrefix) {
-				filtered = filtered.concat(contents.filter(file => file.startsWith(prefix)));
-			}
-		} else {
-			filtered = filtered.concat(contents.filter(file => file.startsWith(includePrefix)));
-		}
-	} else if (includeSuffix) {
-		if (is.array(includeSuffix)) {
-			for await (const suffix of includeSuffix) {
-				filtered = filtered.concat(contents.filter(file => file.endsWith(suffix)));
-			}
-		} else {
-			filtered = filtered.concat(contents.filter(file => file.endsWith(includeSuffix)));
+			filtered = filtered.concat(contents.filter(file => file.match(args.include)));
 		}
 	} else {
 		filtered = contents;
 	}
 
 	// ######## Apply exclusion filters ########
-	if (excludePrefix && excludeSuffix) {
-		if (is.array(excludePrefix) && is.array(excludeSuffix)) {
-			for await (const prefix of excludePrefix) {
-				for await (const suffix of excludeSuffix) {
-					filtered = filtered.filter(file => !file.startsWith(prefix) || !file.endsWith(suffix));
-				}
-			}
-		} else if (is.array(excludePrefix)) {
-			for await (const prefix of excludePrefix) {
-				filtered = filtered.filter(
-					file => !file.startsWith(prefix) || !file.endsWith(excludeSuffix)
-				);
-			}
-		} else if (is.array(excludeSuffix)) {
-			for await (const suffix of excludeSuffix) {
-				filtered = filtered.filter(
-					file => !file.startsWith(excludePrefix) || !file.endsWith(suffix)
-				);
+	if (is.objectWithProperty(args, `exclude`) && args.exclude !== null) {
+		if (is.array(args.exclude)) {
+			for await (const regex of args.exclude) {
+				filtered = filtered.filter(file => !file.match(regex));
 			}
 		} else {
-			filtered = filtered.filter(
-				file => !file.startsWith(excludePrefix) || !file.endsWith(excludeSuffix)
-			);
-		}
-	} else if (excludePrefix) {
-		if (is.array(excludePrefix)) {
-			for await (const prefix of excludePrefix) {
-				filtered = filtered.filter(file => !file.startsWith(prefix));
-			}
-		} else {
-			filtered = filtered.filter(file => !file.startsWith(excludePrefix));
-		}
-	} else if (excludeSuffix) {
-		if (is.array(excludeSuffix)) {
-			for await (const suffix of excludeSuffix) {
-				filtered = filtered.filter(file => !file.endsWith(suffix));
-			}
-		} else {
-			filtered = filtered.filter(file => !file.endsWith(excludeSuffix));
+			filtered = filtered.filter(file => !file.match(args.exclude));
 		}
 	}
 	return filtered;
-	// }
 }
 
 module.exports.getDirContents = getDirContents;
