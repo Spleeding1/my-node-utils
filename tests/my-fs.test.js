@@ -56,7 +56,7 @@ describe(`cleanUpAssets`, () => {
 
 	// ######## srcDir failing ########
 	test.each(testData.isNotStringTypeError)(
-		`should throw error if srcDir is $type`,
+		`should throw an error if srcDir is $type`,
 		async ({type, arg}) => {
 			await expect(cleanUpAssets(arg, destDirPath)).rejects.toThrow(
 				TypeError(`$srcDir must be a string!`)
@@ -66,7 +66,7 @@ describe(`cleanUpAssets`, () => {
 
 	// ######## destDir failing ########
 	test.each(testData.isNotStringTypeError)(
-		`should throw error if destDir is $type`,
+		`should throw an error if destDir is $type`,
 		async ({type, arg}) => {
 			await expect(cleanUpAssets(srcDirPath, arg)).rejects.toThrow(
 				TypeError(`$destDir must be a string!`)
@@ -74,7 +74,6 @@ describe(`cleanUpAssets`, () => {
 		}
 	);
 
-	// TODO: args type testing
 	// ######## args ########
 	test.each([
 		{type: `null`, arg: null},
@@ -82,6 +81,19 @@ describe(`cleanUpAssets`, () => {
 	])(`should not throw an error if args is $type`, async ({type, arg}) => {
 		await expect(cleanUpAssets(srcDirPath, destDirPath, arg)).resolves.not.toThrowError();
 	});
+
+	test.each([
+		{type: `a string`, value: `abc`},
+		{type: `a number`, value: 123},
+		{type: `an array`, value: []},
+		{type: `true`, value: true},
+		{type: `false`, value: false},
+	])(`should throw an error if args is $type`, async ({type, value}) => {
+		await expect(cleanUpAssets(srcDirPath, destDirPath, value)).rejects.toThrow(
+			TypeError(`$args must be an object or null!`)
+		);
+	});
+
 	test(`should remove files from the destDir that are not in the srcDir`, async () => {
 		await cleanUpAssets(`${cwd}/${destDir}`, `${cwd}/${srcDir}`, `.txt`);
 
@@ -208,7 +220,7 @@ describe(`getDirContents`, () => {
 	});
 
 	test.each(testData.isNotStringTypeError)(
-		`should throw error if srcDir is $type`,
+		`should throw an error if srcDir is $type`,
 		async ({type, arg}) => {
 			await expect(getDirContents(arg)).rejects.toThrow(TypeError(`$srcDir must be a string!`));
 		}
@@ -230,7 +242,7 @@ describe(`getDirContents`, () => {
 		{type: `false`, value: false},
 	])(`should throw an error if args is $type`, async ({type, value}) => {
 		await expect(getDirContents(srcDir, value)).rejects.toThrow(
-			TypeError(`args must be an object or null`)
+			TypeError(`$args must be an object or null!`)
 		);
 	});
 

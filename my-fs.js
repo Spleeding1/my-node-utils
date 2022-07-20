@@ -32,12 +32,14 @@ async function cleanUpAssets(srcDir, destDir, args = {include: null, exclude: nu
 	if (!is.string(srcDir)) {
 		throw message.typeError.string(`srcDir`);
 	}
+
 	if (!is.string(destDir)) {
 		throw message.typeError.string(`destDir`);
 	}
-	// if (fileExt && ) {
 
-	// }
+	if (!is.objectOrNull(args)) {
+		throw TypeError(`$args must be an object or null!`);
+	}
 
 	// const destFiles = await getDirContents(destDir, fileExt);
 	// const srcFiles = await getDirContents(srcDir, fileExt);
@@ -193,7 +195,7 @@ async function getDirContents(srcDir, args = {include: null, exclude: null}) {
 	}
 
 	if (!is.objectOrNull(args)) {
-		throw TypeError(`args must be an object or null`);
+		throw TypeError(`$args must be an object or null!`);
 	}
 
 	// ------------------------------
