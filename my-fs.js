@@ -41,27 +41,18 @@ async function cleanUpAssets(srcDir, destDir, args = {include: null, exclude: nu
 		throw TypeError(`$args must be an object or null!`);
 	}
 
-	// const destFiles = await getDirContents(destDir, fileExt);
-	// const srcFiles = await getDirContents(srcDir, fileExt);
-	let srcString = ``;
+	const srcFiles = await getDirContents(srcDir, args);
+	const destFiles = await getDirContents(destDir);
 
-	// srcFiles.forEach(fileName => {
-	// 	if (!fileName.startsWith(`_`)) {
-	// 		srcString = `${srcString}, ${fileName}`;
-	// 	}
-	// });
-
-	// for await (const file of destFiles) {
-	// 	if (!file.endsWith(fileExt)) {
-	// 		continue;
-	// 	}
-	// 	const fileName = `${file.split(`.`)[0]}${fileExt}`;
-	// 	if (srcString.includes(fileName)) {
-	// 		continue;
-	// 	}
-
-	// 	fs.unlinkSync(`${destDir}/${file}`);
-	// }
+	for await (const file of destFiles) {
+		if (!srcFiles.includes(file)) {
+			fs.unlinkSync(`${destDir}/${file}`);
+		}
+		// const fileName = `${file.split(`.`)[0]}${fileExt}`;
+		// if (srcString.includes(fileName)) {
+		// 	continue;
+		// }
+	}
 }
 
 module.exports.cleanUpAssets = cleanUpAssets;

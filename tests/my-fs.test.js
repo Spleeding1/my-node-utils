@@ -15,8 +15,53 @@ const testData = require(`./test-data/type-testing`);
 
 // Test variables.
 const cwd = process.cwd();
-const dirOneFiles = [`one.txt`, `two.txt`, `three.txt`];
-const dirTwoFiles = [`one.txt`];
+const dirOneFiles = [
+	`file1.txt`,
+	`_file1.txt`,
+	`file2.js`,
+	`file2.min.js`,
+	`file3.css`,
+	`_file3.css`,
+	`file3.min.css`,
+	`file4.txt`,
+];
+const dirTwoFiles = [
+	`file1.txt`,
+	`_file1.txt`,
+	`file2.js`,
+	`file2.min.js`,
+	`file3.css`,
+	`_file3.css`,
+	`file3.min.css`,
+	`file4.txt`,
+	`theFile.txt`,
+	`anotherFile.css`,
+];
+const dirThreeFiles = [
+	`file1.txt`,
+	`_file1.txt`,
+	`file2.js`,
+	`file2.min.js`,
+	`file3.css`,
+	`_file3.css`,
+	`file3.min.css`,
+	`file4.txt`,
+	`aDirectory`,
+];
+const dirFourFiles = [
+	`file1.txt`,
+	`_file1.txt`,
+	`file2.js`,
+	`_file2.js`,
+	`file2.min.js`,
+	`file3.css`,
+	`_file3.css`,
+	`file3.min.css`,
+	`file4.txt`,
+	`_file4.txt`,
+	`theFile.txt`,
+	`aDirectory`,
+];
 
 // ############################################################
 // my-fs.js unittests for functions
@@ -31,14 +76,12 @@ const dirTwoFiles = [`one.txt`];
 // ****************************************
 
 describe(`cleanUpAssets`, () => {
-	const destDir = `cleanUpAssetsDest`;
-	const destDirPath = `${cwd}/${destDir}`;
-	const srcDir = `cleanUpAssetsSrc`;
-	const srcDirPath = `${cwd}/${srcDir}`;
+	const destDir = `${cwd}/cleanUpAssetsDest`;
+	const srcDir = `${cwd}/cleanUpAssetsSrc`;
 
 	beforeEach(async () => {
-		await setUpTestDir(srcDir, dirTwoFiles);
-		await setUpTestDir(destDir, dirOneFiles);
+		await setUpTestDir(srcDir, dirOneFiles);
+		await setUpTestDir(destDir, dirTwoFiles);
 	});
 
 	afterEach(() => {
@@ -51,14 +94,14 @@ describe(`cleanUpAssets`, () => {
 	// Argument types
 	// ------------------------------
 	test(`should accept strings for destDir and srcDir`, async () => {
-		await expect(cleanUpAssets(srcDirPath, destDirPath)).resolves.not.toThrowError();
+		await expect(cleanUpAssets(srcDir, destDir)).resolves.not.toThrowError();
 	});
 
 	// ######## srcDir failing ########
 	test.each(testData.isNotStringTypeError)(
 		`should throw an error if srcDir is $type`,
 		async ({type, arg}) => {
-			await expect(cleanUpAssets(arg, destDirPath)).rejects.toThrow(
+			await expect(cleanUpAssets(arg, destDir)).rejects.toThrow(
 				TypeError(`$srcDir must be a string!`)
 			);
 		}
@@ -68,7 +111,7 @@ describe(`cleanUpAssets`, () => {
 	test.each(testData.isNotStringTypeError)(
 		`should throw an error if destDir is $type`,
 		async ({type, arg}) => {
-			await expect(cleanUpAssets(srcDirPath, arg)).rejects.toThrow(
+			await expect(cleanUpAssets(srcDir, arg)).rejects.toThrow(
 				TypeError(`$destDir must be a string!`)
 			);
 		}
@@ -79,7 +122,7 @@ describe(`cleanUpAssets`, () => {
 		{type: `null`, arg: null},
 		{type: `an object`, arg: {}},
 	])(`should not throw an error if args is $type`, async ({type, arg}) => {
-		await expect(cleanUpAssets(srcDirPath, destDirPath, arg)).resolves.not.toThrowError();
+		await expect(cleanUpAssets(srcDir, destDir, arg)).resolves.not.toThrowError();
 	});
 
 	test.each([
@@ -89,18 +132,71 @@ describe(`cleanUpAssets`, () => {
 		{type: `true`, value: true},
 		{type: `false`, value: false},
 	])(`should throw an error if args is $type`, async ({type, value}) => {
-		await expect(cleanUpAssets(srcDirPath, destDirPath, value)).rejects.toThrow(
+		await expect(cleanUpAssets(srcDir, destDir, value)).rejects.toThrow(
 			TypeError(`$args must be an object or null!`)
 		);
 	});
 
-	test(`should remove files from the destDir that are not in the srcDir`, async () => {
-		await cleanUpAssets(`${cwd}/${destDir}`, `${cwd}/${srcDir}`, `.txt`);
+	// TODO: Add minified: boolean
 
-		expect(fs.existsSync(`${cwd}/${destDir}/one.txt`)).toBeTruthy();
-		expect(fs.existsSync(`${cwd}/${destDir}/two.txt`)).toBeFalsy();
-		expect(fs.existsSync(`${cwd}/${destDir}/three.txt`)).toBeFalsy();
-	});
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	// TODO: test all filtering (include and exclude and minified)
+	test.each([
+		{
+			args: {include: /.css$/},
+			length: 3,
+			files: [`file3.css`, `_file3.css`, `file3.min.css`],
+		},
+		{
+			args: {include: /.css$/, exclude: /.min.css$/},
+			length: 2,
+			files: [`file3.css`, `_file3.css`],
+		},
+		{
+			args: {include: /.css$/, exclude: [/^_/, /.min.css$/]},
+			length: 1,
+			files: [`file3.css`],
+		},
+		{
+			args: {include: [/.css$/, /.js$/]},
+			length: 5,
+			files: [`file2.js`, `file2.min.js`, `file3.css`, `_file3.css`, `file3.min.css`],
+		},
+		{
+			args: {include: [/.css$/, /.js$/], exclude: /^_/},
+			length: 4,
+			files: [`file2.js`, `file2.min.js`, `file3.css`, `file3.min.css`],
+		},
+		{
+			args: {include: [/.css$/, /.js$/], exclude: [/^_/, /.min.js$/]},
+			length: 3,
+			files: [`file2.js`, `file3.css`, `file3.min.css`],
+		},
+		{
+			args: {exclude: /^_/},
+			length: 6,
+			files: [`file1.txt`, `file2.js`, `file2.min.js`, `file3.css`, `file3.min.css`, `file4.txt`],
+		},
+		{
+			args: {exclude: [/^_/, /.txt$/]},
+			length: 4,
+			files: [`file2.js`, `file2.min.js`, `file3.css`, `file3.min.css`],
+		},
+	])(
+		`should remove files from the destDir that are not in the srcDir`,
+		async ({args, length, files}) => {
+			await cleanUpAssets(srcDir, destDir, args);
+
+			const destContents = await getDirContents(destDir);
+
+			expect(destContents.length).toBe(length);
+			files.forEach(file => {
+				expect(destContents.includes(file)).toBeTruthy();
+			});
+		}
+	);
 });
 
 // ****************************************
@@ -152,31 +248,6 @@ describe(`getDirContents`, () => {
 	const srcDir2 = `${cwd}/getDirContentsSrc2`;
 	const srcDir3 = `${cwd}/getDirContentsSrc3`;
 	const srcDir4 = `${cwd}/getDirContentsSrc4`;
-	const dirThreeFiles = [
-		`file1.txt`,
-		`_file1.txt`,
-		`file2.js`,
-		`file2.min.js`,
-		`file3.css`,
-		`_file3.css`,
-		`file3.min.css`,
-		`file4.txt`,
-		`aDirectory`,
-	];
-	const dirFourFiles = [
-		`file1.txt`,
-		`_file1.txt`,
-		`file2.js`,
-		`_file2.js`,
-		`file2.min.js`,
-		`file3.css`,
-		`_file3.css`,
-		`file3.min.css`,
-		`file4.txt`,
-		`_file4.txt`,
-		`theFile.txt`,
-		`aDirectory`,
-	];
 
 	beforeAll(async () => {
 		await setUpTestDir(srcDir);
@@ -253,8 +324,8 @@ describe(`getDirContents`, () => {
 	// ------------------------------
 	test.each([
 		{dir: srcDir, length: 0},
-		{dir: srcDir1, length: 3},
-		{dir: srcDir2, length: 1},
+		{dir: srcDir1, length: 8},
+		{dir: srcDir2, length: 10},
 	])(`should return an array of $dir contents`, async ({dir, length}) => {
 		const dirContents = await getDirContents(dir);
 		expect.assertions(2);
