@@ -14,6 +14,37 @@ const testData = require(`./test-data/type-testing`);
 // Unit Tests for TypeError messages
 // ############################################################
 // ****************************************
+// function booleanTypeError(arg)
+// ****************************************
+describe(`booleanTypeError`, () => {
+	// ------------------------------
+	// Argument Types
+	// ------------------------------
+	test(`should not throw error if arg is a string`, () => {
+		expect(() => {
+			message.typeError.boolean(`$arg`);
+		}).not.toThrow();
+	});
+
+	test.each(testData.isNotStringTypeError)(`should throw error if $arg is $type`, ({type, arg}) => {
+		expect(() => {
+			message.typeError.boolean(arg);
+		}).toThrow(TypeError(`$arg must be a string!`));
+	});
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test(`should return TypeError`, () => {
+		const result1 = message.typeError.boolean(`theArg`);
+		expect(result1).toEqual(TypeError(`$theArg must be true or false!`));
+
+		const result2 = message.typeError.boolean(`theBool`);
+		expect(result2).toEqual(TypeError(`$theBool must be true or false!`));
+	});
+});
+
+// ****************************************
 // function nullStringOrArrayOfStringsTypeError(arg)
 // ****************************************
 describe(`nullStringOrArrayOfStringsTypeError`, () => {

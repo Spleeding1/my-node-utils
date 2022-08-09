@@ -3,9 +3,10 @@
  * my-messages.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * version 1.2.0
+ * version 1.3.0
  *
  * Functions to return commonly used messages
+ * * booleanTypeError
  * * nullStringOrArrayOfStringsTypeError
  * * stringTypeError
  */
@@ -21,6 +22,20 @@ const is = require(`./my-bools`);
 
 // Used for exporting
 let typeErrors = {};
+
+/**
+ * Returns TypeError with uniform message.
+ * @param {string} arg Argument name that should be a string.
+ * @returns {TypeError}
+ * @throws {TypeError} If $arg is not boolean.
+ */
+function booleanTypeError(arg) {
+	if (!is.string(arg)) {
+		throw stringTypeError(arg);
+	}
+	return TypeError(`$${arg} must be true or false!`);
+}
+typeErrors.boolean = booleanTypeError;
 
 /**
  * Returns TypeError with uniform message.
