@@ -49,6 +49,28 @@ describe(`isArrayOfStrings`, () => {
 		expect(typeof result).toBe(`boolean`);
 	});
 });
+
+// ****************************************
+// isBoolean(arg)
+// ****************************************
+describe(`isBoolean`, () => {
+	test.each([
+		[
+			{type: `an object`, arg: {}, expected: false},
+			{type: `null`, arg: null, expected: false},
+			{type: `a string`, arg: `abc`, expected: false},
+			{type: `true`, arg: true, expected: true},
+			{type: `false`, arg: false, expected: true},
+			{type: `a number`, arg: 123, expected: false},
+			{type: `an array`, arg: [], expected: false},
+		],
+	])(`should return $expected if arg is $type`, ({type, value, expected}) => {
+		const result = is.boolean(value);
+		expect(result).toBe(expected);
+		expect(typeof result).toBe(`boolean`);
+	});
+});
+
 // ****************************************
 // isNullStringOrArray(arg)
 // ****************************************
