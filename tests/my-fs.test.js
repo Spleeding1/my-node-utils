@@ -137,12 +137,24 @@ describe(`cleanUpAssets`, () => {
 		);
 	});
 
-	// TODO: Add minified: boolean
+	// ######## args.minified ########
+	test.each(testData.isBoolean)(
+		`should not throw error if args.minified is $type`,
+		async ({type, arg}) => {
+			await expect(cleanUpAssets(srcDir, destDir, {minified: true})).resolves.not.toThrowError();
+		}
+	);
+
+	test.each(testData.isNotBooleanTypeError)(
+		`should throw error if args.minified is $type`,
+		async ({type, arg}) => {
+			await expect(cleanUpAssets(srcDir, destDir, {minified: arg})).rejects.toThrowError();
+		}
+	);
 
 	// ------------------------------
 	// Functionality
 	// ------------------------------
-	// TODO: test all filtering (include and exclude and minified)
 	test.each([
 		{
 			args: {include: /.css$/},
@@ -197,6 +209,32 @@ describe(`cleanUpAssets`, () => {
 			});
 		}
 	);
+
+	test(`should only leave '.min.' files if args.minified is true`, async () => {
+		const srcDir1 = `${cwd}/cleanUpAssetsSrc1`;
+
+		// Setup test directory
+		await setUpTestDir(srcDir1, [
+			`file1.txt`,
+			`_file1.txt`,
+			`file2.js`,
+			`file3.css`,
+			`_file3.css`,
+			`file4.txt`,
+		]);
+
+		await cleanUpAssets(srcDir1, destDir, {include: [/.css$/, /.js$/], minified: true});
+
+		const destContents = await getDirContents(destDir);
+
+		expect(destContents.length).toBe(2);
+		[`file2.min.js`, `file3.min.css`].forEach(file => {
+			expect(destContents.includes(file)).toBeTruthy();
+		});
+
+		// Tear down test directory
+		await teardownTestDir(srcDir1);
+	});
 });
 
 // ****************************************

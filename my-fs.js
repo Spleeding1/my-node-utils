@@ -28,7 +28,13 @@ const message = require(`./my-messages`);
  * @param {string} srcFilesDir Path to source files.
  * @param {?string} extension File extension of files.
  */
-async function cleanUpAssets(srcDir, destDir, args = {include: null, exclude: null}) {
+async function cleanUpAssets(
+	srcDir,
+	destDir,
+	args = {include: null, exclude: null, minified: false}
+) {
+	let minified = false;
+
 	if (!is.string(srcDir)) {
 		throw message.typeError.string(`srcDir`);
 	}
@@ -41,17 +47,30 @@ async function cleanUpAssets(srcDir, destDir, args = {include: null, exclude: nu
 		throw TypeError(`$args must be an object or null!`);
 	}
 
+	if (is.objectWithProperty(args, `minified`)) {
+		if (is.boolean(args.minified)) {
+			minified = args.minified;
+		} else {
+			throw message.typeError.boolean(`args.minified`);
+		}
+	}
+
 	const srcFiles = await getDirContents(srcDir, args);
 	const destFiles = await getDirContents(destDir);
 
 	for await (const file of destFiles) {
-		if (!srcFiles.includes(file)) {
+		if (minified) {
+			if (file.includes(`.min.`)) {
+				const fileMod = file.replace(`.min.`, `.`);
+				if (!srcFiles.includes(fileMod)) {
+					fs.unlinkSync(`${destDir}/${file}`);
+				}
+			} else {
+				fs.unlinkSync(`${destDir}/${file}`);
+			}
+		} else if (!srcFiles.includes(file)) {
 			fs.unlinkSync(`${destDir}/${file}`);
 		}
-		// const fileName = `${file.split(`.`)[0]}${fileExt}`;
-		// if (srcString.includes(fileName)) {
-		// 	continue;
-		// }
 	}
 }
 
