@@ -118,24 +118,21 @@ describe(`cleanUpAssets`, () => {
 	);
 
 	// ######## args ########
-	test.each([
-		{type: `null`, arg: null},
-		{type: `an object`, arg: {}},
-	])(`should not throw an error if args is $type`, async ({type, arg}) => {
-		await expect(cleanUpAssets(srcDir, destDir, arg)).resolves.not.toThrowError();
-	});
+	test.each(testData.isObjectOrNull)(
+		`should not throw an error if args is $type`,
+		async ({type, arg}) => {
+			await expect(cleanUpAssets(srcDir, destDir, arg)).resolves.not.toThrowError();
+		}
+	);
 
-	test.each([
-		{type: `a string`, value: `abc`},
-		{type: `a number`, value: 123},
-		{type: `an array`, value: []},
-		{type: `true`, value: true},
-		{type: `false`, value: false},
-	])(`should throw an error if args is $type`, async ({type, value}) => {
-		await expect(cleanUpAssets(srcDir, destDir, value)).rejects.toThrow(
-			TypeError(`$args must be an object or null!`)
-		);
-	});
+	test.each(testData.isNotObjectOrNullTypeError)(
+		`should throw an error if args is $type`,
+		async ({type, arg}) => {
+			await expect(cleanUpAssets(srcDir, destDir, arg)).rejects.toThrow(
+				TypeError(`$args must be an object or null!`)
+			);
+		}
+	);
 
 	// ######## args.minified ########
 	test.each(testData.isBoolean)(
@@ -239,8 +236,8 @@ describe(`cleanUpAssets`, () => {
 
 // ****************************************
 // async function copyDirContents(
-//     sourceDir,
-//     targetDir,
+//     srcDir,
+//     destDir,
 //     fileSuffix = null
 // )
 // ****************************************
@@ -258,10 +255,60 @@ describe(`copyDirContents`, () => {
 		});
 	});
 
-	// TODO: finish test
+	// ------------------------------
+	// Argument Types
+	// ------------------------------
+	// ######## srcDir ########
+	test(`should not throw error if srcDir is a string`, async () => {
+		await expect(copyDirContents(srcDir, destDir)).resolves.not.toThrowError();
+	});
+
+	test.each(testData.isNotStringTypeError)(
+		`should throw error if srcDir is $type`,
+		async ({type, arg}) => {
+			await expect(copyDirContents(arg, destDir)).rejects.toThrow(
+				TypeError(`$srcDir must be a string!`)
+			);
+		}
+	);
+
+	// ######## destDir ########
+	test(`should not throw error if destDir is a string`, async () => {
+		await expect(copyDirContents(srcDir, destDir)).resolves.not.toThrowError();
+	});
+
+	test.each(testData.isNotStringTypeError)(
+		`should throw error if destDir is $type`,
+		async ({type, arg}) => {
+			await expect(copyDirContents(srcDir, arg)).rejects.toThrow(
+				TypeError(`$destDir must be a string!`)
+			);
+		}
+	);
+
+	// ######## args ########
+	test.each(testData.isObjectOrNull)(
+		`should not throw error if args is $type`,
+		async (type, arg) => {
+			await expect(copyDirContents(srcDir, destDir, arg)).resolves.not.toThrowError();
+		}
+	);
+
+	test.each(testData.isNotObjectOrNullTypeError)(
+		`should throw error if args is $type`,
+		async ({type, arg}) => {
+			await expect(copyDirContents(srcDir, destDir, arg)).rejects.toThrow(
+				TypeError(`$args must be an object or null!`)
+			);
+		}
+	);
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
 	test(`should create destDir if it does not exist`, async () => {
 		// await copyDirContents(srcDir, destDir);
-		// expect(true).toBeFalsy();
+		// TODO: Finish the test
 	});
 });
 
@@ -306,23 +353,6 @@ describe(`getDirContents`, () => {
 	// ------------------------------
 	// Argument types
 	// ------------------------------
-	// ######## Reusable test data ########
-	const nullStringOrArrayOfStringsTypesPassing = [
-		{type: `a string`, value: `abc`},
-		{type: `an array`, value: [`abc`]},
-		{type: `null`, value: null},
-	];
-	const nullStringOrArrayOfStringsTypesFailing = [
-		{type: `an object`, value: {}},
-		{type: `a number`, value: 123},
-		{type: `true`, value: true},
-		{type: `false`, value: false},
-		{type: `an array with an object`, value: [`abc`, {}, `def`]},
-		{type: `an array with a number`, value: [123, `abc`, `def`]},
-		{type: `an array with true`, value: [`abc`, `def`, true]},
-		{type: `an array with false`, value: [`abc`, false, `def`]},
-		{type: `an array with null`, value: [null, `abc`, `def`]},
-	];
 	// ######## srcDir ########
 	test(`should not throw error if srcDir is a string`, async () => {
 		await expect(getDirContents(srcDir)).resolves.not.toThrowError();
@@ -336,24 +366,21 @@ describe(`getDirContents`, () => {
 	);
 
 	// ######## args ########
-	test.each([
-		{type: `an object`, value: {}},
-		{type: `null`, value: null},
-	])(`should not throw error if args is $type`, async ({type, value}) => {
-		await expect(getDirContents(srcDir, value)).resolves.not.toThrowError();
-	});
+	test.each(testData.isObjectOrNull)(
+		`should not throw error if args is $type`,
+		async ({type, arg}) => {
+			await expect(getDirContents(srcDir, arg)).resolves.not.toThrowError();
+		}
+	);
 
-	test.each([
-		{type: `a string`, value: `abc`},
-		{type: `a number`, value: 123},
-		{type: `an array`, value: []},
-		{type: `true`, value: true},
-		{type: `false`, value: false},
-	])(`should throw an error if args is $type`, async ({type, value}) => {
-		await expect(getDirContents(srcDir, value)).rejects.toThrow(
-			TypeError(`$args must be an object or null!`)
-		);
-	});
+	test.each(testData.isNotObjectOrNullTypeError)(
+		`should throw an error if args is $type`,
+		async ({type, arg}) => {
+			await expect(getDirContents(srcDir, arg)).rejects.toThrow(
+				TypeError(`$args must be an object or null!`)
+			);
+		}
+	);
 
 	// args.include and args.exclude accept regex, regex[], and null and cannot be type tested.
 

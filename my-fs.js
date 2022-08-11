@@ -76,6 +76,7 @@ async function cleanUpAssets(
 
 module.exports.cleanUpAssets = cleanUpAssets;
 
+// TODO: fix documentation
 /**
  * Copies the contents of one directory to another.
  * @async
@@ -84,42 +85,52 @@ module.exports.cleanUpAssets = cleanUpAssets;
  * @param {?string} fileSuffix Used if targeting specific file types.
  * @returns {Promise<void>} If an error occurs.
  */
-async function copyDirContents(sourceDir, targetDir, fileSuffix = null) {
-	if (fileOrDirCheck(sourceDir) !== `isDirectory` || fileOrDirCheck(targetDir) !== `isDirectory`) {
-		return;
-	}
-	const contents = await getDirContents(sourceDir, fileSuffix);
-
-	if (!fs.existsSync(targetDir)) {
-		fs.mkdirSync(targetDir, err => {
-			if (err) {
-				console.error(err.brightRed);
-				return;
-			}
-		});
+async function copyDirContents(srcDir, destDir, args = null) {
+	if (!is.string(srcDir)) {
+		throw message.typeError.string(`srcDir`);
 	}
 
-	for (const file of contents) {
-		if (fileSuffix) {
-			if (file.endsWith(fileSuffix)) {
-				console.info(file.yellow);
-				fs.copyFileSync(`${sourceDir}/${file}`, `${targetDir}/${file}`, err => {
-					if (err) {
-						console.error(err.brightRed);
-						return;
-					}
-				});
-			}
-		} else {
-			console.info(file.yellow);
-			fs.copyFileSync(`${sourceDir}/${file}`, `${targetDir}/${file}`, err => {
-				if (err) {
-					console.error(err.brightRed);
-					return;
-				}
-			});
-		}
+	if (!is.string(destDir)) {
+		throw message.typeError.string(`destDir`);
 	}
+
+	if (!is.objectOrNull(args)) {
+		throw message.typeError.objectOrNull(`args`);
+	}
+	// if (fileOrDirCheck(sourceDir) !== `isDirectory` || fileOrDirCheck(targetDir) !== `isDirectory`) {
+	// 	return;
+	// }
+	// const contents = await getDirContents(sourceDir, fileSuffix);
+	// if (!fs.existsSync(targetDir)) {
+	// 	fs.mkdirSync(targetDir, err => {
+	// 		if (err) {
+	// 			console.error(err.brightRed);
+	// 			return;
+	// 		}
+	// 	});
+	// }
+	// for (const file of contents) {
+	// 	if (fileSuffix) {
+	// 		if (file.endsWith(fileSuffix)) {
+	// 			console.info(file.yellow);
+	// 			fs.copyFileSync(`${sourceDir}/${file}`, `${targetDir}/${file}`, err => {
+	// 				if (err) {
+	// 					console.error(err.brightRed);
+	// 					return;
+	// 				}
+	// 			});
+	// 		}
+	// 	} else {
+	// 		console.info(file.yellow);
+	// 		fs.copyFileSync(`${sourceDir}/${file}`, `${targetDir}/${file}`, err => {
+	// 			if (err) {
+	// 				console.error(err.brightRed);
+	// 				return;
+	// 			}
+	// 		});
+	// 	}
+	// }
+	return;
 }
 
 module.exports.copyDirContents = copyDirContents;

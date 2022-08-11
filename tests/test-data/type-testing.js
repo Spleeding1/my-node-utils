@@ -6,7 +6,7 @@
  *
  * Reusable test data for testing correct types with Jest.
  */
-
+// TODO: Reorganize with better nameing
 const isBoolean = [
 	{type: `true`, arg: true},
 	{type: `false`, arg: false},
@@ -16,7 +16,7 @@ module.exports.isBoolean = isBoolean;
 
 const isNotBooleanTypeError = [
 	{type: `null`, arg: null},
-	{type: `string`, arg: `123`},
+	{type: `a string`, arg: `123`},
 	{type: `a number`, arg: 123},
 	{type: `an object`, arg: {}},
 	{type: `an array`, arg: []},
@@ -26,7 +26,7 @@ module.exports.isNotBooleanTypeError = isNotBooleanTypeError;
 
 const isNullStringOrArrayOfStrings = [
 	{type: `null`, arg: null},
-	{type: `string`, arg: `123`},
+	{type: `a string`, arg: `123`},
 	{type: `an array of strings`, arg: [`123`, `456`]},
 ];
 
@@ -52,3 +52,20 @@ const isNotStringTypeError = [
 ];
 
 module.exports.isNotStringTypeError = isNotStringTypeError;
+
+const isObjectOrNull = [
+	{type: `an object`, arg: {}},
+	{type: `null`, arg: null},
+];
+
+module.exports.isObjectOrNull = isObjectOrNull;
+
+const isNotObjectOrNullTypeError = [
+	{type: `a number`, arg: 123},
+	{type: `an array`, arg: []},
+	{type: `true`, arg: true},
+	{type: `false`, arg: false},
+	{type: `a string`, arg: `123`},
+];
+
+module.exports.isNotObjectOrNullTypeError = isNotObjectOrNullTypeError;
