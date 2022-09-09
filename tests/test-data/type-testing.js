@@ -6,66 +6,70 @@
  *
  * Reusable test data for testing correct types with Jest.
  */
-// TODO: Reorganize with better nameing
-const isBoolean = [
+
+// Holds all exports.
+let dataTypes = {};
+
+// ############################################################
+// Singular Types
+// ############################################################
+const isBooleanType = [
 	{type: `true`, arg: true},
 	{type: `false`, arg: false},
 ];
+dataTypes[`isBoolean`] = isBooleanType;
 
-module.exports.isBoolean = isBoolean;
-
-const isNotBooleanTypeError = [
+const isNotBooleanType = [
 	{type: `null`, arg: null},
 	{type: `a string`, arg: `123`},
 	{type: `a number`, arg: 123},
 	{type: `an object`, arg: {}},
 	{type: `an array`, arg: []},
 ];
+dataTypes[`isNotBoolean`] = isNotBooleanType;
 
-module.exports.isNotBooleanTypeError = isNotBooleanTypeError;
+const isNotStringType = [
+	{type: `a number`, arg: 123},
+	{type: `an object`, arg: {}},
+	{type: `null`, arg: null},
+	{type: `an array`, arg: []},
+	{type: `true`, arg: true},
+	{type: `false`, arg: false},
+];
+dataTypes[`isNotString`] = isNotStringType;
 
-const isNullStringOrArrayOfStrings = [
+// ############################################################
+// Compound Types
+// ############################################################
+const isArrayOfStringsStringOrNullType = [
 	{type: `null`, arg: null},
 	{type: `a string`, arg: `123`},
 	{type: `an array of strings`, arg: [`123`, `456`]},
 ];
+dataTypes[`isArrayOfStringsStringOrNull`] = isArrayOfStringsStringOrNullType;
 
-module.exports.isNullStringOrArrayOfStrings = isNullStringOrArrayOfStrings;
-
-const isNotNullStringOrArrayOfStringsTypeError = [
+const isNotArrayOfStringsStringOrNullType = [
 	{type: `a number`, arg: 123},
 	{type: `an object`, arg: {}},
 	{type: `an array of non-strings`, arg: [`123`, 123]},
 	{type: `true`, arg: true},
 	{type: `false`, arg: false},
 ];
+dataTypes[`isNotArrayOfStringsStringOrNull`] = isNotArrayOfStringsStringOrNullType;
 
-module.exports.isNotNullStringOrArrayOfStringsTypeError = isNotNullStringOrArrayOfStringsTypeError;
-
-const isNotStringTypeError = [
-	{type: `a number`, arg: 123},
-	{type: `an object`, arg: {}},
-	{type: `null`, arg: null},
-	{type: `an array`, arg: []},
-	{type: `true`, arg: true},
-	{type: `false`, arg: false},
-];
-
-module.exports.isNotStringTypeError = isNotStringTypeError;
-
-const isObjectOrNull = [
+const isObjectOrNullType = [
 	{type: `an object`, arg: {}},
 	{type: `null`, arg: null},
 ];
+dataTypes[`isObjectOrNull`] = isObjectOrNullType;
 
-module.exports.isObjectOrNull = isObjectOrNull;
-
-const isNotObjectOrNullTypeError = [
+const isNotObjectOrNullType = [
 	{type: `a number`, arg: 123},
 	{type: `an array`, arg: []},
 	{type: `true`, arg: true},
 	{type: `false`, arg: false},
 	{type: `a string`, arg: `123`},
 ];
+dataTypes[`isNotObjectOrNull`] = isNotObjectOrNullType;
 
-module.exports.isNotObjectOrNullTypeError = isNotObjectOrNullTypeError;
+module.exports.type = dataTypes;
