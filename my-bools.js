@@ -18,7 +18,7 @@
  */
 
 const message = require(`./my-messages`);
-
+// TODO: Reorganize with better nameing
 /**
  * Checks whether given argument is an array.
  * @param {*} arg Argument to check.

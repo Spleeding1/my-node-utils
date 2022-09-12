@@ -3,16 +3,17 @@
  * my-messages.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * version 1.3.0
+ * version 1.4.0
  *
  * Functions to return commonly used messages
- * * booleanTypeError
- * * nullStringOrArrayOfStringsTypeError
- * * stringTypeError
+ * * isNotBooleanTypeError(arg)
+ * * isNotStringTypeError(arg)
+ * * isNotArrayOfStringsStringOrNullTypeError(arg)
+ * * isNotObjectOrNullTypeError(arg)
  */
 
 const is = require(`./my-bools`);
-// TODO: Reorganize with better nameing. Match test data.types
+
 // ############################################################
 // Error Messages
 // ############################################################
@@ -73,6 +74,18 @@ function isNotArrayOfStringsStringOrNullTypeError(arg) {
 }
 typeErrors.isNotArrayOfStringsStringOrNull = isNotArrayOfStringsStringOrNullTypeError;
 
-// TODO: objectOrNullTypeError func
+/**
+ * Returns TypeError with uniform message.
+ * @param {string} arg Argument name that should be a string.
+ * @returns {TypeError}
+ * @throws {TypeError} If $arg is not an object or null.
+ */
+function isNotObjectOrNullTypeError(arg) {
+	if (!is.string(arg)) {
+		throw isNotStringTypeError(arg);
+	}
+	return TypeError(`$${arg} must be an object or null!`);
+}
+typeErrors.isNotObjectOrNull = isNotObjectOrNullTypeError;
 
 module.exports.typeError = typeErrors;
