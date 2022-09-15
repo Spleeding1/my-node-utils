@@ -14,11 +14,9 @@ const testData = require(`./test-data/type-testing`);
 // Unit Tests for TypeError messages
 // ############################################################
 // ****************************************
-// function function isNotBooleanTypeError(arg) {
-arg;
+// function isNotBooleanTypeError(arg)
 // ****************************************
-describe(`function isNotBooleanTypeError(arg) {
-	`, () => {
+describe(`function isNotBooleanTypeError(arg)`, () => {
 	// ------------------------------
 	// Argument Types
 	// ------------------------------
@@ -59,7 +57,7 @@ describe(`isNotStringTypeError`, () => {
 		}).not.toThrow();
 	});
 
-	test.each(testData.isNotStringTypeError)(`should throw error if $arg is $type`, ({type, arg}) => {
+	test.each(testData.type.isNotString)(`should throw error if $arg is $type`, ({type, arg}) => {
 		expect(() => {
 			message.typeError.isNotString(arg);
 		}).toThrow(TypeError(`$arg must be a string!`));
@@ -72,13 +70,13 @@ describe(`isNotStringTypeError`, () => {
 		const result1 = message.typeError.isNotString(`theString`);
 		expect(result1).toEqual(TypeError(`$theString must be a string!`));
 
-		const result2 = message.typeError.isNorString(`theArg`);
+		const result2 = message.typeError.isNotString(`theArg`);
 		expect(result2).toEqual(TypeError(`$theArg must be a string!`));
 	});
 });
 
 // ****************************************
-// function nullStringOrArrayOfStringsTypeError(arg)
+// function isNotArrayOfStringsStringOrNullTypeError(arg)
 // ****************************************
 describe(`isNotArrayOfStringsStringOrNullTypeError`, () => {
 	// ------------------------------
@@ -101,10 +99,10 @@ describe(`isNotArrayOfStringsStringOrNullTypeError`, () => {
 	// ------------------------------
 	test(`should return TypeError`, () => {
 		const result1 = message.typeError.isNotArrayOfStringsStringOrNull(`theArg`);
-		expect(result1).toEqual(TypeError(`$theArg must be a string, string[], or null!`));
+		expect(result1).toEqual(TypeError(`$theArg must be a string[], string, or null!`));
 
 		const result2 = message.typeError.isNotArrayOfStringsStringOrNull(`theString`);
-		expect(result2).toEqual(TypeError(`$theString must be a string, string[], or null!`));
+		expect(result2).toEqual(TypeError(`$theString must be a string[], string, or null!`));
 	});
 });
 
@@ -129,9 +127,9 @@ describe(`isNotObjectOrNullTypeError`, () => {
 	// ------------------------------
 	test(`should return TypeError`, () => {
 		const result1 = message.typeError.isNotObjectOrNull(`theArg`);
-		expect(result1).toEqual(TypeError(`$theArg must be an object or null`));
+		expect(result1).toEqual(TypeError(`$theArg must be an object or null!`));
 
 		const result2 = message.typeError.isNotObjectOrNull(`theString`);
-		expect(result2).toEqual(TypeError(`$theString must be an object or null`));
+		expect(result2).toEqual(TypeError(`$theString must be an object or null!`));
 	});
 });

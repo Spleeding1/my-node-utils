@@ -7,7 +7,7 @@
  * Reusable test data for testing correct types with Jest.
  */
 
-// Holds all exports.
+// Holds all "type" exports.
 let dataTypes = {};
 
 // ############################################################

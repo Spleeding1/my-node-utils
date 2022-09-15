@@ -36,7 +36,7 @@ let typeErrors = {};
 
 function isNotBooleanTypeError(arg) {
 	if (!is.string(arg)) {
-		throw stringTypeError(arg);
+		throw isNotStringTypeError(arg);
 	}
 	return TypeError(`$${arg} must be true or false!`);
 }

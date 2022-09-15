@@ -8,7 +8,8 @@
  */
 
 const is = require(`./../my-bools`);
-
+const testData = require(`./test-data/type-testing`);
+// TODO: restructure tests to use testData
 // ############################################################
 // Unittests for functions
 // ############################################################
@@ -51,30 +52,9 @@ describe(`isArrayOfStrings`, () => {
 });
 
 // ****************************************
-// isBoolean(arg)
+// isArrayStringOrNull(arg)
 // ****************************************
-describe(`isBoolean`, () => {
-	test.each([
-		[
-			{type: `an object`, arg: {}, expected: false},
-			{type: `null`, arg: null, expected: false},
-			{type: `a string`, arg: `abc`, expected: false},
-			{type: `true`, arg: true, expected: true},
-			{type: `false`, arg: false, expected: true},
-			{type: `a number`, arg: 123, expected: false},
-			{type: `an array`, arg: [], expected: false},
-		],
-	])(`should return $expected if arg is $type`, ({type, value, expected}) => {
-		const result = is.boolean(value);
-		expect(result).toBe(expected);
-		expect(typeof result).toBe(`boolean`);
-	});
-});
-
-// ****************************************
-// isNullStringOrArray(arg)
-// ****************************************
-describe(`isNullStringOrArray`, () => {
+describe(`isArrayStringOrNull`, () => {
 	test.each([
 		{type: `an object`, arg: {}, expected: false},
 		{type: `null`, arg: null, expected: true},
@@ -84,8 +64,24 @@ describe(`isNullStringOrArray`, () => {
 		{type: `a number`, arg: 123, expected: false},
 		{type: `an array`, arg: [], expected: true},
 	])(`should return $expected if arg is $type`, ({type, arg, expected}) => {
-		const result = is.nullStringOrArray(arg);
+		const result = is.ArrayStringOrNull(arg);
 		expect(result).toBe(expected);
+		expect(typeof result).toBe(`boolean`);
+	});
+});
+
+// ****************************************
+// isBoolean(arg)
+// ****************************************
+describe(`isBoolean`, () => {
+	test.each(testData.type.isBoolean)(`should return true if arg is $type`, ({type, arg}) => {
+		const result = is.boolean(arg);
+		expect(result).toBeTruthy();
+		expect(typeof result).toBe(`boolean`);
+	});
+	test.each(testData.type.isNotBoolean)(`should return false if arg is $type`, ({type, arg}) => {
+		const result = is.boolean(arg);
+		expect(result).toBeFalsy();
 		expect(typeof result).toBe(`boolean`);
 	});
 });
@@ -94,19 +90,19 @@ describe(`isNullStringOrArray`, () => {
 // isObjectOrNull(arg)
 // ****************************************
 describe(`isObjectOrNull`, () => {
-	test.each([
-		{type: `an object`, arg: {}, expected: true},
-		{type: `null`, arg: null, expected: true},
-		{type: `a string`, arg: `abc`, expected: false},
-		{type: `true`, arg: true, expected: false},
-		{type: `false`, arg: false, expected: false},
-		{type: `a number`, arg: 123, expected: false},
-		{type: `an array`, arg: [], expected: false},
-	])(`should return $expected if arg is $type`, ({type, arg, expected}) => {
+	test.each(testData.type.isObjectOrNull)(`should return true if arg is $type`, ({type, arg}) => {
 		const result = is.objectOrNull(arg);
-		expect(result).toBe(expected);
+		expect(result).toBeTruthy();
 		expect(typeof result).toBe(`boolean`);
 	});
+	test.each(testData.type.isNotObjectOrNull)(
+		`should return false if arg is $type`,
+		({type, arg}) => {
+			const result = is.objectOrNull(arg);
+			expect(result).toBeFalsy();
+			expect(typeof result).toBe(`boolean`);
+		}
+	);
 });
 
 // ****************************************

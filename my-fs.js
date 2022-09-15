@@ -36,15 +36,15 @@ async function cleanUpAssets(
 	let minified = false;
 
 	if (!is.string(srcDir)) {
-		throw message.typeError.string(`srcDir`);
+		throw message.typeError.isNotString(`srcDir`);
 	}
 
 	if (!is.string(destDir)) {
-		throw message.typeError.string(`destDir`);
+		throw message.typeError.isNotString(`destDir`);
 	}
 
 	if (!is.objectOrNull(args)) {
-		throw TypeError(`$args must be an object or null!`);
+		throw message.typeError.isNotObjectOrNull(`args`);
 	}
 
 	if (is.objectWithProperty(args, `minified`)) {
@@ -76,7 +76,7 @@ async function cleanUpAssets(
 
 module.exports.cleanUpAssets = cleanUpAssets;
 
-// TODO: fix documentation
+// TODO: fix documentation anf complete fucntion
 /**
  * Copies the contents of one directory to another.
  * @async
@@ -86,51 +86,36 @@ module.exports.cleanUpAssets = cleanUpAssets;
  * @returns {Promise<void>} If an error occurs.
  */
 async function copyDirContents(srcDir, destDir, args = null) {
-	if (!is.string(srcDir)) {
-		throw message.typeError.string(`srcDir`);
+	if (is.string(srcDir)) {
+		const srcDirType = await fileOrDirCheck(srcDir);
+
+		if (srcDirType === `isFile` || srcDirType === `doesNotExist`) {
+			throw Error(`$srcDir ${srcDirType}!`);
+		}
+	} else {
+		throw message.typeError.isNotString(`srcDir`);
 	}
 
-	if (!is.string(destDir)) {
-		throw message.typeError.string(`destDir`);
+	if (is.string(destDir)) {
+		const destDirType = await fileOrDirCheck(destDir);
+
+		if (destDirType === `isFile`) {
+			throw Error(`$destDir ${destDirType}!`);
+		}
+		createDirectory(destDir);
+	} else {
+		throw message.typeError.isNotString(`destDir`);
 	}
 
 	if (!is.objectOrNull(args)) {
-		throw message.typeError.objectOrNull(`args`);
+		throw message.typeError.isNotObjectOrNull(`args`);
 	}
-	// if (fileOrDirCheck(sourceDir) !== `isDirectory` || fileOrDirCheck(targetDir) !== `isDirectory`) {
-	// 	return;
-	// }
-	// const contents = await getDirContents(sourceDir, fileSuffix);
-	// if (!fs.existsSync(targetDir)) {
-	// 	fs.mkdirSync(targetDir, err => {
-	// 		if (err) {
-	// 			console.error(err.brightRed);
-	// 			return;
-	// 		}
-	// 	});
-	// }
-	// for (const file of contents) {
-	// 	if (fileSuffix) {
-	// 		if (file.endsWith(fileSuffix)) {
-	// 			console.info(file.yellow);
-	// 			fs.copyFileSync(`${sourceDir}/${file}`, `${targetDir}/${file}`, err => {
-	// 				if (err) {
-	// 					console.error(err.brightRed);
-	// 					return;
-	// 				}
-	// 			});
-	// 		}
-	// 	} else {
-	// 		console.info(file.yellow);
-	// 		fs.copyFileSync(`${sourceDir}/${file}`, `${targetDir}/${file}`, err => {
-	// 			if (err) {
-	// 				console.error(err.brightRed);
-	// 				return;
-	// 			}
-	// 		});
-	// 	}
-	// }
-	return;
+
+	const contents = await getDirContents(srcDir);
+
+	for (const file of contents) {
+		fs.copyFileSync(`${srcDir}/${file}`, `${destDir}/${file}`);
+	}
 }
 
 module.exports.copyDirContents = copyDirContents;
@@ -181,19 +166,20 @@ module.exports.createFileDirectories = createFileDirectories;
  * @returns {Promise<string>} The result of the check.
  */
 async function fileOrDirCheck(path) {
-	let result = `neither`;
-	try {
+	if (!is.string(path)) {
+		throw message.typeError.isNotString(`path`);
+	}
+
+	if (fs.existsSync(path)) {
 		const stat = fs.lstatSync(path);
+
 		if (stat.isFile()) {
-			result = `isFile`;
+			return `isFile`;
 		} else if (stat.isDirectory()) {
-			result = `isDirectory`;
+			return `isDirectory`;
 		}
-		console.info(`${result}: ${path}`.gray);
-		return result;
-	} catch (e) {
-		console.error(`${e}\n${path}`.brightRed);
-		return `error`;
+	} else {
+		return `doesNotExist`;
 	}
 }
 
@@ -212,7 +198,7 @@ async function getDirContents(srcDir, args = {include: null, exclude: null}) {
 	// Argument type checks
 	// ------------------------------
 	if (!is.string(srcDir)) {
-		throw message.typeError.string(`srcDir`);
+		throw message.typeError.isNotString(`srcDir`);
 	}
 
 	if (!is.objectOrNull(args)) {

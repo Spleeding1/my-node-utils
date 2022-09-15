@@ -7,11 +7,12 @@
  * Test file for my-fs.js
  */
 
-const {cleanUpAssets, copyDirContents, getDirContents} = require(`./../my-fs`);
+const {cleanUpAssets, copyDirContents, getDirContents, fileOrDirCheck} = require(`./../my-fs`);
 const fs = require(`fs`);
 const is = require(`./../my-bools`);
 const message = require(`./../my-messages`);
 const testData = require(`./test-data/type-testing`);
+const {assert} = require("console");
 
 // Test variables.
 const cwd = process.cwd();
@@ -98,7 +99,7 @@ describe(`cleanUpAssets`, () => {
 	});
 
 	// ######## srcDir failing ########
-	test.each(testData.isNotStringTypeError)(
+	test.each(testData.type.isNotString)(
 		`should throw an error if srcDir is $type`,
 		async ({type, arg}) => {
 			await expect(cleanUpAssets(arg, destDir)).rejects.toThrow(
@@ -108,7 +109,7 @@ describe(`cleanUpAssets`, () => {
 	);
 
 	// ######## destDir failing ########
-	test.each(testData.isNotStringTypeError)(
+	test.each(testData.type.isNotString)(
 		`should throw an error if destDir is $type`,
 		async ({type, arg}) => {
 			await expect(cleanUpAssets(srcDir, arg)).rejects.toThrow(
@@ -118,14 +119,14 @@ describe(`cleanUpAssets`, () => {
 	);
 
 	// ######## args ########
-	test.each(testData.isObjectOrNull)(
+	test.each(testData.type.isObjectOrNull)(
 		`should not throw an error if args is $type`,
 		async ({type, arg}) => {
 			await expect(cleanUpAssets(srcDir, destDir, arg)).resolves.not.toThrowError();
 		}
 	);
 
-	test.each(testData.isNotObjectOrNullTypeError)(
+	test.each(testData.type.isNotObjectOrNull)(
 		`should throw an error if args is $type`,
 		async ({type, arg}) => {
 			await expect(cleanUpAssets(srcDir, destDir, arg)).rejects.toThrow(
@@ -135,14 +136,14 @@ describe(`cleanUpAssets`, () => {
 	);
 
 	// ######## args.minified ########
-	test.each(testData.isBoolean)(
+	test.each(testData.type.isBoolean)(
 		`should not throw error if args.minified is $type`,
 		async ({type, arg}) => {
 			await expect(cleanUpAssets(srcDir, destDir, {minified: true})).resolves.not.toThrowError();
 		}
 	);
 
-	test.each(testData.isNotBooleanTypeError)(
+	test.each(testData.type.isNotBoolean)(
 		`should throw error if args.minified is $type`,
 		async ({type, arg}) => {
 			await expect(cleanUpAssets(srcDir, destDir, {minified: arg})).rejects.toThrowError();
@@ -152,6 +153,7 @@ describe(`cleanUpAssets`, () => {
 	// ------------------------------
 	// Functionality
 	// ------------------------------
+	// TODO: throw errors is dirs do not exist or are files.
 	test.each([
 		{
 			args: {include: /.css$/},
@@ -263,7 +265,7 @@ describe(`copyDirContents`, () => {
 		await expect(copyDirContents(srcDir, destDir)).resolves.not.toThrowError();
 	});
 
-	test.each(testData.isNotStringTypeError)(
+	test.each(testData.type.isNotString)(
 		`should throw error if srcDir is $type`,
 		async ({type, arg}) => {
 			await expect(copyDirContents(arg, destDir)).rejects.toThrow(
@@ -277,7 +279,7 @@ describe(`copyDirContents`, () => {
 		await expect(copyDirContents(srcDir, destDir)).resolves.not.toThrowError();
 	});
 
-	test.each(testData.isNotStringTypeError)(
+	test.each(testData.type.isNotString)(
 		`should throw error if destDir is $type`,
 		async ({type, arg}) => {
 			await expect(copyDirContents(srcDir, arg)).rejects.toThrow(
@@ -287,14 +289,14 @@ describe(`copyDirContents`, () => {
 	);
 
 	// ######## args ########
-	test.each(testData.isObjectOrNull)(
+	test.each(testData.type.isObjectOrNull)(
 		`should not throw error if args is $type`,
-		async (type, arg) => {
+		async ({type, arg}) => {
 			await expect(copyDirContents(srcDir, destDir, arg)).resolves.not.toThrowError();
 		}
 	);
 
-	test.each(testData.isNotObjectOrNullTypeError)(
+	test.each(testData.type.isNotObjectOrNull)(
 		`should throw error if args is $type`,
 		async ({type, arg}) => {
 			await expect(copyDirContents(srcDir, destDir, arg)).rejects.toThrow(
@@ -303,13 +305,55 @@ describe(`copyDirContents`, () => {
 		}
 	);
 
+	// TODO: Test certain arg types as they come up.
+
 	// ------------------------------
 	// Functionality
 	// ------------------------------
-	test(`should create destDir if it does not exist`, async () => {
-		// await copyDirContents(srcDir, destDir);
-		// TODO: Finish the test
+	test(`should throw an error if srcDir does not exist`, async () => {
+		await expect(copyDirContents(`${srcDir}doesnotexist`, destDir)).rejects.toThrow(
+			Error(`$srcDir doesNotExist!`)
+		);
 	});
+
+	test(`should throw an error if srcDir is a file`, async () => {
+		fs.writeFileSync(`${srcDir}/isFile`, ``);
+		await expect(copyDirContents(`${srcDir}/isFile`, destDir)).rejects.toThrow(
+			Error(`$srcDir isFile!`)
+		);
+	});
+
+	test(`should create destDir if it does not exist`, async () => {
+		await copyDirContents(srcDir, destDir);
+		expect(fs.existsSync(destDir)).toBeTruthy();
+	});
+
+	test(`should throw an error if destDir is a file`, async () => {
+		fs.writeFileSync(`${srcDir}/isFile`, ``);
+		await expect(copyDirContents(srcDir, `${srcDir}/isFile`)).rejects.toThrow(
+			Error(`$destDir isFile!`)
+		);
+	});
+
+	test(`should copy the contents of the srcDir to the destDir`, async () => {
+		await copyDirContents(srcDir, destDir);
+
+		const destContents = await getDirContents(destDir);
+
+		expect(destContents.length).toBe(8);
+		dirOneFiles.forEach(file => {
+			expect(destContents.includes(file)).toBeTruthy();
+		});
+
+		// TODO: Copy all of the regex from getDirContents args to test filtering.
+
+		// TODO: Test that files that aren't in srcDir won't be deleted.
+
+		// TODO: Test arg to overwrite or ignore existing file.
+
+		// TODO: Test arg to mirror srcDir.
+	});
+	// TODO: Finish the describe
 });
 
 // ****************************************
@@ -358,7 +402,7 @@ describe(`getDirContents`, () => {
 		await expect(getDirContents(srcDir)).resolves.not.toThrowError();
 	});
 
-	test.each(testData.isNotStringTypeError)(
+	test.each(testData.type.isNotString)(
 		`should throw an error if srcDir is $type`,
 		async ({type, arg}) => {
 			await expect(getDirContents(arg)).rejects.toThrow(TypeError(`$srcDir must be a string!`));
@@ -366,14 +410,14 @@ describe(`getDirContents`, () => {
 	);
 
 	// ######## args ########
-	test.each(testData.isObjectOrNull)(
+	test.each(testData.type.isObjectOrNull)(
 		`should not throw error if args is $type`,
 		async ({type, arg}) => {
 			await expect(getDirContents(srcDir, arg)).resolves.not.toThrowError();
 		}
 	);
 
-	test.each(testData.isNotObjectOrNullTypeError)(
+	test.each(testData.type.isNotObjectOrNull)(
 		`should throw an error if args is $type`,
 		async ({type, arg}) => {
 			await expect(getDirContents(srcDir, arg)).rejects.toThrow(
@@ -481,6 +525,51 @@ describe(`getDirContents`, () => {
 		files.forEach(file => {
 			expect(dirContents.includes(file)).toBeTruthy();
 		});
+	});
+});
+
+// ****************************************
+// fileOrDirCheck(path)
+// ****************************************
+describe(`fileOrDirCheck`, () => {
+	const dir = `${cwd}/fileOrDirCheckDir`;
+	const file = `${cwd}/fileOrDirCheckFile`;
+	const doesntExist = `${cwd}/doesntexist`;
+
+	beforeAll(async () => {
+		await setUpTestDir(dir);
+		fs.writeFileSync(file, ``);
+	});
+
+	afterAll(async () => {
+		await teardownTestDir(dir);
+		await teardownTestDir(file);
+	});
+
+	// ------------------------------
+	// Argument Types
+	// ------------------------------
+	test(`should not throw error if path is a string`, async () => {
+		await expect(fileOrDirCheck(dir)).resolves.not.toThrowError();
+	});
+
+	test.each(testData.type.isNotString)(
+		`should throw error if path is $type`,
+		async ({type, arg}) => {
+			await expect(fileOrDirCheck(arg)).rejects.toThrow(TypeError(`$path must be a string!`));
+		}
+	);
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test.each([
+		{path: dir, expected: `isDirectory`},
+		{path: file, expected: `isFile`},
+		{path: doesntExist, expected: `doesNotExist`},
+	])(`should return $expected if path is $path`, async ({path, expected}) => {
+		const result = await fileOrDirCheck(path);
+		expect(result).toBe(expected);
 	});
 });
 

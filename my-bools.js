@@ -10,15 +10,15 @@
  *
  * * array(arg)
  * * arrayOfStrings(array)
+ * * arrayStringOrNull(arg)
  * * boolean(arg)
- * * nullStringOrArray(arg)
  * * objectOrNull(arg)
  * * objectWithProperty(arg, property)
  * * string(arg)
  */
 
 const message = require(`./my-messages`);
-// TODO: Reorganize with better nameing
+
 /**
  * Checks whether given argument is an array.
  * @param {*} arg Argument to check.
@@ -55,6 +55,20 @@ function isArrayOfStrings(stringArray) {
 module.exports.arrayOfStrings = isArrayOfStrings;
 
 /**
+ * Checks if given argument is null, a string or an array.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is null, a string, or an array.
+ */
+function isArrayStringOrNull(arg) {
+	if (arg === null || isString(arg) || isArray(arg)) {
+		return true;
+	}
+	return false;
+}
+
+module.exports.ArrayStringOrNull = isArrayStringOrNull;
+
+/**
  * Checks if given argument is boolean.
  * @param {*} arg Argument to check.
  * @returns {boolean} If arg is boolean.
@@ -67,20 +81,6 @@ function isBoolean(arg) {
 }
 
 module.exports.boolean = isBoolean;
-
-/**
- * Checks if given argument is null, a string or an array.
- * @param {*} arg Argument to check.
- * @returns {boolean} If arg is null, a string, or an array.
- */
-function isNullStringOrArray(arg) {
-	if (arg === null || isString(arg) || isArray(arg)) {
-		return true;
-	}
-	return false;
-}
-
-module.exports.nullStringOrArray = isNullStringOrArray;
 
 /**
  * Checks whether the supplied argument is an object or null.
@@ -105,7 +105,7 @@ module.exports.objectOrNull = isObjectOrNull;
  */
 function isObjectWithProperty(arg, property) {
 	if (!isString(property)) {
-		throw message.typeError.string(`property`);
+		throw message.typeError.isNotString(`property`);
 	}
 
 	if (typeof arg === `object` && !isArray(arg) && arg !== null && arg.hasOwnProperty(property)) {
