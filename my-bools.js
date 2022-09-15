@@ -129,3 +129,17 @@ function isString(arg) {
 }
 
 module.exports.string = isString;
+
+/**
+ * Checks whether given argument is a string or null.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is a string or null.
+ */
+function isStringOrNull(arg) {
+	if (typeof arg === `string` || arg === null) {
+		return true;
+	}
+	return false;
+}
+
+module.exports.stringOrNull = isStringOrNull;

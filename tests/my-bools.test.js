@@ -153,17 +153,38 @@ describe(`is.objectWithProperty`, () => {
 // isString(arg)
 // ****************************************
 describe(`is.string`, () => {
-	test.each([
-		{type: `an object`, arg: {}, expected: false},
-		{type: `null`, arg: null, expected: false},
-		{type: `a string`, arg: `abc`, expected: true},
-		{type: `true`, arg: true, expected: false},
-		{type: `false`, arg: false, expected: false},
-		{type: `a number`, arg: 123, expected: false},
-		{type: `an array`, arg: [], expected: false},
-	])(`should return $expected if arg is $type`, ({type, arg, expected}) => {
-		const result = is.string(arg);
-		expect(result).toBe(expected);
+	test(`should return true if arg is a string`, () => {
+		const result = is.string(`123`);
+		expect(result).toBe(true);
 		expect(typeof result).toBe(`boolean`);
 	});
+
+	test.each(testData.type.isNotString)(`should return false if arg is $type`, ({type, arg}) => {
+		const result = is.string(arg);
+		expect(result).toBe(false);
+		expect(typeof result).toBe(`boolean`);
+	});
+});
+
+// ****************************************
+// isStringOrNull(arg)
+// ****************************************
+describe(`isStringOrNull`, () => {
+	test.each(testData.type.isStringOrNull)(
+		`should not throw an error if arg is $type`,
+		({type, arg}) => {
+			const result = is.stringOrNull(arg);
+			expect(result).toBe(true);
+			expect(typeof result).toBe(`boolean`);
+		}
+	);
+
+	test.each(testData.type.isNotStringOrNull)(
+		`should  throw an error if arg is $type`,
+		({type, arg}) => {
+			const result = is.stringOrNull(arg);
+			expect(result).toBe(true);
+			expect(typeof result).toBe(`boolean`);
+		}
+	);
 });
