@@ -154,6 +154,12 @@ describe(`cleanUpAssets`, () => {
 	// Functionality
 	// ------------------------------
 	// TODO: throw errors is dirs do not exist or are files.
+	test(`should throw error if srcDir does not exist`, async () => {
+		await expect(cleanUpAssets(`${srcDir}doesntexist`, destDir)).rejects.toThrow(
+			`$srcDir doesNotExist!`
+		);
+	});
+
 	test.each([
 		{
 			args: {include: /.css$/},
@@ -360,14 +366,9 @@ describe(`copyDirContents`, () => {
 // async function getDirContents(
 //     srcDir,
 //     args = {
-//         include: {
-//             prefix: null,
-//             suffix: null
-//         },
-//         exclude: {
-//             prefix: null,
-//             suffix: null
-//         },
+//         include: null,
+//         exclude: null,
+//         dirArgName: null,
 //     }
 // )
 // ****************************************
@@ -426,11 +427,28 @@ describe(`getDirContents`, () => {
 		}
 	);
 
-	// args.include and args.exclude accept regex, regex[], and null and cannot be type tested.
+	// ***** args.dirArgName *****
+	test.each(testData.type.isNotStringOrNull)(
+		`should throw error if args.dirArgName is $type`,
+		async ({type, arg}) => {
+			await expect(getDirContents(123, {dirArgName: arg})).rejects.toThrow(
+				TypeError(`$args.dirArgName must be a string or null!`)
+			);
+		}
+	);
 
 	// ------------------------------
 	// Functionality
 	// ------------------------------
+	test(`should throw error if srcDir doesn't exist`, async () => {
+		await expect(getDirContents(`${srcDir}doesNotExist`)).rejects.toThrow(`$srcDir doesNotExist!`);
+	});
+
+	test(`should throw custom error if args.dirArgName is a string`, async () => {
+		await expect(getDirContents(123, {dirArgName: `theDir`})).rejects.toThrow(
+			TypeError(`$theDir must be a string!`)
+		);
+	});
 	test.each([
 		{dir: srcDir, length: 0},
 		{dir: srcDir1, length: 8},

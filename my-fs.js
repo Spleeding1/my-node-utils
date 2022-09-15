@@ -34,14 +34,13 @@ async function cleanUpAssets(
 	args = {include: null, exclude: null, minified: false}
 ) {
 	let minified = false;
+	// ------------------------------
+	// Argument Type Checks
+	// ------------------------------
 
-	if (!is.string(srcDir)) {
-		throw message.typeError.isNotString(`srcDir`);
-	}
+	/* srcDir checked in getDirContents */
 
-	if (!is.string(destDir)) {
-		throw message.typeError.isNotString(`destDir`);
-	}
+	/* destDir checked in getDirContents */
 
 	if (!is.objectOrNull(args)) {
 		throw message.typeError.isNotObjectOrNull(`args`);
@@ -56,7 +55,8 @@ async function cleanUpAssets(
 	}
 
 	const srcFiles = await getDirContents(srcDir, args);
-	const destFiles = await getDirContents(destDir);
+
+	const destFiles = await getDirContents(destDir, {dirArgName: `destDir`});
 
 	for await (const file of destFiles) {
 		if (minified) {
@@ -193,16 +193,30 @@ module.exports.fileOrDirCheck = fileOrDirCheck;
  * @returns {Promise<array>} Array of directory contents.
  * @throws {TypeError} If $srcDir or $args is an incorrect type.
  */
-async function getDirContents(srcDir, args = {include: null, exclude: null}) {
+async function getDirContents(srcDir, args = {include: null, exclude: null, dirArgName: null}) {
 	// ------------------------------
 	// Argument type checks
 	// ------------------------------
-	if (!is.string(srcDir)) {
-		throw message.typeError.isNotString(`srcDir`);
-	}
-
 	if (!is.objectOrNull(args)) {
 		throw TypeError(`$args must be an object or null!`);
+	}
+
+	if (is.string(srcDir)) {
+		const srcDirType = await fileOrDirCheck(srcDir);
+
+		if (srcDirType === `doesNotExist`) {
+			throw Error(`$srcDir ${srcDirType}!`);
+		}
+	} else {
+		if (is.objectWithProperty(args, `dirArgName`) && args.dirArgName !== null) {
+			if (is.string(args.dirArgName)) {
+				throw message.typeError.isNotString(args.dirArgName);
+			} else {
+				throw message.typeError.isNotStringOrNull(`args.dirArgName`);
+			}
+		} else {
+			throw message.typeError.isNotString(`srcDir`);
+		}
 	}
 
 	// ------------------------------
