@@ -183,7 +183,7 @@ describe(`isStringOrNull`, () => {
 		`should  throw an error if arg is $type`,
 		({type, arg}) => {
 			const result = is.stringOrNull(arg);
-			expect(result).toBe(true);
+			expect(result).toBe(false);
 			expect(typeof result).toBe(`boolean`);
 		}
 	);
