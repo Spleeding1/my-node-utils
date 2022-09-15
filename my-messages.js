@@ -89,3 +89,18 @@ function isNotObjectOrNullTypeError(arg) {
 typeErrors.isNotObjectOrNull = isNotObjectOrNullTypeError;
 
 module.exports.typeError = typeErrors;
+
+/**
+ * Returns TypeError with uniform message.
+ * @param {string} arg name of arg that should be a string.
+ * @returns TypeError
+ * @throws TypeError if $arg is not a string.
+ */
+function isNotStringOrNullTypeError(arg) {
+	if (!is.string(arg)) {
+		throw isNotStringTypeError(`arg`);
+	}
+
+	return TypeError(`$${arg} must be a string or null!`);
+}
+typeErrors.isNotStringOrNull = isNotStringOrNullTypeError;

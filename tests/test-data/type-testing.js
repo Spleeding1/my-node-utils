@@ -7,69 +7,52 @@
  * Reusable test data for testing correct types with Jest.
  */
 
+// ############################################################
+// Building Blocks
+// ############################################################
+const anArray = {type: `an array`, arg: []};
+const anArrayOfStrings = {type: `an array of non-strings`, arg: [`123`, 123]};
+const isFalse = {type: `false`, arg: false};
+const isNull = {type: `null`, arg: null};
+const aNumber = {type: `a number`, arg: 123};
+const anObject = {type: `an object`, arg: {}};
+const aString = {type: `a string`, arg: `123`};
+const isTrue = {type: `true`, arg: true};
+
 // Holds all "type" exports.
 let dataTypes = {};
 
 // ############################################################
 // Singular Types
 // ############################################################
-const isBooleanType = [
-	{type: `true`, arg: true},
-	{type: `false`, arg: false},
-];
+const isBooleanType = [isTrue, isFalse];
 dataTypes[`isBoolean`] = isBooleanType;
 
-const isNotBooleanType = [
-	{type: `null`, arg: null},
-	{type: `a string`, arg: `123`},
-	{type: `a number`, arg: 123},
-	{type: `an object`, arg: {}},
-	{type: `an array`, arg: []},
-];
+const isNotBooleanType = [isNull, aString, aNumber, anObject, anArray];
 dataTypes[`isNotBoolean`] = isNotBooleanType;
 
-const isNotStringType = [
-	{type: `a number`, arg: 123},
-	{type: `an object`, arg: {}},
-	{type: `null`, arg: null},
-	{type: `an array`, arg: []},
-	{type: `true`, arg: true},
-	{type: `false`, arg: false},
-];
+const isNotStringType = [aNumber, anObject, isNull, anArray, isTrue, isFalse];
 dataTypes[`isNotString`] = isNotStringType;
 
 // ############################################################
 // Compound Types
 // ############################################################
-const isArrayOfStringsStringOrNullType = [
-	{type: `null`, arg: null},
-	{type: `a string`, arg: `123`},
-	{type: `an array of strings`, arg: [`123`, `456`]},
-];
+const isArrayOfStringsStringOrNullType = [isNull, aString, anArrayOfStrings];
 dataTypes[`isArrayOfStringsStringOrNull`] = isArrayOfStringsStringOrNullType;
 
-const isNotArrayOfStringsStringOrNullType = [
-	{type: `a number`, arg: 123},
-	{type: `an object`, arg: {}},
-	{type: `an array of non-strings`, arg: [`123`, 123]},
-	{type: `true`, arg: true},
-	{type: `false`, arg: false},
-];
+const isNotArrayOfStringsStringOrNullType = [aNumber, anObject, anArrayOfStrings, isTrue, isFalse];
 dataTypes[`isNotArrayOfStringsStringOrNull`] = isNotArrayOfStringsStringOrNullType;
 
-const isObjectOrNullType = [
-	{type: `an object`, arg: {}},
-	{type: `null`, arg: null},
-];
+const isObjectOrNullType = [isNull, anObject];
 dataTypes[`isObjectOrNull`] = isObjectOrNullType;
 
-const isNotObjectOrNullType = [
-	{type: `a number`, arg: 123},
-	{type: `an array`, arg: []},
-	{type: `true`, arg: true},
-	{type: `false`, arg: false},
-	{type: `a string`, arg: `123`},
-];
+const isNotObjectOrNullType = [aNumber, anArray, isTrue, isFalse, aString];
 dataTypes[`isNotObjectOrNull`] = isNotObjectOrNullType;
+
+const isStringOrNullType = [aString, isNull];
+dataTypes[`isStringOrNull`] = isStringOrNullType;
+
+const isNotStringOrNullType = [anArray, isFalse, anObject, isTrue, aNumber];
+dataTypes[`isNotStringOrNull`] = isNotStringOrNullType;
 
 module.exports.type = dataTypes;
