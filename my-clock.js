@@ -11,6 +11,9 @@
  * * stopTimer(startTime)
  */
 
+const is = require(`./my-bools`);
+const message = require(`./my-messages`);
+
 /**
  * Starting time for clocking process performance.
  * @returns {number}
@@ -25,8 +28,8 @@ function startTimer() {
  * @returns {string} Difference between startTime and stopTime in seconds.
  */
 function stopTimer(startTime) {
-	if (typeof startTime !== `number`) {
-		throw TypeError(`startTime must be a number`);
+	if (!is.number(startTime)) {
+		throw message.typeError.isNotNumber(`startTime`);
 	}
 	const elapsedTime = performance.now() - startTime;
 	return `${(elapsedTime / 1000).toFixed(3)}s`;

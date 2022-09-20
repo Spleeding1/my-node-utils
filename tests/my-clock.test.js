@@ -26,9 +26,9 @@ describe(`performance testing timer`, () => {
 	test(`timer.stop() should throw error if startTime is not a number`, () => {
 		expect(() => {
 			timer.stop(`123`);
-		}).toThrow(TypeError(`startTime must be a number`));
+		}).toThrow(TypeError(`$startTime must be a number!`));
 		expect(() => {
 			timer.stop(new Date());
-		}).toThrow(TypeError(`startTime must be a number`));
+		}).toThrow(TypeError(`$startTime must be a number!`));
 	});
 });
