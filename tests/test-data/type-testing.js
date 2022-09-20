@@ -20,39 +20,23 @@ const aString = {type: `a string`, arg: `123`};
 const isTrue = {type: `true`, arg: true};
 
 // Holds all "type" exports.
-let dataTypes = {};
+let dataTypes = {
+	// ############################################################
+	// Singular Types
+	// ############################################################
+	isBoolean: [isTrue, isFalse],
+	isNotBoolean: [isNull, aString, aNumber, anObject, anArray],
+	isNotNumber: [isTrue, isFalse, aString, anArray, anObject, isNull],
+	isNotString: [aNumber, anObject, isNull, anArray, isTrue, isFalse],
 
-// ############################################################
-// Singular Types
-// ############################################################
-const isBooleanType = [isTrue, isFalse];
-dataTypes[`isBoolean`] = isBooleanType;
-
-const isNotBooleanType = [isNull, aString, aNumber, anObject, anArray];
-dataTypes[`isNotBoolean`] = isNotBooleanType;
-
-const isNotStringType = [aNumber, anObject, isNull, anArray, isTrue, isFalse];
-dataTypes[`isNotString`] = isNotStringType;
-
-// ############################################################
-// Compound Types
-// ############################################################
-const isArrayOfStringsStringOrNullType = [isNull, aString, anArrayOfStrings];
-dataTypes[`isArrayOfStringsStringOrNull`] = isArrayOfStringsStringOrNullType;
-
-const isNotArrayOfStringsStringOrNullType = [aNumber, anObject, anArrayOfStrings, isTrue, isFalse];
-dataTypes[`isNotArrayOfStringsStringOrNull`] = isNotArrayOfStringsStringOrNullType;
-
-const isObjectOrNullType = [isNull, anObject];
-dataTypes[`isObjectOrNull`] = isObjectOrNullType;
-
-const isNotObjectOrNullType = [aNumber, anArray, isTrue, isFalse, aString];
-dataTypes[`isNotObjectOrNull`] = isNotObjectOrNullType;
-
-const isStringOrNullType = [aString, isNull];
-dataTypes[`isStringOrNull`] = isStringOrNullType;
-
-const isNotStringOrNullType = [anArray, isFalse, anObject, isTrue, aNumber];
-dataTypes[`isNotStringOrNull`] = isNotStringOrNullType;
-
+	// ############################################################
+	// Compound Types
+	// ############################################################
+	isArrayOfStringsStringOrNull: [isNull, aString, anArrayOfStrings],
+	isNotArrayOfStringsStringOrNull: [aNumber, anObject, anArrayOfStrings, isTrue, isFalse],
+	isObjectOrNull: [isNull, anObject],
+	isNotObjectOrNull: [aNumber, anArray, isTrue, isFalse, aString],
+	isStringOrNull: [aString, isNull],
+	isNotStringOrNull: [anArray, isFalse, anObject, isTrue, aNumber],
+};
 module.exports.type = dataTypes;
