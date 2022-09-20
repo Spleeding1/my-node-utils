@@ -26,7 +26,7 @@ describe(`function isNotBooleanTypeError(arg)`, () => {
 		}).not.toThrow();
 	});
 
-	test.each(testData.type.isNotString)(`should throw error if $arg is $type`, ({type, arg}) => {
+	test.each(testData.type.isNotString)(`should throw error if arg is $type`, ({type, arg}) => {
 		expect(() => {
 			message.typeError.isNotBoolean(arg);
 		}).toThrow(TypeError(`$arg must be a string!`));
@@ -57,7 +57,7 @@ describe(`isNotStringTypeError`, () => {
 		}).not.toThrow();
 	});
 
-	test.each(testData.type.isNotString)(`should throw error if $arg is $type`, ({type, arg}) => {
+	test.each(testData.type.isNotString)(`should throw error if arg is $type`, ({type, arg}) => {
 		expect(() => {
 			message.typeError.isNotString(arg);
 		}).toThrow(TypeError(`$arg must be a string!`));
@@ -88,7 +88,7 @@ describe(`isNotArrayOfStringsStringOrNullTypeError`, () => {
 		}).not.toThrow();
 	});
 
-	test.each(testData.type.isNotString)(`should throw error if $arg is $type`, ({type, arg}) => {
+	test.each(testData.type.isNotString)(`should throw error if arg is $type`, ({type, arg}) => {
 		expect(() => {
 			message.typeError.isNotArrayOfStringsStringOrNull(arg);
 		}).toThrow(TypeError(`$arg must be a string!`));
@@ -104,6 +104,35 @@ describe(`isNotArrayOfStringsStringOrNullTypeError`, () => {
 		const result2 = message.typeError.isNotArrayOfStringsStringOrNull(`theString`);
 		expect(result2).toEqual(TypeError(`$theString must be a string[], string, or null!`));
 	});
+});
+
+// ****************************************
+// function isNotNumberTypeError(arg)
+// ****************************************
+describe(`isNotNumberTypeError`, () => {
+	// ------------------------------
+	// Argument Types
+	// ------------------------------
+	test(`should not throw error if arg is a string`, () => {
+		expect(() => {
+			message.typeError.isNotNumber(`$arg`);
+		}).not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(`should throw error if arg is $type`, ({type, arg}) => {
+		expect(() => {
+			message.typeError.isNotNumber(arg);
+		}).toThrow(TypeError(`$arg must be a string!`));
+	});
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	const result1 = message.typeError.isNotNumber(`theArg`);
+	expect(result1).toEqual(TypeError(`$theArg must be a number!`));
+
+	const result2 = message.typeError.isNotNumber(`theString`);
+	expect(result2).toEqual(TypeError(`$theString must be a number!`));
 });
 
 // ****************************************

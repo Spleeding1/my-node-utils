@@ -44,6 +44,21 @@ typeErrors.isNotBoolean = isNotBooleanTypeError;
 
 /**
  * Returns TypeError with uniform message.
+ * @param {string} arg Argument name that should be a string.
+ * @returns {TypeError}
+ * @throws {TypeError} If $arg is not boolean.
+ */
+
+function isNotNumberTypeError(arg) {
+	if (!is.string(arg)) {
+		throw isNotStringTypeError(arg);
+	}
+	return TypeError(`$${arg} must be a number!`);
+}
+typeErrors.isNotNumber = isNotNumberTypeError;
+
+/**
+ * Returns TypeError with uniform message.
  * @param {string} arg name of arg that should be a string.
  * @returns TypeError
  * @throws TypeError if $arg is not a string.

@@ -80,6 +80,19 @@ function isBoolean(arg) {
 module.exports.boolean = isBoolean;
 
 /**
+ * Checks if given argument is a number.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is boolean.
+ */
+function isNumber(arg) {
+	if (typeof arg === `number`) {
+		return true;
+	}
+	return false;
+}
+module.exports.number = isNumber;
+
+/**
  * Checks whether the supplied argument is an object or null.
  * @param {*} arg Argument to check.
  * @returns {boolean} If arg is an object or null.

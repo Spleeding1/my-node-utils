@@ -87,6 +87,27 @@ describe(`isBoolean`, () => {
 });
 
 // ****************************************
+// isNumber(arg)
+// ****************************************
+describe(`is.number`, () => {
+	test(`should return true if arg is a number`, () => {
+		const result1 = is.number(123);
+		expect(result1).toBe(true);
+		expect(typeof result1).toBe(`boolean`);
+
+		const result2 = is.number(123.123);
+		expect(result2).toBe(true);
+		expect(typeof result2).toBe(`boolean`);
+	});
+
+	test.each(testData.type.isNotNumber)(`should return false if arg is $type`, ({type, arg}) => {
+		const result = is.number(arg);
+		expect(result).toBe(false);
+		expect(typeof result).toBe(`boolean`);
+	});
+});
+
+// ****************************************
 // isObjectOrNull(arg)
 // ****************************************
 describe(`isObjectOrNull`, () => {
