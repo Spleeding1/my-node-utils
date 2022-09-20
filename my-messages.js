@@ -3,13 +3,15 @@
  * my-messages.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * version 1.4.0
+ * version 1.6.0
  *
  * Functions to return commonly used messages
  * * isNotBooleanTypeError(arg)
+ * * isNotNumberTypeError(arg)
  * * isNotStringTypeError(arg)
  * * isNotArrayOfStringsStringOrNullTypeError(arg)
  * * isNotObjectOrNullTypeError(arg)
+ * * isNotStringOrNullTypeError(arg)
  */
 
 const is = require(`./my-bools`);

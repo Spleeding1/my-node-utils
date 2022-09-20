@@ -79,16 +79,25 @@ const dirFourFiles = [
 describe(`cleanUpAssets`, () => {
 	const destDir = `${cwd}/cleanUpAssetsDest`;
 	const srcDir = `${cwd}/cleanUpAssetsSrc`;
+	const aFile = `${cwd}/cleanUpAssetsAFile`;
+
+	beforeAll(async () => {
+		await setUpTestDir(srcDir, dirOneFiles);
+		fs.writeFileSync(aFile, ``);
+	});
 
 	beforeEach(async () => {
-		await setUpTestDir(srcDir, dirOneFiles);
 		await setUpTestDir(destDir, dirTwoFiles);
 	});
 
-	afterEach(() => {
-		[srcDir, destDir].forEach(async dir => {
-			await teardownTestDir(dir);
-		});
+	afterEach(async () => {
+		await teardownTestDir(destDir);
+	});
+
+	afterAll(async () => {
+		await teardownTestDir(srcDir);
+		await teardownTestDir(destDir);
+		await teardownTestDir(aFile);
 	});
 
 	// ------------------------------
@@ -153,11 +162,24 @@ describe(`cleanUpAssets`, () => {
 	// ------------------------------
 	// Functionality
 	// ------------------------------
-	// TODO: throw errors is dirs do not exist or are files.
 	test(`should throw error if srcDir does not exist`, async () => {
 		await expect(cleanUpAssets(`${srcDir}doesntexist`, destDir)).rejects.toThrow(
 			`$srcDir doesNotExist!`
 		);
+	});
+
+	test(`should throw error if srcDir is a file`, async () => {
+		await expect(cleanUpAssets(aFile, destDir)).rejects.toThrow(`$srcDir isFile!`);
+	});
+
+	test(`should throw error if destDir does not exist`, async () => {
+		await expect(cleanUpAssets(srcDir, `${destDir}doesntexist`)).rejects.toThrow(
+			`$destDir doesNotExist!`
+		);
+	});
+
+	test(`should throw error if destDir is a file`, async () => {
+		await expect(cleanUpAssets(srcDir, aFile)).rejects.toThrow(`$destDir isFile!`);
 	});
 
 	test.each([
@@ -251,16 +273,34 @@ describe(`cleanUpAssets`, () => {
 // ****************************************
 describe(`copyDirContents`, () => {
 	const srcDir = `${cwd}/copyDirContentsSrc`;
+	const srcDir1 = `${cwd}/copyDirContentsSrc1`;
+	const srcDir2 = `${cwd}/copyDirContentsSrc2`;
+	const srcDir3 = `${cwd}/copyDirContentsSrc3`;
+	const srcDir4 = `${cwd}/copyDirContentsSrc4`;
 	const destDir = `${cwd}/copyDirContentsDest`;
+	const aFile = `${cwd}/copyDirContentsAfile`;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		await setUpTestDir(srcDir, dirOneFiles);
+		await setUpTestDir(srcDir1, dirOneFiles);
+		await setUpTestDir(srcDir2, dirTwoFiles);
+		await setUpTestDir(srcDir3, dirThreeFiles);
+		await setUpTestDir(srcDir4, dirFourFiles);
+		fs.writeFileSync(aFile, ``);
 	});
 
-	afterEach(() => {
-		[srcDir, destDir].forEach(async dir => {
-			await teardownTestDir(dir);
-		});
+	afterEach(async () => {
+		await teardownTestDir(destDir);
+	});
+
+	afterAll(async () => {
+		await teardownTestDir(srcDir);
+		await teardownTestDir(srcDir1);
+		await teardownTestDir(srcDir2);
+		await teardownTestDir(srcDir3);
+		await teardownTestDir(srcDir4);
+		await teardownTestDir(destDir);
+		await teardownTestDir(aFile);
 	});
 
 	// ------------------------------
@@ -312,6 +352,37 @@ describe(`copyDirContents`, () => {
 	);
 
 	// TODO: Test certain arg types as they come up.
+	// ***** args.overwrite *****
+	test.each(testData.type.isBoolean)(
+		`should not throw error if args.overwrite is $type`,
+		async ({type, arg}) => {
+			await expect(copyDirContents(srcDir, destDir, {overwrite: arg})).resolves.not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotBoolean)(
+		`should throw error if args.overwrite is $type`,
+		async ({type, arg}) => {
+			await expect(copyDirContents(srcDir, destDir, {overwrite: arg})).rejects.toThrow(
+				TypeError(`$args.overwrite must be true or false!`)
+			);
+		}
+	);
+
+	// ***** args.mirror *****
+	test.each(testData.type.isBoolean)(
+		`should not throw error if args.mirror is $type`,
+		async ({type, arg}) => {
+			await expect(copyDirContents(srcDir, destDir, {mirror: arg})).resolves.not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotBoolean)(
+		`should throw error if args.mirror is $type`,
+		async ({type, arg}) => {
+			await expect(copyDirContents(srcDir, destDir, {mirror: arg})).rejects.toThrow();
+		}
+	);
 
 	// ------------------------------
 	// Functionality
@@ -323,10 +394,7 @@ describe(`copyDirContents`, () => {
 	});
 
 	test(`should throw an error if srcDir is a file`, async () => {
-		fs.writeFileSync(`${srcDir}/isFile`, ``);
-		await expect(copyDirContents(`${srcDir}/isFile`, destDir)).rejects.toThrow(
-			Error(`$srcDir isFile!`)
-		);
+		await expect(copyDirContents(aFile, destDir)).rejects.toThrow(Error(`$srcDir isFile!`));
 	});
 
 	test(`should create destDir if it does not exist`, async () => {
@@ -335,10 +403,7 @@ describe(`copyDirContents`, () => {
 	});
 
 	test(`should throw an error if destDir is a file`, async () => {
-		fs.writeFileSync(`${srcDir}/isFile`, ``);
-		await expect(copyDirContents(srcDir, `${srcDir}/isFile`)).rejects.toThrow(
-			Error(`$destDir isFile!`)
-		);
+		await expect(copyDirContents(srcDir, aFile)).rejects.toThrow(Error(`$destDir isFile!`));
 	});
 
 	test(`should copy the contents of the srcDir to the destDir`, async () => {
@@ -350,17 +415,151 @@ describe(`copyDirContents`, () => {
 		dirOneFiles.forEach(file => {
 			expect(destContents.includes(file)).toBeTruthy();
 		});
-
-		// TODO: Copy all of the regex from getDirContents args to test filtering.
-
-		// TODO: Test that files that aren't in srcDir won't be deleted.
-
-		// TODO: Test arg to overwrite or ignore existing file.
-
-		// TODO: Test arg to mirror srcDir.
 	});
-	// TODO: Finish the describe
+
+	test.each([
+		{dir: srcDir1, length: 8},
+		{dir: srcDir2, length: 10},
+	])(`should copy $dir contents to the destDir`, async ({dir, length}) => {
+		await copyDirContents(dir, destDir);
+
+		const dirContents = await getDirContents(destDir);
+		expect(dirContents.length).toBe(length);
+	});
+
+	// ######## inclusion ########
+	test.each([
+		{dir: srcDir3, args: {include: /^_/}, length: 2, files: [`_file1.txt`, `_file3.css`]},
+		{
+			dir: srcDir3,
+			args: {include: [/^_/, /^file2/]},
+			length: 4,
+			files: [`_file1.txt`, `_file3.css`, `file2.js`, `file2.min.js`],
+		},
+	])(`should only copy $files with $args`, async ({dir, args, length, files}) => {
+		await copyDirContents(dir, destDir, args);
+		const dirContents = await getDirContents(destDir, args);
+
+		expect(dirContents.length).toBe(length);
+		files.forEach(file => {
+			expect(dirContents.includes(file)).toBeTruthy();
+		});
+	});
+
+	// ######## exclusion ########
+	test.each([
+		{
+			dir: srcDir3,
+			args: {exclude: /^_/},
+			length: 7,
+			files: [
+				`file1.txt`,
+				`file2.js`,
+				`file2.min.js`,
+				`file3.css`,
+				`file3.min.css`,
+				`file4.txt`,
+				`aDirectory`,
+			],
+		},
+		{
+			dir: srcDir3,
+			args: {exclude: [/^_/, /^file2/]},
+			length: 5,
+			files: [`file1.txt`, `file3.css`, `file3.min.css`, `file4.txt`, `aDirectory`],
+		},
+	])(`should copy return $files with $args`, async ({dir, args, length, files}) => {
+		await copyDirContents(dir, destDir, args);
+		const dirContents = await getDirContents(destDir, args);
+
+		expect(dirContents.length).toBe(length);
+		files.forEach(file => {
+			expect(dirContents.includes(file)).toBeTruthy();
+		});
+	});
+
+	// ######## inclusion and exclusion filtering ########
+	test.each([
+		{
+			dir: srcDir3,
+			args: {include: /file/, exclude: /^_/},
+			length: 6,
+			files: [`file1.txt`, `file2.js`, `file2.min.js`, `file3.css`, `file3.min.css`, `file4.txt`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: /file/, exclude: [/^_/, /.css$/]},
+			length: 4,
+			files: [`file1.txt`, `file2.js`, `file2.min.js`, `file4.txt`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: [/1/, /4/], exclude: /^_/},
+			length: 2,
+			files: [`file1.txt`, `file4.txt`],
+		},
+		{
+			dir: srcDir3,
+			args: {include: [/1/, /2/], exclude: [/^_/, /.min.js/]},
+			length: 2,
+			files: [`file1.txt`, `file2.js`],
+		},
+	])(`should copy return $files with $args`, async ({dir, args, length, files}) => {
+		await copyDirContents(dir, destDir, args);
+		const dirContents = await getDirContents(destDir, args);
+
+		expect(dirContents.length).toBe(length);
+		files.forEach(file => {
+			expect(dirContents.includes(file)).toBeTruthy();
+		});
+	});
+
+	test(`should not delete files in destDir that are not in srcDir`, async () => {
+		await setUpTestDir(destDir, [`saveMe.txt`]);
+		await copyDirContents(srcDir, destDir);
+
+		const contents = await getDirContents(destDir);
+		expect(contents.includes(`saveMe.txt`));
+		expect(contents.length > 1).toBeTruthy();
+	});
+
+	test(`should ignore existing files if args.overwrite is false`, async () => {
+		await setUpTestDir(destDir, [`file1.txt`]);
+		fs.writeFileSync(`${destDir}/file1.txt`, `Save Me.`);
+		await copyDirContents(srcDir, destDir);
+		const fileContents = fs.readFileSync(`${destDir}/file1.txt`, {encoding: `utf8`, flag: `r`});
+		expect(fileContents).toBe(`Save Me.`);
+	});
+
+	test(`should overwrite existing files if args.overwrite is true`, async () => {
+		await setUpTestDir(destDir, [`file1.txt`]);
+		fs.writeFileSync(`${destDir}/file1.txt`, `overwrite me`);
+		await copyDirContents(srcDir, destDir, {overwrite: true});
+		const fileContents = fs.readFileSync(`${destDir}/file1.txt`, {encoding: `utf8`, flag: `r`});
+		expect(fileContents).toBe(``);
+	});
+
+	test(`should make destDir mirror srcDir if args.mirror is true`, async () => {
+		await setUpTestDir(destDir, [`file1.txt`, `extra-file.min.css`]);
+		fs.writeFileSync(`${destDir}/file1.txt`, `overwrite me`);
+		await copyDirContents(srcDir, destDir, {mirror: true});
+		const fileContents = fs.readFileSync(`${destDir}/file1.txt`, {encoding: `utf8`, flag: `r`});
+		expect(fileContents).toBe(``);
+		expect(fs.existsSync(`${destDir}/extra-file.min.css`)).toBeFalsy();
+
+		const destDirContents = await getDirContents(destDir);
+
+		dirOneFiles.forEach(file => {
+			expect(destDirContents.includes(file)).toBeTruthy();
+		});
+	});
+
+	// TODO: Add inclusion and exclusion filtering to args
 });
+
+// TODO: createDirectory
+
+// TODO: createDirectories
 
 // ****************************************
 // async function getDirContents(
@@ -378,6 +577,7 @@ describe(`getDirContents`, () => {
 	const srcDir2 = `${cwd}/getDirContentsSrc2`;
 	const srcDir3 = `${cwd}/getDirContentsSrc3`;
 	const srcDir4 = `${cwd}/getDirContentsSrc4`;
+	const aFile = `${cwd}/getDirContentsAFile`;
 
 	beforeAll(async () => {
 		await setUpTestDir(srcDir);
@@ -385,6 +585,7 @@ describe(`getDirContents`, () => {
 		await setUpTestDir(srcDir2, dirTwoFiles);
 		await setUpTestDir(srcDir3, dirThreeFiles);
 		await setUpTestDir(srcDir4, dirFourFiles);
+		fs.writeFileSync(aFile, ``);
 	});
 
 	afterAll(async () => {
@@ -393,6 +594,7 @@ describe(`getDirContents`, () => {
 		await teardownTestDir(srcDir2);
 		await teardownTestDir(srcDir3);
 		await teardownTestDir(srcDir4);
+		await teardownTestDir(aFile);
 	});
 
 	// ------------------------------
@@ -444,11 +646,16 @@ describe(`getDirContents`, () => {
 		await expect(getDirContents(`${srcDir}doesNotExist`)).rejects.toThrow(`$srcDir doesNotExist!`);
 	});
 
+	test(`should throw error if srcDir is a file`, async () => {
+		await expect(getDirContents(aFile)).rejects.toThrow(`$srcDir isFile!`);
+	});
+
 	test(`should throw custom error if args.dirArgName is a string`, async () => {
 		await expect(getDirContents(123, {dirArgName: `theDir`})).rejects.toThrow(
 			TypeError(`$theDir must be a string!`)
 		);
 	});
+
 	test.each([
 		{dir: srcDir, length: 0},
 		{dir: srcDir1, length: 8},

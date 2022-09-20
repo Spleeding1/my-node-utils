@@ -3,7 +3,7 @@
  * my-bools.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.8.0
+ * Version 1.9.0
  *
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
@@ -12,6 +12,7 @@
  * * arrayOfStrings(array)
  * * arrayStringOrNull(arg)
  * * boolean(arg)
+ * * number(arg)
  * * objectOrNull(arg)
  * * objectWithProperty(arg, property)
  * * string(arg)

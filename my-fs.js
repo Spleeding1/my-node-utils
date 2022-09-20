@@ -3,16 +3,16 @@
  * my-fs.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.6.4
+ * Version 1.6.5
  *
  * Utility async functions that use fs.
  *
- * * cleanUpAssets(outputFilesDir, srcFilesDir, extension)
- * * copyDirContents(sourceDir, targetDir, fileSuffix = null)
+ * * cleanUpAssets(srcDir, destDir, args)
+ * * copyDirContents(srcDir, destDir, args)
  * * createDirectory(dirPath)
  * * createFileDirectories(filePath, isDirPath = false)
  * * fileOrDirCheck(path)
- * * getDirContents(path, fileSuffix = null)
+ * * getDirContents(srcDir, args)
  */
 
 const colors = require(`colors`);
@@ -21,31 +21,29 @@ const is = require(`./my-bools`);
 const message = require(`./my-messages`);
 
 /**
- * Deletes output file if src file does not exist. Bypasses src files that start with `_`. Removes
- * file extension to account for `*.min.*` files.
+ * Deletes destDir file if srcDir file does not exist.
  * @async
- * @param {string} outputFilesDir Path to output files.
- * @param {string} srcFilesDir Path to source files.
- * @param {?string} extension File extension of files.
+ * @param {string} srcDir Path to source directory.
+ * @param {string} destDir Path to destination directory.
+ * @param {?object} args Filtering arguments.
+ * @param {?regex} args.include Files to include from check in srcDir.
+ * @param {?regex} args.exclude Files to exclude from check in srcDir.
+ * @param {?boolean} args.minified Will match minified files in the destDir to unminified files in the srcDir and only keep the minified files.
  */
 async function cleanUpAssets(
 	srcDir,
 	destDir,
 	args = {include: null, exclude: null, minified: false}
 ) {
-	let minified = false;
-	// ------------------------------
-	// Argument Type Checks
-	// ------------------------------
-
+	// ######## Argument Type Checks ########
 	/* srcDir checked in getDirContents */
-
 	/* destDir checked in getDirContents */
 
 	if (!is.objectOrNull(args)) {
 		throw message.typeError.isNotObjectOrNull(`args`);
 	}
 
+	let minified = false;
 	if (is.objectWithProperty(args, `minified`)) {
 		if (is.boolean(args.minified)) {
 			minified = args.minified;
@@ -54,8 +52,8 @@ async function cleanUpAssets(
 		}
 	}
 
+	// ######## Functionality ########
 	const srcFiles = await getDirContents(srcDir, args);
-
 	const destFiles = await getDirContents(destDir, {dirArgName: `destDir`});
 
 	for await (const file of destFiles) {
@@ -66,6 +64,7 @@ async function cleanUpAssets(
 					fs.unlinkSync(`${destDir}/${file}`);
 				}
 			} else {
+				// Delete file if it is not .min.
 				fs.unlinkSync(`${destDir}/${file}`);
 			}
 		} else if (!srcFiles.includes(file)) {
@@ -73,51 +72,74 @@ async function cleanUpAssets(
 		}
 	}
 }
-
 module.exports.cleanUpAssets = cleanUpAssets;
 
-// TODO: fix documentation anf complete fucntion
 /**
- * Copies the contents of one directory to another.
+ * Copies the contents of srcDir to destDir.
+ * Creates destDir if it does not exist.
  * @async
- * @param {string} sourceDir Path of source directory.
- * @param {string} targetDir Path of target directory.
- * @param {?string} fileSuffix Used if targeting specific file types.
- * @returns {Promise<void>} If an error occurs.
+ * @param {string} srcDir Path of source directory.
+ * @param {string} destDir Path of destination directory.
+ * @param {?object} args Used for filtering and more.
+ * @param {?regex} args.include Files to include from check in srcDir.
+ * @param {?regex} args.exclude Files to exclude from check in srcDir.
+ * @param {?boolean} args.mirror Makes destDir mirror srcDir.
+ * @param {?boolean} args.overwrite Overwrite file in destDir if it exists.
  */
 async function copyDirContents(srcDir, destDir, args = null) {
-	if (is.string(srcDir)) {
-		const srcDirType = await fileOrDirCheck(srcDir);
+	// ######## Argument Type Checks ########
+	/* srcDir checked with getDirContents */
+	/* destDir checked with getDirContents */
 
-		if (srcDirType === `isFile` || srcDirType === `doesNotExist`) {
-			throw Error(`$srcDir ${srcDirType}!`);
+	let mirror = false;
+	let overwrite = false;
+
+	if (is.objectOrNull(args)) {
+		if (is.objectWithProperty(args, `mirror`)) {
+			if (is.boolean(args.mirror)) {
+				mirror = args.mirror;
+			} else {
+				throw message.typeError.isNotBoolean(`args.mirror`);
+			}
+		}
+
+		if (is.objectWithProperty(args, `overwrite`)) {
+			if (is.boolean(args.overwrite)) {
+				overwrite = args.overwrite;
+			} else {
+				throw message.typeError.isNotBoolean(`args.overwrite`);
+			}
 		}
 	} else {
-		throw message.typeError.isNotString(`srcDir`);
+		throw message.typeError.isNotObjectOrNull(`args`);
 	}
 
+	// ***** destDir *****
 	if (is.string(destDir)) {
 		const destDirType = await fileOrDirCheck(destDir);
 
 		if (destDirType === `isFile`) {
 			throw Error(`$destDir ${destDirType}!`);
 		}
+
+		if (fs.existsSync(destDir) && mirror) {
+			fs.rmSync(destDir, {recursive: true, force: true});
+		}
+
 		createDirectory(destDir);
 	} else {
 		throw message.typeError.isNotString(`destDir`);
 	}
 
-	if (!is.objectOrNull(args)) {
-		throw message.typeError.isNotObjectOrNull(`args`);
-	}
-
-	const contents = await getDirContents(srcDir);
+	// ######## Functionality ########
+	const contents = await getDirContents(srcDir, args);
 
 	for (const file of contents) {
-		fs.copyFileSync(`${srcDir}/${file}`, `${destDir}/${file}`);
+		if (!fs.existsSync(`${destDir}/${file}`) || overwrite) {
+			fs.copyFileSync(`${srcDir}/${file}`, `${destDir}/${file}`);
+		}
 	}
 }
-
 module.exports.copyDirContents = copyDirContents;
 
 /**
@@ -126,6 +148,9 @@ module.exports.copyDirContents = copyDirContents;
  * @param {string} dirPath Path of Directory
  */
 async function createDirectory(dirPath) {
+	// ######## Argument Type Check ########
+
+	// ######## Functionality ########
 	try {
 		if (!fs.existsSync(dirPath)) {
 			fs.mkdirSync(dirPath);
@@ -135,16 +160,18 @@ async function createDirectory(dirPath) {
 		console.error(err.brightRed);
 	}
 }
-
 module.exports.createDirectory = createDirectory;
 
 /**
  * Creates all of the directories from the given path.
  * @async
  * @param {string} filePath Path of file destination.
- * @param {bool} isDirPath If the path is to a directory.
+ * @param {boolean} isDirPath If the path is to a directory.
  */
 async function createFileDirectories(filePath, isDirPath = false) {
+	// ######## Argument Type Checks ########
+
+	// ######## Functionality ########
 	const splitFilePath = filePath.split(`/`);
 
 	if (splitFilePath.length > 1) {
@@ -156,7 +183,6 @@ async function createFileDirectories(filePath, isDirPath = false) {
 		}
 	}
 }
-
 module.exports.createFileDirectories = createFileDirectories;
 
 /**
@@ -166,10 +192,12 @@ module.exports.createFileDirectories = createFileDirectories;
  * @returns {Promise<string>} The result of the check.
  */
 async function fileOrDirCheck(path) {
+	// ######## Argument Type Checks ########
 	if (!is.string(path)) {
 		throw message.typeError.isNotString(`path`);
 	}
 
+	// ######## Functionality ########
 	if (fs.existsSync(path)) {
 		const stat = fs.lstatSync(path);
 
@@ -182,46 +210,44 @@ async function fileOrDirCheck(path) {
 		return `doesNotExist`;
 	}
 }
-
 module.exports.fileOrDirCheck = fileOrDirCheck;
 
 /**
  * Gets the contents of a directory.
  * @async
  * @param {string} srcDir Directory path.
- * @param {object?} args File suffix to only get certain files.
+ * @param {?object} args File suffix to only get certain files.
+ * @param {?regex} args.include Files to include from check in srcDir.
+ * @param {?regex} args.exclude Files to exclude from check in srcDir.
+ * @param {?string} args.dirArgName Name of srcDir to use for error reporting.
  * @returns {Promise<array>} Array of directory contents.
- * @throws {TypeError} If $srcDir or $args is an incorrect type.
  */
 async function getDirContents(srcDir, args = {include: null, exclude: null, dirArgName: null}) {
-	// ------------------------------
-	// Argument type checks
-	// ------------------------------
+	// ######## Argument type checks ########
 	if (!is.objectOrNull(args)) {
 		throw TypeError(`$args must be an object or null!`);
+	}
+
+	let dirName = `srcDir`;
+	if (is.objectWithProperty(args, `dirArgName`) && args.dirArgName !== null) {
+		if (is.string(args.dirArgName)) {
+			dirName = args.dirArgName;
+		} else {
+			throw message.typeError.isNotStringOrNull(`args.dirArgName`);
+		}
 	}
 
 	if (is.string(srcDir)) {
 		const srcDirType = await fileOrDirCheck(srcDir);
 
-		if (srcDirType === `doesNotExist`) {
-			throw Error(`$srcDir ${srcDirType}!`);
+		if (srcDirType === `doesNotExist` || srcDirType === `isFile`) {
+			throw Error(`$${dirName} ${srcDirType}!`);
 		}
 	} else {
-		if (is.objectWithProperty(args, `dirArgName`) && args.dirArgName !== null) {
-			if (is.string(args.dirArgName)) {
-				throw message.typeError.isNotString(args.dirArgName);
-			} else {
-				throw message.typeError.isNotStringOrNull(`args.dirArgName`);
-			}
-		} else {
-			throw message.typeError.isNotString(`srcDir`);
-		}
+		throw message.typeError.isNotString(dirName);
 	}
 
-	// ------------------------------
-	// Get dir contents
-	// ------------------------------
+	// ######## Functionality ########
 	const contents = fs.readdirSync(srcDir);
 
 	// Skip filtering if no contents
@@ -229,12 +255,10 @@ async function getDirContents(srcDir, args = {include: null, exclude: null, dirA
 		return [];
 	}
 
-	// ------------------------------
-	// Apply filters to contents
-	// ------------------------------
+	// ***** Apply Filtering *****
 	let filtered = [];
 
-	// ######## Apply inclusion filters ########
+	// --- Apply inclusion filters ---
 	if (is.objectWithProperty(args, `include`) && args.include !== null) {
 		if (is.array(args.include)) {
 			for await (const regex of args.include) {
@@ -247,7 +271,7 @@ async function getDirContents(srcDir, args = {include: null, exclude: null, dirA
 		filtered = contents;
 	}
 
-	// ######## Apply exclusion filters ########
+	// --- Apply exclusion filters ---
 	if (is.objectWithProperty(args, `exclude`) && args.exclude !== null) {
 		if (is.array(args.exclude)) {
 			for await (const regex of args.exclude) {
