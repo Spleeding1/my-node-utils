@@ -3,7 +3,7 @@
  * my-bools.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.7.1
+ * Version 1.8.0
  *
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
@@ -15,6 +15,7 @@
  * * objectOrNull(arg)
  * * objectWithProperty(arg, property)
  * * string(arg)
+ * * stringOrNull(arg)
  */
 
 const message = require(`./my-messages`);
