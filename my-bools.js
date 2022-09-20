@@ -30,7 +30,6 @@ function isArray(arg) {
 	}
 	return false;
 }
-
 module.exports.array = isArray;
 
 /**
@@ -51,7 +50,6 @@ function isArrayOfStrings(stringArray) {
 	}
 	return result;
 }
-
 module.exports.arrayOfStrings = isArrayOfStrings;
 
 /**
@@ -65,7 +63,6 @@ function isArrayStringOrNull(arg) {
 	}
 	return false;
 }
-
 module.exports.ArrayStringOrNull = isArrayStringOrNull;
 
 /**
@@ -79,7 +76,6 @@ function isBoolean(arg) {
 	}
 	return false;
 }
-
 module.exports.boolean = isBoolean;
 
 /**
@@ -93,7 +89,6 @@ function isObjectOrNull(arg) {
 	}
 	return false;
 }
-
 module.exports.objectOrNull = isObjectOrNull;
 
 /**
@@ -113,7 +108,6 @@ function isObjectWithProperty(arg, property) {
 	}
 	return false;
 }
-
 module.exports.objectWithProperty = isObjectWithProperty;
 
 /**
@@ -127,7 +121,6 @@ function isString(arg) {
 	}
 	return false;
 }
-
 module.exports.string = isString;
 
 /**
@@ -141,5 +134,4 @@ function isStringOrNull(arg) {
 	}
 	return false;
 }
-
 module.exports.stringOrNull = isStringOrNull;
