@@ -89,7 +89,7 @@ module.exports.cleanUpAssets = cleanUpAssets;
 async function copyDirContents(srcDir, destDir, args = null) {
 	// ######## Argument Type Checks ########
 	/* srcDir checked with getDirContents */
-	/* destDir checked with getDirContents */
+	/* destDir checked with fileOrDirCheck */
 
 	let mirror = false;
 	let overwrite = false;
@@ -115,21 +115,17 @@ async function copyDirContents(srcDir, destDir, args = null) {
 	}
 
 	// ***** destDir *****
-	if (is.string(destDir)) {
-		const destDirType = await fileOrDirCheck(destDir);
+	const destDirType = await fileOrDirCheck(destDir, `destDir`);
 
-		if (destDirType === `isFile`) {
-			throw Error(`$destDir ${destDirType}!`);
-		}
-
-		if (fs.existsSync(destDir) && mirror) {
-			fs.rmSync(destDir, {recursive: true, force: true});
-		}
-
-		createDirectory(destDir);
-	} else {
-		throw message.typeError.isNotString(`destDir`);
+	if (destDirType === `isFile`) {
+		throw Error(`$destDir ${destDirType}!`);
 	}
+
+	if (destDirType === `isDirectory` && mirror) {
+		fs.rmSync(destDir, {recursive: true, force: true});
+	}
+
+	createDirectory(destDir);
 
 	// ######## Functionality ########
 	const contents = await getDirContents(srcDir, args);
@@ -149,15 +145,19 @@ module.exports.copyDirContents = copyDirContents;
  */
 async function createDirectory(dirPath) {
 	// ######## Argument Type Check ########
+	const dirPathCheck = await fileOrDirCheck(dirPath, `dirPath`);
+	if (dirPathCheck === `isFile`) {
+		throw Error(`$dirPath ${dirPathCheck}!`);
+	}
 
 	// ######## Functionality ########
-	try {
-		if (!fs.existsSync(dirPath)) {
+	if (dirPathCheck === `doesNotExist`) {
+		try {
 			fs.mkdirSync(dirPath);
 			console.info(`created ${dirPath}`.gray);
+		} catch (err) {
+			console.error(err.brightRed);
 		}
-	} catch (err) {
-		console.error(err.brightRed);
 	}
 }
 module.exports.createDirectory = createDirectory;
@@ -189,12 +189,22 @@ module.exports.createFileDirectories = createFileDirectories;
  * Checks a path for isFile() and isDirectory().
  * @async
  * @param {string} path Path of file or directory.
+ * @param {?string} pathArgName Name of the argument for error message.
  * @returns {Promise<string>} The result of the check.
  */
-async function fileOrDirCheck(path) {
+async function fileOrDirCheck(path, pathArgName = null) {
 	// ######## Argument Type Checks ########
+	let pathName = `path`;
+
+	if (pathArgName !== null) {
+		if (is.string(pathArgName)) {
+			pathName = pathArgName;
+		} else {
+			throw message.typeError.isNotStringOrNull(`pathArgName`);
+		}
+	}
 	if (!is.string(path)) {
-		throw message.typeError.isNotString(`path`);
+		throw message.typeError.isNotString(pathName);
 	}
 
 	// ######## Functionality ########
@@ -237,14 +247,10 @@ async function getDirContents(srcDir, args = {include: null, exclude: null, dirA
 		}
 	}
 
-	if (is.string(srcDir)) {
-		const srcDirType = await fileOrDirCheck(srcDir);
+	const srcDirType = await fileOrDirCheck(srcDir, dirName);
 
-		if (srcDirType === `doesNotExist` || srcDirType === `isFile`) {
-			throw Error(`$${dirName} ${srcDirType}!`);
-		}
-	} else {
-		throw message.typeError.isNotString(dirName);
+	if (srcDirType === `doesNotExist` || srcDirType === `isFile`) {
+		throw Error(`$${dirName} ${srcDirType}!`);
 	}
 
 	// ######## Functionality ########

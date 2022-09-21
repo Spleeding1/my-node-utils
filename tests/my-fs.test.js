@@ -7,7 +7,13 @@
  * Test file for my-fs.js
  */
 
-const {cleanUpAssets, copyDirContents, getDirContents, fileOrDirCheck} = require(`./../my-fs`);
+const {
+	cleanUpAssets,
+	copyDirContents,
+	getDirContents,
+	fileOrDirCheck,
+	createDirectory,
+} = require(`./../my-fs`);
 const fs = require(`fs`);
 const is = require(`./../my-bools`);
 const message = require(`./../my-messages`);
@@ -351,7 +357,6 @@ describe(`copyDirContents`, () => {
 		}
 	);
 
-	// TODO: Test certain arg types as they come up.
 	// ***** args.overwrite *****
 	test.each(testData.type.isBoolean)(
 		`should not throw error if args.overwrite is $type`,
@@ -553,13 +558,125 @@ describe(`copyDirContents`, () => {
 			expect(destDirContents.includes(file)).toBeTruthy();
 		});
 	});
-
-	// TODO: Add inclusion and exclusion filtering to args
 });
 
 // TODO: createDirectory
+// ****************************************
+// async function createDirectory(dirPath)
+// ****************************************
+describe(`createDirectory(dirPath)`, () => {
+	const dirPath = `${cwd}/createDirectory`;
+
+	afterEach(async () => {
+		teardownTestDir(dirPath);
+	});
+
+	// ------------------------------
+	// Argument Types
+	// ------------------------------
+	test(`should not throw error if dirPath is a string`, async () => {
+		await expect(createDirectory(dirPath)).resolves.not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(
+		`should throw error if dirPath is $type`,
+		async ({type, arg}) => {
+			await expect(createDirectory(arg)).rejects.toThrow(TypeError(`$dirPath must be a string!`));
+		}
+	);
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test(`should create directory`, async () => {
+		await createDirectory(dirPath);
+		const result = await fileOrDirCheck(dirPath);
+		expect(result).toBe(`isDirectory`);
+	});
+
+	test(`should not overwrite directory if it already exists`, async () => {
+		await setUpTestDir(dirPath, [`file.txt`]);
+		await createDirectory(dirPath);
+		const dirContents = await getDirContents(dirPath);
+		expect(dirContents.length > 0);
+	});
+
+	test(`should throw error if dirPath exists and is a file`, async () => {
+		fs.writeFileSync(dirPath, ``);
+		await expect(createDirectory(dirPath)).rejects.toThrow(Error(`$dirPath isFile!`));
+	});
+
+	//TODO: make all fs.exists fileOrDirCheck()s
+});
 
 // TODO: createDirectories
+
+// ****************************************
+// async fileOrDirCheck(path, pathArgName)
+// ****************************************
+describe(`fileOrDirCheck`, () => {
+	const dir = `${cwd}/fileOrDirCheckDir`;
+	const file = `${cwd}/fileOrDirCheckFile`;
+	const doesntExist = `${cwd}/doesntexist`;
+
+	beforeAll(async () => {
+		await setUpTestDir(dir);
+		fs.writeFileSync(file, ``);
+	});
+
+	afterAll(async () => {
+		await teardownTestDir(dir);
+		await teardownTestDir(file);
+	});
+
+	// ------------------------------
+	// Argument Types
+	// ------------------------------
+	test(`should not throw error if path is a string`, async () => {
+		await expect(fileOrDirCheck(dir)).resolves.not.toThrowError();
+	});
+
+	test.each(testData.type.isNotString)(
+		`should throw error if path is $type`,
+		async ({type, arg}) => {
+			await expect(fileOrDirCheck(arg)).rejects.toThrow(TypeError(`$path must be a string!`));
+		}
+	);
+
+	test.each(testData.type.isStringOrNull)(
+		`should not throw error if pathArgName is $type`,
+		async ({type, arg}) => {
+			await expect(fileOrDirCheck(dir, arg)).resolves.not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotStringOrNull)(
+		`should throw error if pathArgName is $type`,
+		async ({type, arg}) => {
+			await expect(fileOrDirCheck(dir, arg)).rejects.toThrow(
+				TypeError(`$pathArgName must be a string or null!`)
+			);
+		}
+	);
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test.each([
+		{path: dir, expected: `isDirectory`},
+		{path: file, expected: `isFile`},
+		{path: doesntExist, expected: `doesNotExist`},
+	])(`should return $expected if path is $path`, async ({path, expected}) => {
+		const result = await fileOrDirCheck(path);
+		expect(result).toBe(expected);
+	});
+
+	test(`should use pathArgName for path string error when given`, async () => {
+		await expect(fileOrDirCheck(123, `myDir`)).rejects.toThrow(
+			TypeError(`$myDir must be a string!`)
+		);
+	});
+});
 
 // ****************************************
 // async function getDirContents(
@@ -750,51 +867,6 @@ describe(`getDirContents`, () => {
 		files.forEach(file => {
 			expect(dirContents.includes(file)).toBeTruthy();
 		});
-	});
-});
-
-// ****************************************
-// fileOrDirCheck(path)
-// ****************************************
-describe(`fileOrDirCheck`, () => {
-	const dir = `${cwd}/fileOrDirCheckDir`;
-	const file = `${cwd}/fileOrDirCheckFile`;
-	const doesntExist = `${cwd}/doesntexist`;
-
-	beforeAll(async () => {
-		await setUpTestDir(dir);
-		fs.writeFileSync(file, ``);
-	});
-
-	afterAll(async () => {
-		await teardownTestDir(dir);
-		await teardownTestDir(file);
-	});
-
-	// ------------------------------
-	// Argument Types
-	// ------------------------------
-	test(`should not throw error if path is a string`, async () => {
-		await expect(fileOrDirCheck(dir)).resolves.not.toThrowError();
-	});
-
-	test.each(testData.type.isNotString)(
-		`should throw error if path is $type`,
-		async ({type, arg}) => {
-			await expect(fileOrDirCheck(arg)).rejects.toThrow(TypeError(`$path must be a string!`));
-		}
-	);
-
-	// ------------------------------
-	// Functionality
-	// ------------------------------
-	test.each([
-		{path: dir, expected: `isDirectory`},
-		{path: file, expected: `isFile`},
-		{path: doesntExist, expected: `doesNotExist`},
-	])(`should return $expected if path is $path`, async ({path, expected}) => {
-		const result = await fileOrDirCheck(path);
-		expect(result).toBe(expected);
 	});
 });
 
