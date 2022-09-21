@@ -3,7 +3,7 @@
  * my-fs.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.6.5
+ * Version 1.6.6
  *
  * Utility async functions that use fs.
  *
@@ -170,6 +170,13 @@ module.exports.createDirectory = createDirectory;
  */
 async function createFileDirectories(filePath, isDirPath = false) {
 	// ######## Argument Type Checks ########
+	if (!is.string(filePath)) {
+		throw message.typeError.isNotString(`filePath`);
+	}
+
+	if (!is.boolean(isDirPath)) {
+		throw message.typeError.isNotBoolean(`isDirPath`);
+	}
 
 	// ######## Functionality ########
 	const splitFilePath = filePath.split(`/`);
@@ -234,6 +241,7 @@ module.exports.fileOrDirCheck = fileOrDirCheck;
  */
 async function getDirContents(srcDir, args = {include: null, exclude: null, dirArgName: null}) {
 	// ######## Argument type checks ########
+	// ***** srcDir checked in fileOrDirCheck *****
 	if (!is.objectOrNull(args)) {
 		throw TypeError(`$args must be an object or null!`);
 	}

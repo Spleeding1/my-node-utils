@@ -13,6 +13,7 @@ const {
 	getDirContents,
 	fileOrDirCheck,
 	createDirectory,
+	createFileDirectories,
 } = require(`./../my-fs`);
 const fs = require(`fs`);
 const is = require(`./../my-bools`);
@@ -560,7 +561,6 @@ describe(`copyDirContents`, () => {
 	});
 });
 
-// TODO: createDirectory
 // ****************************************
 // async function createDirectory(dirPath)
 // ****************************************
@@ -605,11 +605,74 @@ describe(`createDirectory(dirPath)`, () => {
 		fs.writeFileSync(dirPath, ``);
 		await expect(createDirectory(dirPath)).rejects.toThrow(Error(`$dirPath isFile!`));
 	});
-
-	//TODO: make all fs.exists fileOrDirCheck()s
 });
 
 // TODO: createDirectories
+// ****************************************
+// async createFileDirectories(filePath, isDirPath)
+// ****************************************
+describe(`createFileDirectories`, () => {
+	const topLevel = `${cwd}/createFileDirectories`;
+	const levelTwo = `${cwd}/createFileDirectories/levelTwo`;
+	const levelThree = `${cwd}/createFileDirectories/levelTwo/LevelThree`;
+	const levelFour = `${cwd}/createFileDirectories/levelTwo/LevelThree/LevelFour`;
+
+	afterEach(async () => {
+		await teardownTestDir(topLevel);
+	});
+
+	// ------------------------------
+	// Argument Types
+	// ------------------------------
+	test(`should not throw error if filePath is a string`, async () => {
+		await expect(createFileDirectories(topLevel)).resolves.not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(
+		`should throw error if filePath is $type`,
+		async ({type, arg}) => {
+			await expect(createFileDirectories(arg)).rejects.toThrow(
+				TypeError(`$filePath must be a string!`)
+			);
+		}
+	);
+
+	test.each(testData.type.isBoolean)(
+		`should not throw error if isDirPath is $type`,
+		async ({type, arg}) => {
+			await expect(createFileDirectories(topLevel, arg)).resolves.not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotBoolean)(
+		`should throw error if isDirPath is $type`,
+		async ({type, arg}) => {
+			await expect(createFileDirectories(topLevel, arg)).rejects.toThrow(
+				TypeError(`$isDirPath must be true or false!`)
+			);
+		}
+	);
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test(`should create all of the missing directories for the file`, async () => {
+		await createFileDirectories(`${levelFour}/file.txt`);
+		expect(fs.existsSync(topLevel)).toBeTruthy();
+		expect(fs.existsSync(levelTwo)).toBeTruthy();
+		expect(fs.existsSync(levelThree)).toBeTruthy();
+		expect(fs.existsSync(levelFour)).toBeTruthy();
+		expect(fs.existsSync(`${levelFour}/file.txt`)).toBeFalsy();
+	});
+
+	test(`should create all of the missing directories for the directory`, async () => {
+		await createFileDirectories(levelFour);
+		expect(fs.existsSync(topLevel)).toBeTruthy();
+		expect(fs.existsSync(levelTwo)).toBeTruthy();
+		expect(fs.existsSync(levelThree)).toBeTruthy();
+		expect(fs.existsSync(levelFour)).toBeFalsy();
+	});
+});
 
 // ****************************************
 // async fileOrDirCheck(path, pathArgName)
