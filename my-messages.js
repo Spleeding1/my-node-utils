@@ -3,7 +3,7 @@
  * my-messages.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * version 1.6.0
+ * version 1.7.0
  *
  * Functions to return commonly used messages
  * * isNotBooleanTypeError(arg)
@@ -11,6 +11,7 @@
  * * isNotStringTypeError(arg)
  * * isNotArrayOfStringsStringOrNullTypeError(arg)
  * * isNotObjectOrNullTypeError(arg)
+ * * isNotObjectOrStringTypeError(arg)
  * * isNotStringOrNullTypeError(arg)
  */
 
@@ -104,6 +105,20 @@ function isNotObjectOrNullTypeError(arg) {
 	return TypeError(`$${arg} must be an object or null!`);
 }
 typeErrors.isNotObjectOrNull = isNotObjectOrNullTypeError;
+
+/**
+ * Returns TypeError with uniform message.
+ * @param {string} arg Argument name that should be an object or a string.
+ * @returns {TypeError}
+ * @throws {TypeError} If $arg is not an object or null.
+ */
+function isNotObjectOrStringTypeError(arg) {
+	if (!is.string(arg)) {
+		throw isNotStringTypeError(arg);
+	}
+	return TypeError(`$${arg} must be an object or a string!`);
+}
+typeErrors.isNotObjectOrString = isNotObjectOrStringTypeError;
 
 module.exports.typeError = typeErrors;
 

@@ -164,6 +164,34 @@ describe(`isNotObjectOrNullTypeError`, () => {
 });
 
 // ****************************************
+// function isNotObjectOrStringTypeError(arg)
+// ****************************************
+describe(`isNotObjectOrStringTypeError`, () => {
+	test(`should not throw error if arg is a string`, () => {
+		expect(() => {
+			message.typeError.isNotObjectOrString(`$arg`);
+		}).not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(`should throw error if $arg is $type`, ({type, arg}) => {
+		expect(() => {
+			message.typeError.isNotObjectOrString(arg);
+		}).toThrow(TypeError(`$arg must be a string!`));
+	});
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test(`should return TypeError`, () => {
+		const result1 = message.typeError.isNotObjectOrString(`theArg`);
+		expect(result1).toEqual(TypeError(`$theArg must be an object or a string!`));
+
+		const result2 = message.typeError.isNotObjectOrString(`theString`);
+		expect(result2).toEqual(TypeError(`$theString must be an object or a string!`));
+	});
+});
+
+// ****************************************
 // isNotStringOrNullTypeError(arg)
 // ****************************************
 describe(`isNotStringOrNullTypeError`, () => {
