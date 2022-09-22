@@ -27,6 +27,7 @@ let dataTypes = {
 	isBoolean: [isTrue, isFalse],
 	isNotBoolean: [isNull, aString, aNumber, anObject, anArray],
 	isNotNumber: [isTrue, isFalse, aString, anArray, anObject, isNull],
+	isNotObject: [isTrue, isFalse, aString, aNumber, anArray, isNull],
 	isNotString: [aNumber, anObject, isNull, anArray, isTrue, isFalse],
 
 	// ############################################################
@@ -35,6 +36,8 @@ let dataTypes = {
 	isArrayOfStringsStringOrNull: [isNull, aString, anArrayOfStrings],
 	isNotArrayOfStringsStringOrNull: [aNumber, anObject, anArrayOfStrings, isTrue, isFalse],
 	isObjectOrNull: [isNull, anObject],
+	isObjectOrString: [anObject, aString],
+	isNotObjectOrString: [isNull, aNumber, isTrue, isFalse, anArray],
 	isNotObjectOrNull: [aNumber, anArray, isTrue, isFalse, aString],
 	isStringOrNull: [aString, isNull],
 	isNotStringOrNull: [anArray, isFalse, anObject, isTrue, aNumber],
