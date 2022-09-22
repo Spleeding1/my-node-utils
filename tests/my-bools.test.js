@@ -9,7 +9,7 @@
 
 const is = require(`./../my-bools`);
 const testData = require(`./test-data/type-testing`);
-// TODO: restructure tests to use testData
+
 // ############################################################
 // Unittests for functions
 // ############################################################
@@ -103,6 +103,22 @@ describe(`is.number`, () => {
 	test.each(testData.type.isNotNumber)(`should return false if arg is $type`, ({type, arg}) => {
 		const result = is.number(arg);
 		expect(result).toBe(false);
+		expect(typeof result).toBe(`boolean`);
+	});
+});
+
+// ****************************************
+// isObject(arg)
+// ****************************************
+describe(`isObject`, () => {
+	test(`should return true if arg is an object`, () => {
+		const result = is.object({});
+		expect(result).toBeTruthy();
+		expect(typeof result).toBe(`boolean`);
+	});
+	test.each(testData.type.isNotObject)(`should return false if arg is $type`, ({type, arg}) => {
+		const result = is.object(arg);
+		expect(result).toBeFalsy();
 		expect(typeof result).toBe(`boolean`);
 	});
 });

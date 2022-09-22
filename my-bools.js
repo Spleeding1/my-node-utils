@@ -3,7 +3,7 @@
  * my-bools.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.9.0
+ * Version 1.10.0
  *
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
@@ -13,6 +13,7 @@
  * * arrayStringOrNull(arg)
  * * boolean(arg)
  * * number(arg)
+ * * object(arg)
  * * objectOrNull(arg)
  * * objectWithProperty(arg, property)
  * * string(arg)
@@ -98,8 +99,21 @@ module.exports.number = isNumber;
  * @param {*} arg Argument to check.
  * @returns {boolean} If arg is an object or null.
  */
+function isObject(arg) {
+	if (typeof arg === `object` && !isArray(arg) && arg !== null) {
+		return true;
+	}
+	return false;
+}
+module.exports.object = isObject;
+
+/**
+ * Checks whether the supplied argument is an object or null.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is an object or null.
+ */
 function isObjectOrNull(arg) {
-	if (arg === null || (typeof arg === `object` && !isArray(arg))) {
+	if (arg === null || isObject(arg)) {
 		return true;
 	}
 	return false;
@@ -118,7 +132,7 @@ function isObjectWithProperty(arg, property) {
 		throw message.typeError.isNotString(`property`);
 	}
 
-	if (typeof arg === `object` && !isArray(arg) && arg !== null && arg.hasOwnProperty(property)) {
+	if (isObject(arg) && arg.hasOwnProperty(property)) {
 		return true;
 	}
 	return false;
