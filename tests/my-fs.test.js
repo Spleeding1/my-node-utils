@@ -562,7 +562,7 @@ describe(`copyDirContents`, () => {
 });
 
 // ****************************************
-// async function createDirectory(dirPath)
+// async function createDirectory(dirPath, print)
 // ****************************************
 describe(`createDirectory(dirPath)`, () => {
 	const dirPath = `${cwd}/createDirectory`;
@@ -582,6 +582,22 @@ describe(`createDirectory(dirPath)`, () => {
 		`should throw error if dirPath is $type`,
 		async ({type, arg}) => {
 			await expect(createDirectory(arg)).rejects.toThrow(TypeError(`$dirPath must be a string!`));
+		}
+	);
+
+	test.each(testData.type.isBoolean)(
+		`should not throw error if print is $type`,
+		async ({type, arg}) => {
+			await expect(createDirectory(dirPath, arg)).resolves.not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotBoolean)(
+		`should throw error if print is $type`,
+		async ({type, arg}) => {
+			await expect(createDirectory(dirPath, arg)).rejects.toThrow(
+				TypeError(`$print must be true or false!`)
+			);
 		}
 	);
 
@@ -607,9 +623,8 @@ describe(`createDirectory(dirPath)`, () => {
 	});
 });
 
-// TODO: createDirectories
 // ****************************************
-// async createFileDirectories(filePath, isDirPath)
+// async createFileDirectories(filePath, isDirPath, print)
 // ****************************************
 describe(`createFileDirectories`, () => {
 	const topLevel = `${cwd}/createFileDirectories`;
@@ -649,6 +664,22 @@ describe(`createFileDirectories`, () => {
 		async ({type, arg}) => {
 			await expect(createFileDirectories(topLevel, arg)).rejects.toThrow(
 				TypeError(`$isDirPath must be true or false!`)
+			);
+		}
+	);
+
+	test.each(testData.type.isBoolean)(
+		`should not throw error if print is $type`,
+		async ({type, arg}) => {
+			await expect(createFileDirectories(topLevel, false, arg)).resolves.not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotBoolean)(
+		`should throw error if print is $type`,
+		async ({type, arg}) => {
+			await expect(createFileDirectories(topLevel, false, arg)).rejects.toThrow(
+				TypeError(`$print must be true or false!`)
 			);
 		}
 	);

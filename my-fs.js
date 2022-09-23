@@ -3,14 +3,14 @@
  * my-fs.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.6.6
+ * Version 1.6.7
  *
  * Utility async functions that use fs.
  *
  * * cleanUpAssets(srcDir, destDir, args)
  * * copyDirContents(srcDir, destDir, args)
- * * createDirectory(dirPath)
- * * createFileDirectories(filePath, isDirPath = false)
+ * * createDirectory(dirPath, print = false)
+ * * createFileDirectories(filePath, isDirPath = false, print = false)
  * * fileOrDirCheck(path)
  * * getDirContents(srcDir, args)
  */
@@ -141,10 +141,14 @@ module.exports.copyDirContents = copyDirContents;
 /**
  * Creates the directory if it doesn't already exist.
  * @async
- * @param {string} dirPath Path of Directory
+ * @param {string} dirPath Path of Directory.
+ * @param {boolean} print Whether to log the path of the created directory.
  */
-async function createDirectory(dirPath) {
+async function createDirectory(dirPath, print = false) {
 	// ######## Argument Type Check ########
+	if (!is.boolean(print)) {
+		throw message.typeError.isNotBoolean(`print`);
+	}
 	const dirPathCheck = await fileOrDirCheck(dirPath, `dirPath`);
 	if (dirPathCheck === `isFile`) {
 		throw Error(`$dirPath ${dirPathCheck}!`);
@@ -154,7 +158,9 @@ async function createDirectory(dirPath) {
 	if (dirPathCheck === `doesNotExist`) {
 		try {
 			fs.mkdirSync(dirPath);
-			console.info(`created ${dirPath}`.gray);
+			if (print) {
+				console.info(`created ${dirPath}`.gray);
+			}
 		} catch (err) {
 			console.error(err.brightRed);
 		}
@@ -167,8 +173,9 @@ module.exports.createDirectory = createDirectory;
  * @async
  * @param {string} filePath Path of file destination.
  * @param {boolean} isDirPath If the path is to a directory.
+ * @param {boolean} print Whether to log the path of the created directory.
  */
-async function createFileDirectories(filePath, isDirPath = false) {
+async function createFileDirectories(filePath, isDirPath = false, print = false) {
 	// ######## Argument Type Checks ########
 	if (!is.string(filePath)) {
 		throw message.typeError.isNotString(`filePath`);
@@ -176,6 +183,10 @@ async function createFileDirectories(filePath, isDirPath = false) {
 
 	if (!is.boolean(isDirPath)) {
 		throw message.typeError.isNotBoolean(`isDirPath`);
+	}
+
+	if (!is.boolean(print)) {
+		throw message.typeError.isNotBoolean(`print`);
 	}
 
 	// ######## Functionality ########
@@ -186,7 +197,7 @@ async function createFileDirectories(filePath, isDirPath = false) {
 		let currentDir = ``;
 		for (let d = 0; d < totalDirectories; d++) {
 			currentDir += `/${splitFilePath[d]}`;
-			await createDirectory(currentDir);
+			await createDirectory(currentDir, print);
 		}
 	}
 }
