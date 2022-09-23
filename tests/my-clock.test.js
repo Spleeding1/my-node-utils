@@ -19,7 +19,7 @@ describe(`performance testing timer`, () => {
 		const stopTime = timer.stop(startTime);
 
 		expect(isNaN(startTime)).toBeFalsy();
-		expect(stopTime.constructor).toBe(String);
+		expect(stopTime.constructor).toStrictEqual(String);
 		expect(stopTime).toMatch(/.[0-9]{3}s$/);
 	});
 

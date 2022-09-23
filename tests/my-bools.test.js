@@ -28,8 +28,8 @@ describe(`isArray`, () => {
 		{type: `an array`, arg: [], expected: true},
 	])(`should return $expected if arg is $type`, ({type, arg, expected}) => {
 		const result = is.array(arg);
-		expect(result).toBe(expected);
-		expect(typeof result).toBe(`boolean`);
+		expect(result).toStrictEqual(expected);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 });
 
@@ -46,8 +46,8 @@ describe(`isArrayOfStrings`, () => {
 		{type: `an array with null`, value: [null, `abc`, `def`], expected: false},
 	])(`should return $expected if array is $type`, ({type, value, expected}) => {
 		const result = is.arrayOfStrings(value);
-		expect(result).toBe(expected);
-		expect(typeof result).toBe(`boolean`);
+		expect(result).toStrictEqual(expected);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 });
 
@@ -65,8 +65,8 @@ describe(`isArrayStringOrNull`, () => {
 		{type: `an array`, arg: [], expected: true},
 	])(`should return $expected if arg is $type`, ({type, arg, expected}) => {
 		const result = is.ArrayStringOrNull(arg);
-		expect(result).toBe(expected);
-		expect(typeof result).toBe(`boolean`);
+		expect(result).toStrictEqual(expected);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 });
 
@@ -77,12 +77,12 @@ describe(`isBoolean`, () => {
 	test.each(testData.type.isBoolean)(`should return true if arg is $type`, ({type, arg}) => {
 		const result = is.boolean(arg);
 		expect(result).toBeTruthy();
-		expect(typeof result).toBe(`boolean`);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 	test.each(testData.type.isNotBoolean)(`should return false if arg is $type`, ({type, arg}) => {
 		const result = is.boolean(arg);
 		expect(result).toBeFalsy();
-		expect(typeof result).toBe(`boolean`);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 });
 
@@ -92,18 +92,18 @@ describe(`isBoolean`, () => {
 describe(`is.number`, () => {
 	test(`should return true if arg is a number`, () => {
 		const result1 = is.number(123);
-		expect(result1).toBe(true);
-		expect(typeof result1).toBe(`boolean`);
+		expect(result1).toStrictEqual(true);
+		expect(typeof result1).toStrictEqual(`boolean`);
 
 		const result2 = is.number(123.123);
-		expect(result2).toBe(true);
-		expect(typeof result2).toBe(`boolean`);
+		expect(result2).toStrictEqual(true);
+		expect(typeof result2).toStrictEqual(`boolean`);
 	});
 
 	test.each(testData.type.isNotNumber)(`should return false if arg is $type`, ({type, arg}) => {
 		const result = is.number(arg);
-		expect(result).toBe(false);
-		expect(typeof result).toBe(`boolean`);
+		expect(result).toStrictEqual(false);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 });
 
@@ -114,12 +114,12 @@ describe(`isObject`, () => {
 	test(`should return true if arg is an object`, () => {
 		const result = is.object({});
 		expect(result).toBeTruthy();
-		expect(typeof result).toBe(`boolean`);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 	test.each(testData.type.isNotObject)(`should return false if arg is $type`, ({type, arg}) => {
 		const result = is.object(arg);
 		expect(result).toBeFalsy();
-		expect(typeof result).toBe(`boolean`);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 });
 
@@ -130,14 +130,14 @@ describe(`isObjectOrNull`, () => {
 	test.each(testData.type.isObjectOrNull)(`should return true if arg is $type`, ({type, arg}) => {
 		const result = is.objectOrNull(arg);
 		expect(result).toBeTruthy();
-		expect(typeof result).toBe(`boolean`);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 	test.each(testData.type.isNotObjectOrNull)(
 		`should return false if arg is $type`,
 		({type, arg}) => {
 			const result = is.objectOrNull(arg);
 			expect(result).toBeFalsy();
-			expect(typeof result).toBe(`boolean`);
+			expect(typeof result).toStrictEqual(`boolean`);
 		}
 	);
 });
@@ -161,8 +161,8 @@ describe(`is.objectWithProperty`, () => {
 		{type: `a number`, value: 123, expected: false},
 	])(`should return $expected when arg is $type`, ({type, value, expected}) => {
 		const result = is.objectWithProperty(value, `hasProperty`);
-		expect(result).toBe(expected);
-		expect(typeof result).toBe(`boolean`);
+		expect(result).toStrictEqual(expected);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 
 	// ######## property ########
@@ -192,14 +192,14 @@ describe(`is.objectWithProperty`, () => {
 describe(`is.string`, () => {
 	test(`should return true if arg is a string`, () => {
 		const result = is.string(`123`);
-		expect(result).toBe(true);
-		expect(typeof result).toBe(`boolean`);
+		expect(result).toStrictEqual(true);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 
 	test.each(testData.type.isNotString)(`should return false if arg is $type`, ({type, arg}) => {
 		const result = is.string(arg);
-		expect(result).toBe(false);
-		expect(typeof result).toBe(`boolean`);
+		expect(result).toStrictEqual(false);
+		expect(typeof result).toStrictEqual(`boolean`);
 	});
 });
 
@@ -211,8 +211,8 @@ describe(`isStringOrNull`, () => {
 		`should not throw an error if arg is $type`,
 		({type, arg}) => {
 			const result = is.stringOrNull(arg);
-			expect(result).toBe(true);
-			expect(typeof result).toBe(`boolean`);
+			expect(result).toStrictEqual(true);
+			expect(typeof result).toStrictEqual(`boolean`);
 		}
 	);
 
@@ -220,8 +220,8 @@ describe(`isStringOrNull`, () => {
 		`should  throw an error if arg is $type`,
 		({type, arg}) => {
 			const result = is.stringOrNull(arg);
-			expect(result).toBe(false);
-			expect(typeof result).toBe(`boolean`);
+			expect(result).toStrictEqual(false);
+			expect(typeof result).toStrictEqual(`boolean`);
 		}
 	);
 });

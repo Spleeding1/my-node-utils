@@ -237,7 +237,7 @@ describe(`cleanUpAssets`, () => {
 
 			const destContents = await getDirContents(destDir);
 
-			expect(destContents.length).toBe(length);
+			expect(destContents.length).toStrictEqual(length);
 			files.forEach(file => {
 				expect(destContents.includes(file)).toBeTruthy();
 			});
@@ -261,7 +261,7 @@ describe(`cleanUpAssets`, () => {
 
 		const destContents = await getDirContents(destDir);
 
-		expect(destContents.length).toBe(2);
+		expect(destContents.length).toStrictEqual(2);
 		[`file2.min.js`, `file3.min.css`].forEach(file => {
 			expect(destContents.includes(file)).toBeTruthy();
 		});
@@ -417,7 +417,7 @@ describe(`copyDirContents`, () => {
 
 		const destContents = await getDirContents(destDir);
 
-		expect(destContents.length).toBe(8);
+		expect(destContents.length).toStrictEqual(8);
 		dirOneFiles.forEach(file => {
 			expect(destContents.includes(file)).toBeTruthy();
 		});
@@ -430,7 +430,7 @@ describe(`copyDirContents`, () => {
 		await copyDirContents(dir, destDir);
 
 		const dirContents = await getDirContents(destDir);
-		expect(dirContents.length).toBe(length);
+		expect(dirContents.length).toStrictEqual(length);
 	});
 
 	// ######## inclusion ########
@@ -446,7 +446,7 @@ describe(`copyDirContents`, () => {
 		await copyDirContents(dir, destDir, args);
 		const dirContents = await getDirContents(destDir, args);
 
-		expect(dirContents.length).toBe(length);
+		expect(dirContents.length).toStrictEqual(length);
 		files.forEach(file => {
 			expect(dirContents.includes(file)).toBeTruthy();
 		});
@@ -478,7 +478,7 @@ describe(`copyDirContents`, () => {
 		await copyDirContents(dir, destDir, args);
 		const dirContents = await getDirContents(destDir, args);
 
-		expect(dirContents.length).toBe(length);
+		expect(dirContents.length).toStrictEqual(length);
 		files.forEach(file => {
 			expect(dirContents.includes(file)).toBeTruthy();
 		});
@@ -514,7 +514,7 @@ describe(`copyDirContents`, () => {
 		await copyDirContents(dir, destDir, args);
 		const dirContents = await getDirContents(destDir, args);
 
-		expect(dirContents.length).toBe(length);
+		expect(dirContents.length).toStrictEqual(length);
 		files.forEach(file => {
 			expect(dirContents.includes(file)).toBeTruthy();
 		});
@@ -534,7 +534,7 @@ describe(`copyDirContents`, () => {
 		fs.writeFileSync(`${destDir}/file1.txt`, `Save Me.`);
 		await copyDirContents(srcDir, destDir);
 		const fileContents = fs.readFileSync(`${destDir}/file1.txt`, {encoding: `utf8`, flag: `r`});
-		expect(fileContents).toBe(`Save Me.`);
+		expect(fileContents).toStrictEqual(`Save Me.`);
 	});
 
 	test(`should overwrite existing files if args.overwrite is true`, async () => {
@@ -542,7 +542,7 @@ describe(`copyDirContents`, () => {
 		fs.writeFileSync(`${destDir}/file1.txt`, `overwrite me`);
 		await copyDirContents(srcDir, destDir, {overwrite: true});
 		const fileContents = fs.readFileSync(`${destDir}/file1.txt`, {encoding: `utf8`, flag: `r`});
-		expect(fileContents).toBe(``);
+		expect(fileContents).toStrictEqual(``);
 	});
 
 	test(`should make destDir mirror srcDir if args.mirror is true`, async () => {
@@ -550,7 +550,7 @@ describe(`copyDirContents`, () => {
 		fs.writeFileSync(`${destDir}/file1.txt`, `overwrite me`);
 		await copyDirContents(srcDir, destDir, {mirror: true});
 		const fileContents = fs.readFileSync(`${destDir}/file1.txt`, {encoding: `utf8`, flag: `r`});
-		expect(fileContents).toBe(``);
+		expect(fileContents).toStrictEqual(``);
 		expect(fs.existsSync(`${destDir}/extra-file.min.css`)).toBeFalsy();
 
 		const destDirContents = await getDirContents(destDir);
@@ -591,7 +591,7 @@ describe(`createDirectory(dirPath)`, () => {
 	test(`should create directory`, async () => {
 		await createDirectory(dirPath);
 		const result = await fileOrDirCheck(dirPath);
-		expect(result).toBe(`isDirectory`);
+		expect(result).toStrictEqual(`isDirectory`);
 	});
 
 	test(`should not overwrite directory if it already exists`, async () => {
@@ -731,7 +731,7 @@ describe(`fileOrDirCheck`, () => {
 		{path: doesntExist, expected: `doesNotExist`},
 	])(`should return $expected if path is $path`, async ({path, expected}) => {
 		const result = await fileOrDirCheck(path);
-		expect(result).toBe(expected);
+		expect(result).toStrictEqual(expected);
 	});
 
 	test(`should use pathArgName for path string error when given`, async () => {
@@ -844,7 +844,7 @@ describe(`getDirContents`, () => {
 		const dirContents = await getDirContents(dir);
 		expect.assertions(2);
 		expect(is.array(dirContents)).toBeTruthy();
-		expect(dirContents.length).toBe(length);
+		expect(dirContents.length).toStrictEqual(length);
 	});
 
 	// ######## inclusion ########
@@ -860,7 +860,7 @@ describe(`getDirContents`, () => {
 		const dirContents = await getDirContents(dir, args);
 		expect.assertions();
 		expect(is.array(dirContents)).toBeTruthy();
-		expect(dirContents.length).toBe(length);
+		expect(dirContents.length).toStrictEqual(length);
 		files.forEach(file => {
 			expect(dirContents.includes(file)).toBeTruthy();
 		});
@@ -891,7 +891,7 @@ describe(`getDirContents`, () => {
 	])(`should only return $files with $args`, async ({dir, args, length, files}) => {
 		const dirContents = await getDirContents(dir, args);
 		expect.assertions();
-		expect(dirContents.length).toBe(length);
+		expect(dirContents.length).toStrictEqual(length);
 		files.forEach(file => {
 			expect(dirContents.includes(file)).toBeTruthy();
 		});
@@ -926,7 +926,7 @@ describe(`getDirContents`, () => {
 	])(`should only return $files with $args`, async ({dir, args, length, files}) => {
 		const dirContents = await getDirContents(dir, args);
 		expect.assertions();
-		expect(dirContents.length).toBe(length);
+		expect(dirContents.length).toStrictEqual(length);
 		files.forEach(file => {
 			expect(dirContents.includes(file)).toBeTruthy();
 		});
