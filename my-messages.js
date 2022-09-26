@@ -3,11 +3,12 @@
  * my-messages.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * version 1.7.0
+ * version 1.8.0
  *
  * Functions to return commonly used messages
  * * isNotBooleanTypeError(arg)
  * * isNotNumberTypeError(arg)
+ * * isNotObjectTypeError(arg)
  * * isNotStringTypeError(arg)
  * * isNotArrayOfStringsStringOrNullTypeError(arg)
  * * isNotObjectOrNullTypeError(arg)
@@ -32,9 +33,9 @@ let typeErrors = {};
 // ------------------------------
 /**
  * Returns TypeError with uniform message.
- * @param {string} arg Argument name that should be a string.
+ * @param {string} arg Argument name that should be boolean.
  * @returns {TypeError}
- * @throws {TypeError} If $arg is not boolean.
+ * @throws {TypeError} If $arg is not a string.
  */
 
 function isNotBooleanTypeError(arg) {
@@ -47,9 +48,9 @@ typeErrors.isNotBoolean = isNotBooleanTypeError;
 
 /**
  * Returns TypeError with uniform message.
- * @param {string} arg Argument name that should be a string.
+ * @param {string} arg Argument name that should be a number.
  * @returns {TypeError}
- * @throws {TypeError} If $arg is not boolean.
+ * @throws {TypeError} If $arg is not a string.
  */
 
 function isNotNumberTypeError(arg) {
@@ -59,6 +60,20 @@ function isNotNumberTypeError(arg) {
 	return TypeError(`$${arg} must be a number!`);
 }
 typeErrors.isNotNumber = isNotNumberTypeError;
+
+/**
+ * Returns TypeError with uniform message.
+ * @param {string} arg Argument name that should be an object.
+ * @returns {TypeError}
+ * @throws {TypeError} If $arg is not a string.
+ */
+function isNotObjectTypeError(arg) {
+	if (!is.string(arg)) {
+		throw isNotStringTypeError(arg);
+	}
+	return TypeError(`$${arg} must be an object!`);
+}
+typeErrors.isNotObject = isNotObjectTypeError;
 
 /**
  * Returns TypeError with uniform message.
@@ -80,7 +95,7 @@ typeErrors.isNotString = isNotStringTypeError;
 // ------------------------------
 /**
  * Returns TypeError with uniform message.
- * @param {string} arg Argument name that should be a string.
+ * @param {string} arg Argument name that should be an array of strings, a string, or null.
  * @returns {TypeError}
  * @throws {TypeError} If $arg is not a string.
  */
@@ -94,9 +109,9 @@ typeErrors.isNotArrayOfStringsStringOrNull = isNotArrayOfStringsStringOrNullType
 
 /**
  * Returns TypeError with uniform message.
- * @param {string} arg Argument name that should be a string.
+ * @param {string} arg Argument name that should be an object or null.
  * @returns {TypeError}
- * @throws {TypeError} If $arg is not an object or null.
+ * @throws {TypeError} If $arg is not a string.
  */
 function isNotObjectOrNullTypeError(arg) {
 	if (!is.string(arg)) {
@@ -110,7 +125,7 @@ typeErrors.isNotObjectOrNull = isNotObjectOrNullTypeError;
  * Returns TypeError with uniform message.
  * @param {string} arg Argument name that should be an object or a string.
  * @returns {TypeError}
- * @throws {TypeError} If $arg is not an object or null.
+ * @throws {TypeError} If $arg is not a string.
  */
 function isNotObjectOrStringTypeError(arg) {
 	if (!is.string(arg)) {
@@ -124,7 +139,7 @@ module.exports.typeError = typeErrors;
 
 /**
  * Returns TypeError with uniform message.
- * @param {string} arg name of arg that should be a string.
+ * @param {string} arg name of arg that should be a string or null.
  * @returns TypeError
  * @throws TypeError if $arg is not a string.
  */
