@@ -10,6 +10,7 @@
  * * isNotNumberTypeError(arg)
  * * isNotObjectTypeError(arg)
  * * isNotStringTypeError(arg)
+ * * isNotArrayOfStringsOrStringTypeError(arg)
  * * isNotArrayOfStringsStringOrNullTypeError(arg)
  * * isNotObjectOrNullTypeError(arg)
  * * isNotObjectOrStringTypeError(arg)
@@ -95,7 +96,21 @@ typeErrors.isNotString = isNotStringTypeError;
 // ------------------------------
 /**
  * Returns TypeError with uniform message.
- * @param {string} arg Argument name that should be an array of strings, a string, or null.
+ * @param {string} arg Argument name that should be string[] or string.
+ * @returns {TypeError}
+ * @throws {TypeError} If $arg is not a string.
+ */
+function isNotArrayOfStringsOrStringTypeError(arg) {
+	if (!is.string(arg)) {
+		throw isNotStringTypeError(arg);
+	}
+	return TypeError(`$${arg} must be a string[] or string!`);
+}
+typeErrors.isNotArrayOfStringsOrString = isNotArrayOfStringsOrStringTypeError;
+
+/**
+ * Returns TypeError with uniform message.
+ * @param {string} arg Argument name that should be string[], string, or null.
  * @returns {TypeError}
  * @throws {TypeError} If $arg is not a string.
  */
