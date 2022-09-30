@@ -3,7 +3,7 @@
  * my-bools.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.11.0
+ * Version 1.12.0
  *
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
@@ -11,6 +11,7 @@
  * * array(arg)
  * * arrayOfStrings(array)
  * * arrayOfStringsOrNull(arg)
+ * * arrayOfStringsOrString(arg)
  * * arrayOfStringsStringOrNull(arg)
  * * boolean(arg)
  * * number(arg)
@@ -99,6 +100,28 @@ function isArrayOfStringsStringOrNull(arg) {
 	return result;
 }
 module.exports.arrayOfStringsStringOrNull = isArrayOfStringsStringOrNull;
+
+/**
+ * Checks if given argument is a string[] or string.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is a string[] or string.
+ */
+function isArrayOfStringsOrString(arg) {
+	let result = true;
+	if (isArray(arg)) {
+		arg.forEach(s => {
+			if (!isString(s)) {
+				result = false;
+			}
+		});
+	} else if (isString(arg)) {
+		result = true;
+	} else {
+		result = false;
+	}
+	return result;
+}
+module.exports.arrayOfStringsOrString = isArrayOfStringsOrString;
 
 /**
  * Checks if given argument is boolean.
