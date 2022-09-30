@@ -3,7 +3,7 @@
  * my-bools.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.10.2
+ * Version 1.11.0
  *
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
@@ -37,9 +37,9 @@ function isArray(arg) {
 module.exports.array = isArray;
 
 /**
- * Checks if given argument is an array of strings.
+ * Checks if given argument is a string[].
  * @param {*} arg Argument to check.
- * @returns {boolean} If arg is an array of strings.
+ * @returns {boolean} If arg is a string[].
  */
 function isArrayOfStrings(arg) {
 	let result = true;
@@ -57,9 +57,9 @@ function isArrayOfStrings(arg) {
 module.exports.arrayOfStrings = isArrayOfStrings;
 
 /**
- * Checks if given argument is null, a string or an array.
+ * Checks if given argument is a string[] or null.
  * @param {*} arg Argument to check.
- * @returns {boolean} If arg is null, a string, or an array.
+ * @returns {boolean} If arg is a string[] or null.
  */
 function isArrayOfStringsOrNull(arg) {
 	let result = true;
@@ -79,9 +79,9 @@ function isArrayOfStringsOrNull(arg) {
 module.exports.arrayOfStringsOrNull = isArrayOfStringsOrNull;
 
 /**
- * Checks if given argument is an array of strings, a string or null.
+ * Checks if given argument is a string[], string or null.
  * @param {*} arg Argument to check.
- * @returns {boolean} If arg is an array of strings, a string or null.
+ * @returns {boolean} If arg is a string[], string or null.
  */
 function isArrayOfStringsStringOrNull(arg) {
 	let result = true;
@@ -116,7 +116,7 @@ module.exports.boolean = isBoolean;
 /**
  * Checks if given argument is a number.
  * @param {*} arg Argument to check.
- * @returns {boolean} If arg is boolean.
+ * @returns {boolean} If arg is a number.
  */
 function isNumber(arg) {
 	if (typeof arg === `number`) {
@@ -127,9 +127,9 @@ function isNumber(arg) {
 module.exports.number = isNumber;
 
 /**
- * Checks whether the supplied argument is an object or null.
+ * Checks whether the supplied argument is an object.
  * @param {*} arg Argument to check.
- * @returns {boolean} If arg is an object or null.
+ * @returns {boolean} If arg is an object.
  */
 function isObject(arg) {
 	if (typeof arg === `object` && !isArray(arg) && arg !== null) {
