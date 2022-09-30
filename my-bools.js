@@ -11,6 +11,7 @@
  * * array(arg)
  * * arrayOfStrings(array)
  * * arrayOfStringsOrNull(arg)
+ * * arrayOfStringsStringOrNull(arg)
  * * boolean(arg)
  * * number(arg)
  * * object(arg)
