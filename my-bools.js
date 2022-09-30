@@ -3,14 +3,14 @@
  * my-bools.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.10.0
+ * Version 1.10.2
  *
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
  *
  * * array(arg)
  * * arrayOfStrings(array)
- * * arrayStringOrNull(arg)
+ * * arrayOfStringsOrNull(arg)
  * * boolean(arg)
  * * number(arg)
  * * object(arg)
@@ -40,10 +40,10 @@ module.exports.array = isArray;
  * @param {*} arg Argument to check.
  * @returns {boolean} If arg is an array of strings.
  */
-function isArrayOfStrings(stringArray) {
+function isArrayOfStrings(arg) {
 	let result = true;
-	if (isArray(stringArray)) {
-		stringArray.forEach(s => {
+	if (isArray(arg)) {
+		arg.forEach(s => {
 			if (!isString(s)) {
 				result = false;
 			}
@@ -60,13 +60,22 @@ module.exports.arrayOfStrings = isArrayOfStrings;
  * @param {*} arg Argument to check.
  * @returns {boolean} If arg is null, a string, or an array.
  */
-function isArrayStringOrNull(arg) {
-	if (arg === null || isString(arg) || isArray(arg)) {
-		return true;
+function isArrayOfStringsOrNull(arg) {
+	let result = true;
+	if (isArray(arg)) {
+		arg.forEach(s => {
+			if (!isString(s)) {
+				result = false;
+			}
+		});
+	} else if (arg === null) {
+		result = true;
+	} else {
+		result = false;
 	}
-	return false;
+	return result;
 }
-module.exports.ArrayStringOrNull = isArrayStringOrNull;
+module.exports.arrayOfStringsOrNull = isArrayOfStringsOrNull;
 
 /**
  * Checks if given argument is boolean.
