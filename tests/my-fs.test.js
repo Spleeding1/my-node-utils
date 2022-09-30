@@ -841,11 +841,15 @@ describe(`getDirContents`, () => {
 	);
 
 	// ***** args.dirArgName *****
-	test.each(testData.type.isNotStringOrNull)(
+	test(`should not throw error if args.dirArgName is a string`, async () => {
+		await expect(getDirContents(srcDir, {dirArgName: `abc123`})).resolves.not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(
 		`should throw error if args.dirArgName is $type`,
 		async ({type, arg}) => {
-			await expect(getDirContents(123, {dirArgName: arg})).rejects.toThrow(
-				TypeError(`$args.dirArgName must be a string or null!`)
+			await expect(getDirContents(srcDir, {dirArgName: arg})).rejects.toThrow(
+				TypeError(`$args.dirArgName must be a string!`)
 			);
 		}
 	);

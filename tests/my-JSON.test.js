@@ -10,8 +10,129 @@
 const fs = require(`fs`);
 const json = require(`./../my-JSON`);
 const testData = require(`./test-data/type-testing`);
+const is = require(`./../my-bools`);
 
 const cwd = process.cwd();
+
+// ****************************************
+// function keyValueToString(JSONObject, args)
+// ****************************************
+describe(`keyValueToString`, () => {
+	const JsonObject = {
+		"The Key": "The Value",
+		"Roasted Marshmallows": "Are Delicious",
+		"Jalapenos": "are spicy",
+		"Is Null": null,
+		"Is True": true,
+		"Is False": false,
+		"A Number": 123,
+		"Is Undefined": void 0,
+	};
+	// ------------------------------
+	// Argument Types
+	// ------------------------------
+	// ######## JsonObject ########
+	test(`should not throw error if JsonObject is an object`, () => {
+		expect(() => {
+			json.keyValueToString(JsonObject);
+		}).not.toThrow();
+	});
+
+	test.each(testData.type.isNotObject)(
+		`should throw error if JsonObject is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(arg);
+			}).toThrow(TypeError(`$JsonObject must be an object!`));
+		}
+	);
+
+	// ######## args ########
+	test.each(testData.type.isObjectOrNull)(
+		`should not throw error if args is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, arg);
+			}).not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotObjectOrNull)(
+		`should throw error if args is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, arg);
+			}).toThrow(TypeError(`$args must be an object or null!`));
+		}
+	);
+
+	// ***** args.delimiter *****
+	test(`should not throw error if args.delimiter is a string`, () => {
+		expect(() => {
+			json.keyValueToString(JsonObject, {delimiter: `abc`});
+		}).not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(
+		`should throw error if args.delimiter is type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {delimiter: arg});
+			}).toThrow(TypeError(`$args.delimiter must be a string!`));
+		}
+	);
+
+	// ***** args.keys *****
+	test.each(testData.type.isArrayOfStringsOrString)(
+		`should not throw error if args.keys is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {keys: arg});
+			}).not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotArrayOfStringsOrString)(
+		`should throw error if args.keys is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {keys: arg});
+			}).toThrow(TypeError(`$args.keys must be a string[] or string!`));
+		}
+	);
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test(`should return a string of all of the key: value pairs on new lines without key arg`, () => {
+		const result = json.keyValueToString(JsonObject);
+
+		expect(typeof result).toStrictEqual(`string`);
+		expect(result).toStrictEqual(
+			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined\n`
+		);
+
+		const result1 = json.keyValueToString(JsonObject, {});
+
+		expect(result1).toStrictEqual(
+			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined\n`
+		);
+	});
+
+	test(`should return a string with customized delimiter`, () => {
+		const result = json.keyValueToString(JsonObject, {delimiter: `->`});
+
+		expect(result).toStrictEqual(
+			`The Key->The Value\nRoasted Marshmallows->Are Delicious\nJalapenos->are spicy\nIs Null->null\nIs True->true\nIs False->false\nA Number->123\nIs Undefined->undefined\n`
+		);
+	});
+
+	//TODO: keys arg string[]
+	// TODO: replace is.arrayOfStringsStringOrNull and other nulls
+	test(`should return a string with only the selected key`, () => {
+		const result = json.keyValueToString(JsonObject, {keys: `The Key`});
+		expect(result).toStrictEqual(`The Key: The Value\n`);
+	});
+});
 
 // ****************************************
 // async mergeJSON(defaultJSON, changeJSON)

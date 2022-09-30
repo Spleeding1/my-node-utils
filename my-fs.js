@@ -3,7 +3,7 @@
  * my-fs.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.6.7
+ * Version 1.6.8
  *
  * Utility async functions that use fs.
  *
@@ -250,7 +250,7 @@ module.exports.fileOrDirCheck = fileOrDirCheck;
  * @param {?string} args.dirArgName Name of srcDir to use for error reporting.
  * @returns {Promise<array>} Array of directory contents.
  */
-async function getDirContents(srcDir, args = {include: null, exclude: null, dirArgName: null}) {
+async function getDirContents(srcDir, args = null) {
 	// ######## Argument type checks ########
 	// ***** srcDir checked in fileOrDirCheck *****
 	if (!is.objectOrNull(args)) {
@@ -258,11 +258,11 @@ async function getDirContents(srcDir, args = {include: null, exclude: null, dirA
 	}
 
 	let dirName = `srcDir`;
-	if (is.objectWithProperty(args, `dirArgName`) && args.dirArgName !== null) {
+	if (is.objectWithProperty(args, `dirArgName`)) {
 		if (is.string(args.dirArgName)) {
 			dirName = args.dirArgName;
 		} else {
-			throw message.typeError.isNotStringOrNull(`args.dirArgName`);
+			throw message.typeError.isNotString(`args.dirArgName`);
 		}
 	}
 
