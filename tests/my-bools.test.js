@@ -75,6 +75,29 @@ describe(`isArrayOfStringsOrNull`, () => {
 });
 
 // ****************************************
+// isArrayOfStringsOrString(arg)
+// ****************************************
+describe(`isArrayOfStringsOrString`, () => {
+	test.each(testData.type.isArrayOfStringsOrString)(
+		`should return true if arg is $type`,
+		({type, arg}) => {
+			const result = is.arrayOfStringsOrString(arg);
+			expect(result).toStrictEqual(true);
+			expect(typeof result).toStrictEqual(`boolean`);
+		}
+	);
+
+	test.each(testData.type.isNotArrayOfStringsOrString)(
+		`should return false if arg is $type`,
+		({type, arg}) => {
+			const result = is.arrayOfStringsOrString(arg);
+			expect(result).toStrictEqual(false);
+			expect(typeof result).toStrictEqual(`boolean`);
+		}
+	);
+});
+
+// ****************************************
 // isArrayOfStringsStringOrNull(arg)
 // ****************************************
 describe(`isArrayOfStringsStringOrNull`, () => {
