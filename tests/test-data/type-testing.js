@@ -11,7 +11,8 @@
 // Building Blocks
 // ############################################################
 const anArray = {type: `an array`, arg: []};
-const anArrayOfStrings = {type: `an array of non-strings`, arg: [`123`, 123]};
+const anArrayOfStrings = {type: `an array of strings`, arg: [`123`, `123`]};
+const anArrayOfNonStrings = {type: `an array of non-strings`, arg: [`123`, 123]};
 const isFalse = {type: `false`, arg: false};
 const isNull = {type: `null`, arg: null};
 const aNumber = {type: `a number`, arg: 123};
@@ -24,6 +25,7 @@ let dataTypes = {
 	// ############################################################
 	// Singular Types
 	// ############################################################
+	isNotArray: [isFalse, isNull, aNumber, anObject, aString, isTrue],
 	isBoolean: [isTrue, isFalse],
 	isNotBoolean: [isNull, aString, aNumber, anObject, anArray],
 	isNotNumber: [isTrue, isFalse, aString, anArray, anObject, isNull],
@@ -33,8 +35,11 @@ let dataTypes = {
 	// ############################################################
 	// Compound Types
 	// ############################################################
+	isNotArrayOfStrings: [isFalse, isNull, aNumber, anObject, aString, isTrue, anArrayOfNonStrings],
+	isArrayOfStringsOrNull: [anArrayOfStrings, isNull],
+	isNotArrayOfStringsOrNull: [isFalse, aNumber, anObject, aString, isTrue, anArrayOfNonStrings],
 	isArrayOfStringsStringOrNull: [isNull, aString, anArrayOfStrings],
-	isNotArrayOfStringsStringOrNull: [aNumber, anObject, anArrayOfStrings, isTrue, isFalse],
+	isNotArrayOfStringsStringOrNull: [aNumber, anObject, anArrayOfNonStrings, isTrue, isFalse],
 	isObjectOrNull: [isNull, anObject],
 	isNotObjectOrNull: [aNumber, anArray, isTrue, isFalse, aString],
 	isObjectOrString: [anObject, aString],
