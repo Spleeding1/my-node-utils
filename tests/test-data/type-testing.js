@@ -38,6 +38,8 @@ let dataTypes = {
 	isNotArrayOfStrings: [isFalse, isNull, aNumber, anObject, aString, isTrue, anArrayOfNonStrings],
 	isArrayOfStringsOrNull: [anArrayOfStrings, isNull],
 	isNotArrayOfStringsOrNull: [isFalse, aNumber, anObject, aString, isTrue, anArrayOfNonStrings],
+	isArrayOfStringsOrString: [aString, anArrayOfStrings],
+	isNotArrayOfStringsOrString: [aNumber, anObject, anArrayOfNonStrings, isTrue, isFalse, isNull],
 	isArrayOfStringsStringOrNull: [isNull, aString, anArrayOfStrings],
 	isNotArrayOfStringsStringOrNull: [aNumber, anObject, anArrayOfNonStrings, isTrue, isFalse],
 	isObjectOrNull: [isNull, anObject],
