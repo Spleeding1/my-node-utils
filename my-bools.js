@@ -78,6 +78,28 @@ function isArrayOfStringsOrNull(arg) {
 module.exports.arrayOfStringsOrNull = isArrayOfStringsOrNull;
 
 /**
+ * Checks if given argument is an array of strings, a string or null.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is an array of strings, a string or null.
+ */
+function isArrayOfStringsStringOrNull(arg) {
+	let result = true;
+	if (isArray(arg)) {
+		arg.forEach(s => {
+			if (!isString(s)) {
+				result = false;
+			}
+		});
+	} else if (arg === null || isString(arg)) {
+		result = true;
+	} else {
+		result = false;
+	}
+	return result;
+}
+module.exports.arrayOfStringsStringOrNull = isArrayOfStringsStringOrNull;
+
+/**
  * Checks if given argument is boolean.
  * @param {*} arg Argument to check.
  * @returns {boolean} If arg is boolean.

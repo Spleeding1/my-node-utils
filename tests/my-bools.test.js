@@ -18,17 +18,15 @@ const testData = require(`./test-data/type-testing`);
 // isArray(arg)
 // ****************************************
 describe(`isArray`, () => {
-	test.each([
-		{type: `an object`, arg: {}, expected: false},
-		{type: `null`, arg: null, expected: false},
-		{type: `a string`, arg: `abc`, expected: false},
-		{type: `true`, arg: true, expected: false},
-		{type: `false`, arg: false, expected: false},
-		{type: `a number`, arg: 123, expected: false},
-		{type: `an array`, arg: [], expected: true},
-	])(`should return $expected if arg is $type`, ({type, arg, expected}) => {
+	test(`should return true if arg is an array`, () => {
+		const result = is.array([]);
+		expect(result).toStrictEqual(true);
+		expect(typeof result).toStrictEqual(`boolean`);
+	});
+
+	test.each(testData.type.isNotArray)(`should return false if arg is $type`, ({type, arg}) => {
 		const result = is.array(arg);
-		expect(result).toStrictEqual(expected);
+		expect(result).toStrictEqual(false);
 		expect(typeof result).toStrictEqual(`boolean`);
 	});
 });
@@ -37,37 +35,66 @@ describe(`isArray`, () => {
 // isArrayOfStrings(array)
 // ****************************************
 describe(`isArrayOfStrings`, () => {
-	test.each([
-		{type: `an array with strings`, value: [`abc`, `def`, `ghi`], expected: true},
-		{type: `an array with an object`, value: [`abc`, {}, `def`], expected: false},
-		{type: `an array with a number`, value: [123, `abc`, `def`], expected: false},
-		{type: `an array with true`, value: [`abc`, `def`, true], expected: false},
-		{type: `an array with false`, value: [`abc`, false, `def`], expected: false},
-		{type: `an array with null`, value: [null, `abc`, `def`], expected: false},
-	])(`should return $expected if array is $type`, ({type, value, expected}) => {
-		const result = is.arrayOfStrings(value);
-		expect(result).toStrictEqual(expected);
+	test(`should return true if arg is an array of strings`, () => {
+		const result = is.arrayOfStrings([`123`, `abc`]);
+		expect(result).toStrictEqual(true);
 		expect(typeof result).toStrictEqual(`boolean`);
 	});
+
+	test.each(testData.type.isNotArrayOfStrings)(
+		`should return false if arg is type`,
+		({type, arg}) => {
+			const result = is.arrayOfStrings(arg);
+			expect(result).toStrictEqual(false);
+			expect(typeof result).toStrictEqual(`boolean`);
+		}
+	);
 });
 
 // ****************************************
-// isArrayStringOrNull(arg)
+// isArrayOfStringsOrNull(arg)
 // ****************************************
-describe(`isArrayStringOrNull`, () => {
-	test.each([
-		{type: `an object`, arg: {}, expected: false},
-		{type: `null`, arg: null, expected: true},
-		{type: `a string`, arg: `abc`, expected: true},
-		{type: `true`, arg: true, expected: false},
-		{type: `false`, arg: false, expected: false},
-		{type: `a number`, arg: 123, expected: false},
-		{type: `an array`, arg: [], expected: true},
-	])(`should return $expected if arg is $type`, ({type, arg, expected}) => {
-		const result = is.ArrayStringOrNull(arg);
-		expect(result).toStrictEqual(expected);
-		expect(typeof result).toStrictEqual(`boolean`);
-	});
+describe(`isArrayOfStringsOrNull`, () => {
+	test.each(testData.type.isArrayOfStringsOrNull)(
+		`should return true if arg is $type`,
+		({type, arg}) => {
+			const result = is.arrayOfStringsOrNull(arg);
+			expect(result).toStrictEqual(true);
+			expect(typeof result).toStrictEqual(`boolean`);
+		}
+	);
+
+	test.each(testData.type.isNotArrayOfStringsOrNull)(
+		`should return false if arg is $type`,
+		({type, arg}) => {
+			const result = is.arrayOfStringsOrNull(arg);
+			expect(result).toStrictEqual(false);
+			expect(typeof result).toStrictEqual(`boolean`);
+		}
+	);
+});
+
+// ****************************************
+// isArrayOfStringsStringOrNull(arg)
+// ****************************************
+describe(`isArrayOfStringsStringOrNull`, () => {
+	test.each(testData.type.isArrayOfStringsStringOrNull)(
+		`should return true if arg is $type`,
+		({type, arg}) => {
+			const result = is.arrayOfStringsStringOrNull(arg);
+			expect(result).toStrictEqual(true);
+			expect(typeof result).toStrictEqual(`boolean`);
+		}
+	);
+
+	test.each(testData.type.isNotArrayOfStringsStringOrNull)(
+		`should return false if arg is $type`,
+		({type, arg}) => {
+			const result = is.arrayOfStringsStringOrNull(arg);
+			expect(result).toStrictEqual(false);
+			expect(typeof result).toStrictEqual(`boolean`);
+		}
+	);
 });
 
 // ****************************************
@@ -172,18 +199,14 @@ describe(`is.objectWithProperty`, () => {
 		}).not.toThrowError();
 	});
 
-	test.each([
-		{type: `a number`, value: 123},
-		{type: `an object`, value: {}},
-		{type: `true`, value: true},
-		{type: `false`, value: false},
-		{type: `null`, value: null},
-		{type: `an array`, value: []},
-	])(`should throw an error if property is $type`, ({type, value}) => {
-		expect(() => {
-			is.objectWithProperty(arg, value);
-		}).toThrow(TypeError(`$property must be a string!`));
-	});
+	test.each(testData.type.isNotString)(
+		`should throw an error if property is $type`,
+		({type, value}) => {
+			expect(() => {
+				is.objectWithProperty(arg, value);
+			}).toThrow(TypeError(`$property must be a string!`));
+		}
+	);
 });
 
 // ****************************************
