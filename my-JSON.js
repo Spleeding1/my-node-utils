@@ -17,14 +17,21 @@ const message = require(`./my-messages`);
 /**
  * Returns formatted key: value string.
  * @param {object} ObjectJSON JSON Object.
- * @param {string} key Desired object key.
- * @param {string} prefix Final string prefix.
- * @param {string} postfix Final sting postfix.
- * @returns {string} Returns formatted string or `` if value is null or undefined.
+ * @param {array|string} args.keys Desired object key.
+ * @param {string} args.betweenEach Placed in between each key: value pair.
+ * @param {string} args.delimiter Placed in between key and value.
+ * @param {string} args.prefix Final string prefix.
+ * @param {string} args.suffix Final sting suffix.
+ * @param {boolean} args.changeEmpty Will change empty values to empty string.
+ * @returns {string} Returns formatted string.
  */
 function keyValueToString(JsonObject, args = null) {
-	let delimiter = `: `;
 	let keys = null;
+	let prefix = ``;
+	let delimiter = `: `;
+	let betweenEach = `\n`;
+	let suffix = ``;
+	let changeEmpty = false;
 
 	if (!is.object(JsonObject)) {
 		throw message.typeError.isNotObject(`JsonObject`);
@@ -49,20 +56,60 @@ function keyValueToString(JsonObject, args = null) {
 				throw message.typeError.isNotArrayOfStringsOrString(`args.keys`);
 			}
 		}
+		if (is.objectWithProperty(args, `prefix`)) {
+			if (is.string(args.prefix)) {
+				prefix = args.prefix;
+			} else {
+				throw message.typeError.isNotString(`args.prefix`);
+			}
+		}
+		if (is.objectWithProperty(args, `suffix`)) {
+			if (is.string(args.suffix)) {
+				suffix = args.suffix;
+			} else {
+				throw message.typeError.isNotString(`args.suffix`);
+			}
+		}
+		if (is.objectWithProperty(args, `betweenEach`)) {
+			if (is.string(args.betweenEach)) {
+				betweenEach = args.betweenEach;
+			} else {
+				throw message.typeError.isNotString(`args.betweenEach`);
+			}
+		}
+		if (is.objectWithProperty(args, `changeEmpty`)) {
+			if (is.boolean(args.changeEmpty)) {
+				changeEmpty = args.changeEmpty;
+			} else {
+				throw message.typeError.isNotBoolean(`args.changeEmpty`);
+			}
+		}
 	} else {
 		throw message.typeError.isNotObjectOrNull(`args`);
 	}
 
-	let returnString = ``;
+	function writeKeyValue(key, returnString) {
+		returnString += returnString === prefix ? `` : betweenEach;
+		const value =
+			changeEmpty &&
+			(JsonObject[key] === null || JsonObject[key] === false || JsonObject[key] === undefined)
+				? ``
+				: JsonObject[key];
+		returnString += `${key}${delimiter}${value}`;
+		return returnString;
+	}
+
+	let returnString = prefix;
 	if (keys) {
 		keys.forEach(key => {
-			returnString += `${key}${delimiter}${JsonObject[key]}\n`;
+			returnString = writeKeyValue(key, returnString);
 		});
 	} else {
 		for (key in JsonObject) {
-			returnString += `${key}${delimiter}${JsonObject[key]}\n`;
+			returnString = writeKeyValue(key, returnString);
 		}
 	}
+	returnString += suffix;
 
 	return returnString;
 }

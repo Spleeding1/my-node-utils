@@ -100,6 +100,77 @@ describe(`keyValueToString`, () => {
 			}).toThrow(TypeError(`$args.keys must be a string[] or string!`));
 		}
 	);
+
+	// ***** args.prefix *****
+	test(`should not throw error if args.prefix is a string`, () => {
+		expect(() => {
+			json.keyValueToString(JsonObject, {prefix: `abc`});
+		}).not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(
+		`should throw error if args.prefix is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {prefix: arg});
+			}).toThrow(TypeError(`$args.prefix must be a string!`));
+		}
+	);
+
+	// ***** args.suffix *****
+	test(`should not throw error if args.suffix is a string`, () => {
+		expect(() => {
+			json.keyValueToString(JsonObject, {suffix: `abc`});
+		}).not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(
+		`should throw error if args.suffix is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {suffix: arg});
+			}).toThrow(TypeError(`$args.suffix must be a string!`));
+		}
+	);
+
+	// ***** args.betweenEach *****
+	test(`should not throw error if args.betweenEach is a string`, () => {
+		expect(() => {
+			json.keyValueToString(JsonObject, {betweenEach: `->`});
+		}).not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(
+		`should throw error if args.betweenEach is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {betweenEach: arg});
+			}).toThrow(TypeError(`$args.betweenEach must be a string!`));
+		}
+	);
+
+	// ***** args.changeEmpty *****
+	test.each(testData.type.isBoolean)(
+		`should not throw error if args.changeEmpty is a $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {changeEmpty: arg});
+			}).not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotBoolean)(
+		`should throw error if args.changeEmpty is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {changeEmpty: arg});
+			}).toThrow(TypeError(`$args.changeEmpty must be true or false!`));
+		}
+	);
+
+	// TODO: ignore empty values
+	// *****  *****
+
 	// ------------------------------
 	// Functionality
 	// ------------------------------
@@ -108,13 +179,13 @@ describe(`keyValueToString`, () => {
 
 		expect(typeof result).toStrictEqual(`string`);
 		expect(result).toStrictEqual(
-			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined\n`
+			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined`
 		);
 
 		const result1 = json.keyValueToString(JsonObject, {});
 
 		expect(result1).toStrictEqual(
-			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined\n`
+			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined`
 		);
 	});
 
@@ -122,15 +193,50 @@ describe(`keyValueToString`, () => {
 		const result = json.keyValueToString(JsonObject, {delimiter: `->`});
 
 		expect(result).toStrictEqual(
-			`The Key->The Value\nRoasted Marshmallows->Are Delicious\nJalapenos->are spicy\nIs Null->null\nIs True->true\nIs False->false\nA Number->123\nIs Undefined->undefined\n`
+			`The Key->The Value\nRoasted Marshmallows->Are Delicious\nJalapenos->are spicy\nIs Null->null\nIs True->true\nIs False->false\nA Number->123\nIs Undefined->undefined`
 		);
 	});
 
-	//TODO: keys arg string[]
-	// TODO: replace is.arrayOfStringsStringOrNull and other nulls
 	test(`should return a string with only the selected key`, () => {
 		const result = json.keyValueToString(JsonObject, {keys: `The Key`});
-		expect(result).toStrictEqual(`The Key: The Value\n`);
+		expect(result).toStrictEqual(`The Key: The Value`);
+	});
+
+	test(`should return a string with only the selected keys`, () => {
+		const result = json.keyValueToString(JsonObject, {keys: [`Jalapenos`, `Is True`]});
+		expect(result).toStrictEqual(`Jalapenos: are spicy\nIs True: true`);
+	});
+
+	test(`should return a string that starts with prefix`, () => {
+		const result = json.keyValueToString(JsonObject, {keys: `Jalapenos`, prefix: `\n`});
+		expect(result).toStrictEqual(`\nJalapenos: are spicy`);
+	});
+
+	test(`should return a string that ends with suffix`, () => {
+		const result = json.keyValueToString(JsonObject, {keys: `Jalapenos`, suffix: `\n`});
+		expect(result).toStrictEqual(`Jalapenos: are spicy\n`);
+	});
+
+	test(`should return a string that betweenEach between keys`, () => {
+		const result = json.keyValueToString(JsonObject, {
+			keys: [`Jalapenos`, `Roasted Marshmallows`],
+			betweenEach: ` and `,
+		});
+		expect(result).toStrictEqual(`Jalapenos: are spicy and Roasted Marshmallows: Are Delicious`);
+	});
+
+	test(`should return a string that does not have betweenEach if only one key`, () => {
+		const result = json.keyValueToString(JsonObject, {keys: `Jalapenos`, betweenEach: `nooo`});
+		expect(result).toStrictEqual(`Jalapenos: are spicy`);
+	});
+
+	test(`should change empty values to empty strings`, () => {
+		const result = json.keyValueToString(JsonObject, {changeEmpty: true});
+
+		expect(typeof result).toStrictEqual(`string`);
+		expect(result).toStrictEqual(
+			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: \nIs True: true\nIs False: \nA Number: 123\nIs Undefined: `
+		);
 	});
 });
 
