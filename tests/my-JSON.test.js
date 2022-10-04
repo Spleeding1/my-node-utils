@@ -27,6 +27,7 @@ describe(`keyValueToString`, () => {
 		"Is False": false,
 		"A Number": 123,
 		"Is Undefined": void 0,
+		"Empty": "",
 	};
 	// ------------------------------
 	// Argument Types
@@ -168,8 +169,24 @@ describe(`keyValueToString`, () => {
 		}
 	);
 
-	// TODO: ignore empty values
-	// *****  *****
+	// ***** args.ignoreEmpty *****
+	test.each(testData.type.isBoolean)(
+		`should not throw error if args.ignoreEmpty is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {ignoreEmpty: arg});
+			}).not.toThrow();
+		}
+	);
+
+	test.each(testData.type.isNotBoolean)(
+		`should throw error if args.ignoreEmpty is $type`,
+		({type, arg}) => {
+			expect(() => {
+				json.keyValueToString(JsonObject, {ignoreEmpty: arg});
+			}).toThrow(TypeError(`$args.ignoreEmpty must be true or false!`));
+		}
+	);
 
 	// ------------------------------
 	// Functionality
@@ -179,13 +196,13 @@ describe(`keyValueToString`, () => {
 
 		expect(typeof result).toStrictEqual(`string`);
 		expect(result).toStrictEqual(
-			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined`
+			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined\nEmpty: `
 		);
 
 		const result1 = json.keyValueToString(JsonObject, {});
 
 		expect(result1).toStrictEqual(
-			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined`
+			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: null\nIs True: true\nIs False: false\nA Number: 123\nIs Undefined: undefined\nEmpty: `
 		);
 	});
 
@@ -193,7 +210,7 @@ describe(`keyValueToString`, () => {
 		const result = json.keyValueToString(JsonObject, {delimiter: `->`});
 
 		expect(result).toStrictEqual(
-			`The Key->The Value\nRoasted Marshmallows->Are Delicious\nJalapenos->are spicy\nIs Null->null\nIs True->true\nIs False->false\nA Number->123\nIs Undefined->undefined`
+			`The Key->The Value\nRoasted Marshmallows->Are Delicious\nJalapenos->are spicy\nIs Null->null\nIs True->true\nIs False->false\nA Number->123\nIs Undefined->undefined\nEmpty->`
 		);
 	});
 
@@ -235,7 +252,15 @@ describe(`keyValueToString`, () => {
 
 		expect(typeof result).toStrictEqual(`string`);
 		expect(result).toStrictEqual(
-			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: \nIs True: true\nIs False: \nA Number: 123\nIs Undefined: `
+			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs Null: \nIs True: true\nIs False: \nA Number: 123\nIs Undefined: \nEmpty: `
+		);
+	});
+
+	test(`should return a string without empty key: value pairs when args.ignoreEmpty is true`, () => {
+		const result = json.keyValueToString(JsonObject, {ignoreEmpty: true});
+
+		expect(result).toStrictEqual(
+			`The Key: The Value\nRoasted Marshmallows: Are Delicious\nJalapenos: are spicy\nIs True: true\nA Number: 123`
 		);
 	});
 });

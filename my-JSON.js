@@ -3,7 +3,7 @@
  * my-JSON.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.2.0
+ * Version 1.2.1
  *
  * Utility functions to work with JSON.
  *
@@ -23,6 +23,7 @@ const message = require(`./my-messages`);
  * @param {string} args.prefix Final string prefix.
  * @param {string} args.suffix Final sting suffix.
  * @param {boolean} args.changeEmpty Will change empty values to empty string.
+ * @param {boolean} args.ignoreEmpty Will skip empty values.
  * @returns {string} Returns formatted string.
  */
 function keyValueToString(JsonObject, args = null) {
@@ -32,6 +33,7 @@ function keyValueToString(JsonObject, args = null) {
 	let betweenEach = `\n`;
 	let suffix = ``;
 	let changeEmpty = false;
+	let ignoreEmpty = false;
 
 	if (!is.object(JsonObject)) {
 		throw message.typeError.isNotObject(`JsonObject`);
@@ -84,18 +86,27 @@ function keyValueToString(JsonObject, args = null) {
 				throw message.typeError.isNotBoolean(`args.changeEmpty`);
 			}
 		}
+		if (is.objectWithProperty(args, `ignoreEmpty`)) {
+			if (is.boolean(args.ignoreEmpty)) {
+				ignoreEmpty = args.ignoreEmpty;
+			} else {
+				throw message.typeError.isNotBoolean(`args.ignoreEmpty`);
+			}
+		}
 	} else {
 		throw message.typeError.isNotObjectOrNull(`args`);
 	}
 
 	function writeKeyValue(key, returnString) {
-		returnString += returnString === prefix ? `` : betweenEach;
 		const value =
-			changeEmpty &&
+			(changeEmpty || ignoreEmpty) &&
 			(JsonObject[key] === null || JsonObject[key] === false || JsonObject[key] === undefined)
 				? ``
 				: JsonObject[key];
-		returnString += `${key}${delimiter}${value}`;
+		if (!(ignoreEmpty && value === ``)) {
+			returnString += returnString === prefix ? `` : betweenEach;
+			returnString += `${key}${delimiter}${value}`;
+		}
 		return returnString;
 	}
 
