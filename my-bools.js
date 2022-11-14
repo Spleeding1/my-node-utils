@@ -3,7 +3,7 @@
  * my-bools.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.12.0
+ * Version 1.13.0
  *
  * Utility functions that return true or false.
  * const is = require(`./my-bools`);
@@ -14,6 +14,7 @@
  * * arrayOfStringsOrString(arg)
  * * arrayOfStringsStringOrNull(arg)
  * * boolean(arg)
+ * * date(arg)
  * * number(arg)
  * * object(arg)
  * * objectOrNull(arg)
@@ -137,6 +138,19 @@ function isBoolean(arg) {
 module.exports.boolean = isBoolean;
 
 /**
+ * Checks if given argument is a date.
+ * @param {*} arg Argument to check.
+ * @returns {boolean} If arg is a date.
+ */
+function isDate(arg) {
+	if (arg && Object.prototype.toString.call(arg) === "[object Date]" && !isNaN(arg)) {
+		return true;
+	}
+	return false;
+}
+module.exports.date = isDate;
+
+/**
  * Checks if given argument is a number.
  * @param {*} arg Argument to check.
  * @returns {boolean} If arg is a number.
@@ -155,7 +169,7 @@ module.exports.number = isNumber;
  * @returns {boolean} If arg is an object.
  */
 function isObject(arg) {
-	if (typeof arg === `object` && !isArray(arg) && arg !== null) {
+	if (typeof arg === `object` && !isArray(arg) && arg !== null && !isDate(arg)) {
 		return true;
 	}
 	return false;

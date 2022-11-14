@@ -137,6 +137,22 @@ describe(`isBoolean`, () => {
 });
 
 // ****************************************
+// isDate(arg)
+// ****************************************
+describe(`isDate`, () => {
+	test(`should return true if arg is a date`, () => {
+		const result = is.date(new Date());
+		expect(result).toBeTruthy();
+		expect(typeof result).toStrictEqual(`boolean`);
+	});
+	test.each(testData.type.isNotDate)(`should return false if arg is $type`, ({type, arg}) => {
+		const result = is.date(arg);
+		expect(result).toBeFalsy();
+		expect(typeof result).toStrictEqual(`boolean`);
+	});
+});
+
+// ****************************************
 // isNumber(arg)
 // ****************************************
 describe(`is.number`, () => {
