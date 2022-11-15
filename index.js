@@ -15,6 +15,9 @@ exports[`myBools`] = myBools;
 const myClock = require(`./my-clock`);
 exports[`myClock`] = myClock;
 
+const myFormatting = require(`./my-formatting`);
+exports[`myFormatting`] = myFormatting;
+
 const myFS = require(`./my-fs`);
 exports[`myFS`] = myFS;
 
@@ -23,9 +26,6 @@ exports[`myJSON`] = myJSON;
 
 const myMessages = require(`./my-messages`);
 exports[`myMessages`] = myMessages;
-
-const myStrings = require(`./my-strings`);
-exports[`myStrings`] = myStrings;
 
 const myTestData = require(`./tests/test-data/type-testing`);
 exports[`myTestData`] = myTestData;
