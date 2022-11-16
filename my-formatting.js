@@ -13,10 +13,31 @@
 const is = require(`./my-bools`);
 const message = require(`./my-messages`);
 
-function formatDate(theDate) {
+function formatDate(theDate, format) {
 	if (!is.date(theDate)) {
 		throw message.typeError.isNotDate(`theDate`);
 	}
+
+	if (!is.string(format)) {
+		throw message.typeError.isNotString(`format`);
+	}
+
+	const d = theDate.getDate();
+	const dd = d < 10 ? `0${d}` : d;
+	const day = theDate.getDay();
+	const Ds = [`M`, `Tu`, `W`, `Th`, `F`, `Sa`, `Su`];
+	const DDs = [`Mo`, `Tu`, `We`, `Th`, `Fr`, `Sa`, `Su`];
+	const DDDs = [`Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun`];
+	const DDDDs = [`Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday`, `Saturday`, `Sunday`];
+
+	const formatted = format
+		.replaceAll(`dd`, dd)
+		.replaceAll(`d`, d)
+		.replaceAll(`DDDD`, DDDDs[day])
+		.replaceAll(`DDD`, DDDs[day])
+		.replaceAll(`DD`, DDs[day])
+		.replaceAll(`D`, Ds[day]);
+	return formatted;
 }
 module.exports.date = formatDate;
 

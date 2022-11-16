@@ -11,23 +11,72 @@ const format = require(`../my-formatting`);
 const testData = require(`./test-data/type-testing`);
 
 describe(`formatDate`, () => {
-	const date = Date(`2022-11-08T04:26:51.269Z`);
+	const date = new Date(`2022-11-08T04:26:51.269Z`);
 
 	// ------------------------------
-	// Argument type check
+	// Argument type checks
 	// ------------------------------
 	test(`should not throw error if theDate is a date`, () => {
 		const theDate = new Date();
 		expect(() => {
-			format.date(theDate);
+			format.date(theDate, `format`);
 		}).not.toThrow();
 	});
-	// TODO: d: 1-31
 
-	// TODO: dd: 01-31
-	// TODO: D: M
-	// TODO: DD: Mon
-	// TODO: DDD: Monday
+	test.each(testData.type.isNotDate)(`should throw error if theDate is $type`, ({type, arg}) => {
+		expect(() => {
+			format.date(arg, `format`);
+		}).toThrow(TypeError(`$theDate must be a date!`));
+	});
+
+	test(`should not throw error if format is a string`, () => {
+		expect(() => {
+			format.date(date, `format`);
+		}).not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(
+		`should not throw error if format is $type`,
+		({type, arg}) => {
+			expect(() => {
+				format.date(date, arg);
+			}).toThrow(TypeError(`$format must be a string!`));
+		}
+	);
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	// ######## Days ########
+	test(`should return a day digit for 'd'`, () => {
+		const result = format.date(date, `d`);
+		expect(result).toStrictEqual(`7`);
+	});
+
+	test(`should return a day digit for 'dd'`, () => {
+		const result = format.date(date, `dd`);
+		expect(result).toStrictEqual(`07`);
+	});
+
+	test(`should return day short abbreviation  for 'D'`, () => {
+		const result = format.date(date, `D`);
+		expect(result).toStrictEqual(`Tu`);
+	});
+
+	test(`should return day short abbreviation  for 'DD'`, () => {
+		const result = format.date(date, `DD`);
+		expect(result).toStrictEqual(`Tu`);
+	});
+
+	test(`should return day long abbreviation  for 'DDD'`, () => {
+		const result = format.date(date, `DDD`);
+		expect(result).toStrictEqual(`Tue`);
+	});
+
+	test(`should return day name for 'DDDD'`, () => {
+		const result = format.date(date, `DDDD`);
+		expect(result).toStrictEqual(`Tuesday`);
+	});
 });
 
 describe(`formatString`, () => {
