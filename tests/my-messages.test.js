@@ -45,6 +45,37 @@ describe(`function isNotBooleanTypeError(arg)`, () => {
 });
 
 // ****************************************
+// function isNotDateTypeError(arg)
+// ****************************************
+describe(`function isNotDateTypeError(arg)`, () => {
+	// ------------------------------
+	// Argument Types
+	// ------------------------------
+	test(`should not throw error if arg is a string`, () => {
+		expect(() => {
+			message.typeError.isNotDate(`$arg`);
+		}).not.toThrow();
+	});
+
+	test.each(testData.type.isNotString)(`should throw error if arg is $type`, ({type, arg}) => {
+		expect(() => {
+			message.typeError.isNotDate(arg);
+		}).toThrow(TypeError(`$arg must be a string!`));
+	});
+
+	// ------------------------------
+	// Functionality
+	// ------------------------------
+	test(`should return TypeError`, () => {
+		const result1 = message.typeError.isNotDate(`theArg`);
+		expect(result1).toEqual(TypeError(`$theArg must be a date!`));
+
+		const result2 = message.typeError.isNotDate(`theDate`);
+		expect(result2).toEqual(TypeError(`$theDate must be a date!`));
+	});
+});
+
+// ****************************************
 // function stringTypeError(arg)
 // ****************************************
 describe(`isNotStringTypeError`, () => {

@@ -3,10 +3,11 @@
  * my-messages.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * version 1.9.0
+ * version 1.10.0
  *
  * Functions to return commonly used messages
  * * isNotBooleanTypeError(arg)
+ * * isNoDateTypeError(arg)
  * * isNotNumberTypeError(arg)
  * * isNotObjectTypeError(arg)
  * * isNotStringTypeError(arg)
@@ -46,6 +47,21 @@ function isNotBooleanTypeError(arg) {
 	return TypeError(`$${arg} must be true or false!`);
 }
 typeErrors.isNotBoolean = isNotBooleanTypeError;
+
+/**
+ * Returns TypeError with uniform message.
+ * @param {string} arg Argument name that should be a date.
+ * @returns {TypeError}
+ * @throws {TypeError} If $arg is not a string.
+ */
+
+function isNotDateTypeError(arg) {
+	if (!is.string(arg)) {
+		throw isNotStringTypeError(arg);
+	}
+	return TypeError(`$${arg} must be a date!`);
+}
+typeErrors.isNotDate = isNotDateTypeError;
 
 /**
  * Returns TypeError with uniform message.
