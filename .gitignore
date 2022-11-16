@@ -1,6 +1,7 @@
 # Ignore everything
 *
 
+# TODO: create .gitinclude
 !tests
 !tests/*.test.js
 !tests/test-data
@@ -11,9 +12,9 @@
 !my-bools.js
 !my-browser-sync.js
 !my-clock.js
+!my-formatting.js
 !my-fs.js
 !my-JSON.js
 !my-loops.js
 !my-messages.js
-!my-strings.js
 !package.json
