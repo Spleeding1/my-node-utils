@@ -8,6 +8,7 @@
  */
 
 const {timer} = require(`./../my-clock`);
+// TODO: make date formatter
 
 // ****************************************
 // function stopTimer(startTime)

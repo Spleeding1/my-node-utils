@@ -11,7 +11,7 @@ const format = require(`../my-formatting`);
 const testData = require(`./test-data/type-testing`);
 
 describe(`formatDate`, () => {
-	const date = new Date(`2022-11-08T04:26:51.269Z`);
+	const date = new Date(`2022-09-08T04:26:51.269Z`);
 
 	// ------------------------------
 	// Argument type checks
@@ -50,32 +50,62 @@ describe(`formatDate`, () => {
 	// ######## Days ########
 	test(`should return a day digit for 'd'`, () => {
 		const result = format.date(date, `d`);
-		expect(result).toStrictEqual(`7`);
+		expect(result).toStrictEqual(`8`);
 	});
 
 	test(`should return a day digit for 'dd'`, () => {
 		const result = format.date(date, `dd`);
-		expect(result).toStrictEqual(`07`);
+		expect(result).toStrictEqual(`08`);
 	});
 
 	test(`should return day short abbreviation  for 'D'`, () => {
 		const result = format.date(date, `D`);
-		expect(result).toStrictEqual(`Tu`);
+		expect(result).toStrictEqual(`Fr`);
 	});
 
 	test(`should return day short abbreviation  for 'DD'`, () => {
 		const result = format.date(date, `DD`);
-		expect(result).toStrictEqual(`Tu`);
+		expect(result).toStrictEqual(`Fr`);
 	});
 
 	test(`should return day long abbreviation  for 'DDD'`, () => {
 		const result = format.date(date, `DDD`);
-		expect(result).toStrictEqual(`Tue`);
+		expect(result).toStrictEqual(`Fri`);
 	});
 
 	test(`should return day name for 'DDDD'`, () => {
 		const result = format.date(date, `DDDD`);
-		expect(result).toStrictEqual(`Tuesday`);
+		expect(result).toStrictEqual(`Friday`);
+	});
+
+	test(`should return digit month for 'm'`, () => {
+		const result = format.date(date, `m`);
+		expect(result).toStrictEqual(`9`);
+	});
+
+	test(`should return digit month for 'mm'`, () => {
+		const result = format.date(date, `mm`);
+		expect(result).toStrictEqual(`09`);
+	});
+
+	test(`should return digit month for 'M'`, () => {
+		const result = format.date(date, `M`);
+		expect(result).toStrictEqual(`Se`);
+	});
+
+	test(`should return digit month for 'MM'`, () => {
+		const result = format.date(date, `MM`);
+		expect(result).toStrictEqual(`Se`);
+	});
+
+	test(`should return digit month for 'MMM'`, () => {
+		const result = format.date(date, `MMM`);
+		expect(result).toStrictEqual(`Sep`);
+	});
+
+	test(`should return digit month for 'MMMM'`, () => {
+		const result = format.date(date, `MMMM`);
+		expect(result).toStrictEqual(`September`);
 	});
 });
 

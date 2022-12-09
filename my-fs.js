@@ -3,7 +3,7 @@
  * my-fs.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.6.8
+ * Version 1.7.0
  *
  * Utility async functions that use fs.
  *
@@ -308,5 +308,14 @@ async function getDirContents(srcDir, args = null) {
 	}
 	return filtered;
 }
-
 module.exports.getDirContents = getDirContents;
+
+// async function getFileContents(source) {
+// 	if (!is.string(source)) {
+// 		throw message.typeError.isNotString(`source`);
+// 	}
+
+// 	const fileString = fs.readFileSync(source);
+// 	return fileString;
+// }
+// module.exports.getFileContents = getFileContents;

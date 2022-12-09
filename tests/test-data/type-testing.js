@@ -7,6 +7,9 @@
  * Reusable test data for testing correct types with Jest.
  */
 
+// TODO: create .gitinclude.
+// TODO: check for uniform formatting when completed.
+
 // ############################################################
 // Building Blocks
 // ############################################################

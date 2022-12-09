@@ -25,10 +25,28 @@ function formatDate(theDate, format) {
 	const d = theDate.getDate();
 	const dd = d < 10 ? `0${d}` : d;
 	const day = theDate.getDay();
-	const Ds = [`M`, `Tu`, `W`, `Th`, `F`, `Sa`, `Su`];
 	const DDs = [`Mo`, `Tu`, `We`, `Th`, `Fr`, `Sa`, `Su`];
 	const DDDs = [`Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun`];
 	const DDDDs = [`Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday`, `Saturday`, `Sunday`];
+	const month = theDate.getMonth();
+	const m = month + 1;
+	const mm = d < 10 ? `0${m}` : m;
+	const MMs = [`Ja`, `Fe`, `Ma`, `Ap`, `Ma`, `Jn`, `Jl`, `Au`, `Se`, `Oc`, `No`, `De`];
+	const MMMs = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `Jun`, `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
+	const MMMMs = [
+		`January`,
+		`February`,
+		`March`,
+		`April`,
+		`May`,
+		`June`,
+		`July`,
+		`August`,
+		`September`,
+		`October`,
+		`November`,
+		`December`,
+	];
 
 	const formatted = format
 		.replaceAll(`dd`, dd)
@@ -36,7 +54,13 @@ function formatDate(theDate, format) {
 		.replaceAll(`DDDD`, DDDDs[day])
 		.replaceAll(`DDD`, DDDs[day])
 		.replaceAll(`DD`, DDs[day])
-		.replaceAll(`D`, Ds[day]);
+		.replaceAll(`D`, DDs[day])
+		.replaceAll(`mm`, mm)
+		.replaceAll(`m`, m)
+		.replaceAll(`MMMM`, MMMMs[month])
+		.replaceAll(`MMM`, MMMs[month])
+		.replaceAll(`MM`, MMs[month])
+		.replaceAll(`M`, MMs[month]);
 	return formatted;
 }
 module.exports.date = formatDate;
