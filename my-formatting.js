@@ -3,16 +3,38 @@
  * my-strings.js
  * Copyright (c) 2022 by Carl David Brubaker
  * All Rights Reserved
- * Version 1.2.0
+ * Version 1.3.0
  *
  * Handles manipulation of strings
  * const format = require(`./format);
+ * * format.addLeadingZero(number);
+ * * format.date(date, `format`);
  * * format.string(inputString, format);
  */
 
 const is = require(`./my-bools`);
 const message = require(`./my-messages`);
 
+/**
+ * Conditionally adds a leading '0' to a number if it is between 0-9.
+ * @param {int|float} number number to add a leading zero to.
+ * @returns {string} number conerted to string with zero applied.
+ */
+function addLeadingZero(number) {
+	if (!is.number(number)) {
+		throw message.typeError.isNotNumber(`number`);
+	}
+
+	return number < 10 ? `0${number}` : `${number}`;
+}
+module.exports.addLeadingZero = addLeadingZero;
+
+/**
+ * Converts a date to the given format.
+ * @param {Date} theDate The date to format.
+ * @param {string} format The desired format of the date.
+ * @returns {string} The formatted date.
+ */
 function formatDate(theDate, format) {
 	if (!is.date(theDate)) {
 		throw message.typeError.isNotDate(`theDate`);
@@ -22,15 +44,35 @@ function formatDate(theDate, format) {
 		throw message.typeError.isNotString(`format`);
 	}
 
-	const d = theDate.getDate();
-	const dd = d < 10 ? `0${d}` : d;
-	const day = theDate.getDay();
-	const DDs = [`Mo`, `Tu`, `We`, `Th`, `Fr`, `Sa`, `Su`];
-	const DDDs = [`Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun`];
-	const DDDDs = [`Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday`, `Saturday`, `Sunday`];
+	const H = theDate.getHours();
+	const HH = addLeadingZero(H);
+	const h = H > 12 ? H - 12 : H === 0 ? 12 : H;
+	const hh = addLeadingZero(h);
+
+	let t = `a`;
+	let tt = `am`;
+	let T = `A`;
+	let TT = `AM`;
+
+	if (H > 11) {
+		t = `p`;
+		tt = `pm`;
+		T = `P`;
+		TT = `PM`;
+	}
+
+	const i = theDate.getMinutes();
+	const ii = addLeadingZero(i);
+
+	const s = theDate.getSeconds();
+	const ss = addLeadingZero(s);
+
+	const yyyy = theDate.getFullYear();
+	const yy = yyyy.toString().slice(-2);
+
 	const month = theDate.getMonth();
 	const m = month + 1;
-	const mm = d < 10 ? `0${m}` : m;
+	const mm = addLeadingZero(m);
 	const MMs = [`Ja`, `Fe`, `Ma`, `Ap`, `Ma`, `Jn`, `Jl`, `Au`, `Se`, `Oc`, `No`, `De`];
 	const MMMs = [`Jan`, `Feb`, `Mar`, `Apr`, `May`, `Jun`, `Jul`, `Aug`, `Sep`, `Oct`, `Nov`, `Dec`];
 	const MMMMs = [
@@ -48,19 +90,45 @@ function formatDate(theDate, format) {
 		`December`,
 	];
 
+	const d = theDate.getDate();
+	const dd = addLeadingZero(d);
+	const day = theDate.getDay();
+	const DDs = [`Mo`, `Tu`, `We`, `Th`, `Fr`, `Sa`, `Su`];
+	const DDDs = [`Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun`];
+	const DDDDs = [`Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday`, `Saturday`, `Sunday`];
+
 	const formatted = format
-		.replaceAll(`dd`, dd)
-		.replaceAll(`d`, d)
-		.replaceAll(`DDDD`, DDDDs[day])
-		.replaceAll(`DDD`, DDDs[day])
-		.replaceAll(`DD`, DDs[day])
-		.replaceAll(`D`, DDs[day])
+		.replaceAll(`t`, `k`)
+		.replaceAll(`T`, `K`)
+		.replaceAll(`d`, `x`)
+		.replaceAll(`D`, `X`)
+		.replaceAll(`hh`, hh)
+		.replaceAll(`h`, h)
+		.replaceAll(`HH`, HH)
+		.replaceAll(`H`, H)
+		.replaceAll(`ii`, ii)
+		.replaceAll(`i`, i)
+		.replaceAll(`ss`, ss)
+		.replaceAll(`s`, s)
+		.replaceAll(`yyyy`, yyyy)
+		.replaceAll(`yy`, yy)
+		.replaceAll(`y`, yy)
 		.replaceAll(`mm`, mm)
 		.replaceAll(`m`, m)
 		.replaceAll(`MMMM`, MMMMs[month])
 		.replaceAll(`MMM`, MMMs[month])
 		.replaceAll(`MM`, MMs[month])
-		.replaceAll(`M`, MMs[month]);
+		.replaceAll(`M`, MMs[month])
+		.replaceAll(`kk`, tt)
+		.replaceAll(`k`, t)
+		.replaceAll(`KK`, TT)
+		.replaceAll(`K`, T)
+		.replaceAll(`xx`, dd)
+		.replaceAll(`x`, d)
+		.replaceAll(`XXXX`, DDDDs[day])
+		.replaceAll(`XXX`, DDDs[day])
+		.replaceAll(`XX`, DDs[day])
+		.replaceAll(`X`, DDs[day]);
 	return formatted;
 }
 module.exports.date = formatDate;

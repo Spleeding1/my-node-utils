@@ -9,6 +9,8 @@
 
 const exports = {};
 
+// TODO: list sorting
+
 const myBools = require(`./my-bools`);
 exports[`myBools`] = myBools;
 
