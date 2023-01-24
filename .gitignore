@@ -9,6 +9,7 @@
 !.gitignore
 !cli-alias.txt
 !index.js
+!LICENSE
 !my-bools.js
 !my-browser-sync.js
 !my-clock.js
@@ -18,3 +19,5 @@
 !my-loops.js
 !my-messages.js
 !package.json
+!package-lock.json
+!README.md
