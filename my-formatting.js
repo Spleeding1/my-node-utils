@@ -133,6 +133,8 @@ function formatDate(theDate, format) {
 }
 module.exports.date = formatDate;
 
+function formatList(list, sorting) {}
+
 /**
  * Format a string to one of the format types.
  * @param {string} inputString String to be formatted.
