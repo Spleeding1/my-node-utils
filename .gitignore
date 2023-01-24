@@ -1,9 +1,7 @@
 # Ignore everything
 *
 
-# TODO: create .gitinclude
 !tests
-!tests/*.test.js
 !tests/test-data
 !tests/test-data/*.js
 !.gitignore
