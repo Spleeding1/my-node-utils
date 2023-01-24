@@ -1,5 +1,5 @@
 {
-	"name": "my-node-utils",
+	"name": "@spleeding1/my-node-utils",
 	"version": "0.1.0",
 	"description": "Utility functions for use with Node.js",
 	"main": "index.js",
@@ -7,11 +7,22 @@
 		"test": "jest"
 	},
 	"author": "Carl David Brubaker",
-	"license": "ISC",
+	"license": "GPL-3.0-or-later",
 	"devDependencies": {
 		"jest": "^29.1.1"
 	},
 	"dependencies": {
 		"colors": "^1.4.0"
-	}
+	},
+	"directories": {
+		"test": "tests"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Spleeding1/my-node-utils.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Spleeding1/my-node-utils/issues"
+	},
+	"homepage": "https://github.com/Spleeding1/my-node-utils#readme"
 }
