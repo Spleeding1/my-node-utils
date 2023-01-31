@@ -7,12 +7,8 @@
  * Utility functions for commonly used things.
  */
 
-const exports = {};
-
-// TODO: list sorting
-
 const myBools = require(`./my-bools`);
-exports[`myBools`] = myBools;
+exports[`is`] = myBools;
 
 const myClock = require(`./my-clock`);
 exports[`myClock`] = myClock;
